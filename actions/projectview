@@ -1,0 +1,49 @@
+#!/bin/bash
+# 2009 Paul Mansfield
+# License:  GPL, http://www.gnu.org/copyleft/gpl.html
+if [ $1 != "usage" ]; then
+    action=$1;shift
+fi
+
+# Stop Verbose lines, thanks to Mark Harrison
+TODOTXT_VERBOSE=0
+usage () {
+    echo "  $(basename $0) [BASENAME] [TERM]"
+    echo "    Show todo items containing TERM, grouped by project, and displayed in priority order."
+    echo "    If no TERM provided, displays entire todo.txt."
+    echo ""
+}
+
+case $1 in
+"usage")
+    usage
+;;
+
+"-h")
+    usage
+;;
+
+*)
+    # Show projects in alphabetical order and todo items in priority  order
+    echo "===== Projects ====="
+    echo ""
+    # Find all projects and sort
+    PROJECTS=`grep -o '[^ ]*+[^ ]\+' "$TODO_FILE" | grep '^+' | sort -u | sed 's/^+//g'` 
+    # For each project show header and the list of todo items
+    for i in $PROJECTS ; do 
+        # Use core _list function, does numbering and colouring for us
+        PROJECT_LIST=`_list "$TODO_FILE" "+$i" $2 | sed 's/\ *+[a-zA-Z0-9\{._\-\}]*\ */ /g'`
+        if [[ -n "${PROJECT_LIST}" ]]; then
+            echo "--- $i ---"
+            echo "${PROJECT_LIST}"
+            echo ""
+        fi
+    done
+    # Show todo items not associated to a project
+    PROJECT_LIST=`_list "$TODO_FILE" $2 | grep -v "+\w"`
+    if [[ -n "${PROJECT_LIST}" ]]; then
+        echo "--- Not in projects ---"
+        echo "${PROJECT_LIST}"
+    fi
+;;
+esac
