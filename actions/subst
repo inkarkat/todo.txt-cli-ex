@@ -1,0 +1,44 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+  echo "$(basename $0) NUMBER PATTERN REPLACEMENT"
+  echo "      Replaces PATTERN with REPLACEMENT on line NUMBER."
+  echo ""
+  exit
+}
+
+die()
+{
+    echo "$*"
+    exit 1
+}
+
+shopt -s extglob
+errmsg="usage: $TODO_SH subst ITEM# PATTERN REPLACEMENT"
+item=$1; shift
+
+[ -z "$item" ] && die "$errmsg"
+[[ "$item" = +([0-9]) ]] || die "$errmsg"
+todo=$(sed "$item!d" "$TODO_FILE")
+[ -z "$todo" ] && die "$item: No such todo."
+if [[ $# -ne 2 && $TODOTXT_FORCE = 0 ]]; then
+    echo -n "Pattern: "
+    read pattern
+    echo -n "Replacement: "
+    read replacement
+else
+    pattern=$1
+    replacement=$2
+fi
+
+if sed -i.bak $item" s|$pattern|$replacement|" "$TODO_FILE"; then
+    [ $TODOTXT_VERBOSE -gt 0 ] && {
+        newtodo=$(sed "$item!d" "$TODO_FILE")
+        echo "$item: $newtodo"
+    }
+else
+    echo "TODO: Error modifying task $item."
+fi
