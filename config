@@ -52,6 +52,18 @@ export TMP_FILE="$TODO_DIR/todo.tmp"
 
 # === BEHAVIOR ===
 
+
+# Do not automatically archive tasks on completion; I want to do this manually
+# (e.g. at the beginning of a new day). 
+export TODOTXT_AUTO_ARCHIVE=0
+
+# Prepend the date to any added task so that I can track the duration the task
+# was open. 
+export TODOTXT_DATE_ON_ADD=1
+
+# Default action is showing all prioritized tasks. 
+export TODOTXT_DEFAULT_ACTION=listpri
+
 ## customize list output
 #
 # TODOTXT_SORT_COMMAND will filter after line numbers are
@@ -68,3 +80,4 @@ export TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k2,2'
 # just before the list output is displayed.
 #
 # export TODOTXT_FINAL_FILTER='cat'
+
