@@ -2,7 +2,8 @@
 
 # Your todo.txt directory
 #export TODO_DIR="/Users/gina/Documents/todo"
-export TODO_DIR="C:/Documents and Settings/gina/My Documents"
+#export TODO_DIR="C:/Documents and Settings/gina/My Documents"
+export TODO_DIR="$HOME/todo"
 
 # Your todo/done/report.txt locations
 export TODO_FILE="$TODO_DIR/todo.txt"
@@ -58,6 +59,9 @@ export TMP_FILE="$TODO_DIR/todo.tmp"
 # priority, context, and project.
 #
 # export TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k2'
+# Sort only on the second colum (containing the priority or first project, after
+# the todo number)
+export TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k2,2'
 
 # TODOTXT_FINAL_FILTER will filter list output after colorization,
 # priority hiding, context hiding, and project hiding. That is,
