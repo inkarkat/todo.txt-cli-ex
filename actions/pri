@@ -1,0 +1,31 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+  echo "    $(basename $0) PRIORITY NUMBER [, NUMBER, NUMBER, ...]"
+  echo "      Adds PRIORITY to todo(s) on line NUMBER."
+  echo ""
+  exit
+}
+
+die()
+{
+    echo "$*"
+    exit 1
+} 
+
+errmsg="usage: $TODO_SH pri PRIORITY ITEM#, [ITEM#, ITEM#, ...]"
+if [[ "$1" = [a-zA-Z] ]]; then
+    pri=$1
+    shift
+else
+    die "$errmsg"
+fi
+[ $# -eq 0 ] && die "$errmsg"
+
+for item in `echo $* | tr ',' ' '`; do 
+    # Call back to the main script to prioritize each item. 
+    "$TODO_FULL_SH" command pri $item $pri
+done
