@@ -10,9 +10,8 @@ shift
   exit
 }
 
-PRIORITY=false
-if [[ x"$1" = x[a-zA-Z] ]]; then
-    PRIORITY=$1
+if [[ "$1" = [a-zA-Z] ]]; then
+    pri=$1
     shift
 fi
 
@@ -20,5 +19,5 @@ fi
 if "$TODO_FULL_SH" command add "$@"; then
     # figure out the line of what we just added, and "do" it
     line=`sed -n '$ =' "$TODO_FILE"`
-    "$TODO_FULL_SH" command pri "$line" $PRIORITY
+    "$TODO_FULL_SH" command pri "$line" $pri
 fi
