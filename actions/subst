@@ -4,7 +4,7 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "$(basename $0) NUMBER PATTERN REPLACEMENT"
+  echo "    $(basename $0) NUMBER PATTERN REPLACEMENT"
   echo "      Replaces PATTERN with REPLACEMENT on line NUMBER."
   echo ""
   exit
@@ -17,13 +17,15 @@ die()
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH subst ITEM# PATTERN REPLACEMENT"
+errmsg="usage: $TODO_SH $(basename $0) ITEM# PATTERN REPLACEMENT"
 item=$1; shift
 
 [ -z "$item" ] && die "$errmsg"
 [[ "$item" = +([0-9]) ]] || die "$errmsg"
-todo=$(sed "$item!d" "$TODO_FILE")
+# Get item without potential priority. 
+todo=$(sed -n $item"s/^(.) //p" "$TODO_FILE")
 [ -z "$todo" ] && die "$item: No such todo."
+
 if [[ $# -ne 2 && $TODOTXT_FORCE = 0 ]]; then
     echo -n "Pattern: "
     read pattern
@@ -33,12 +35,6 @@ else
     pattern=$1
     replacement=$2
 fi
-
-if sed -i.bak $item" s|$pattern|$replacement|" "$TODO_FILE"; then
-    [ $TODOTXT_VERBOSE -gt 0 ] && {
-        newtodo=$(sed "$item!d" "$TODO_FILE")
-        echo "$item: $newtodo"
-    }
-else
-    echo "TODO: Error modifying task $item."
-fi
+newtodo=$(echo "$todo"|sed "s|$pattern|$replacement|g")
+[ "$todo" = "$newtodo" ] && die "No replacement done for $pattern"
+"$TODO_FULL_SH" command replace $item "$newtodo"
