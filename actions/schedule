@@ -27,10 +27,10 @@ function remove {
 	item=$1
 	verbose=$TODOTXT_VERBOSE
 	TODOTXT_VERBOSE=0
-	task=`$TODO_FULL_SH -x -p list $item | tail -n1 \
-		| sed -e "s/^[0-9]* //" \
-			-e "s/^([A-Z])* //" \
-			-e "s/$pattern//"` # remove item number, priority and threshold
+	task=$($TODO_FULL_SH -x -p list $item | tail -n1 | sed \
+		-e "s/$pattern//" \
+		-e "s/^[0-9]* //" \
+		-e "s/^([A-Z])* //") # remove threshold, item number and priority
 	TODOTXT_VERBOSE=$verbose
 	$TODO_FULL_SH replace $item "$task" # N.B.: retains priority
 }
@@ -41,10 +41,10 @@ function replace {
 
 	verbose=$TODOTXT_VERBOSE
 	TODOTXT_VERBOSE=0
-	task=`$TODO_FULL_SH -x -p list $item | tail -n1 \
-		| sed -e "s/^[0-9]* //" \
-			-e "s/^([A-Z])* //" \
-			-e "s/$pattern//"` # remove item number, priority and threshold
+	task=$($TODO_FULL_SH -x -p list $item | tail -n1 | sed \
+		-e "s/$pattern//" \
+		-e "s/^[0-9]* //" \
+		-e "s/^([A-Z])* //") # remove threshold, item number and priority
 	TODOTXT_VERBOSE=$verbose
 	$TODO_FULL_SH replace $item "$task t:"`date -d "$threshold" +%F`
 }
