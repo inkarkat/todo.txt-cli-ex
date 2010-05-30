@@ -4,8 +4,8 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "    $(basename $0) NUMBER PATTERN REPLACEMENT"
-  echo "      Replaces PATTERN with REPLACEMENT on line NUMBER."
+  echo "    $(basename $0) ITEM# PATTERN REPLACEMENT"
+  echo "      Replaces PATTERN with REPLACEMENT on line ITEM#."
   echo ""
   exit
 }
@@ -24,7 +24,7 @@ item=$1; shift
 [[ "$item" = +([0-9]) ]] || die "$errmsg"
 # Get item without potential priority. 
 todo=$(sed -n $item"s/^(.) //p" "$TODO_FILE")
-[ -z "$todo" ] && die "$item: No such todo."
+[ -z "$todo" ] && die "$item: No such task."
 
 if [[ $# -ne 2 && $TODOTXT_FORCE = 0 ]]; then
     echo -n "Pattern: "
