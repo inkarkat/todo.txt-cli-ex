@@ -80,4 +80,5 @@ export TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k2,2'
 # just before the list output is displayed.
 #
 # export TODOTXT_FINAL_FILTER='cat'
-
+# Filter out future tasks, based on markers of the form "t:YYYY-MM-DD". 
+export TODOTXT_FINAL_FILTER="$HOME/.todo/futureTasks"
