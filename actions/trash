@@ -4,10 +4,10 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
-  echo "      Puts the task(s) on line ITEM# into trash.txt."
-  echo ""
-  exit
+    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
+    echo "      Puts the task(s) on line ITEM# into trash.txt."
+    echo ""
+    exit
 }
 
 die()
@@ -45,7 +45,10 @@ for item in `echo $* | tr ',' ' '`; do
             # leave blank line behind (preserves line numbers)
             sed -i.bak -e $item"s/^.*//" "$TODO_FILE"
         fi
-        [ $TODOTXT_VERBOSE -gt 0 ] && echo "TODO: '$todo' put into trash."
+        [ $TODOTXT_VERBOSE -gt 0 ] && {
+            echo "$item: $todo"
+            echo "TODO: $item put into trash."
+        }
     else
         echo "$item is already marked done"
     fi
