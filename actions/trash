@@ -37,7 +37,7 @@ for item in `echo $* | tr ',' ' '`; do
         # Add timestamp like the 'do' command. 
         sed -i.bak $item"s|^|$now |" "$TODO_FILE"
         # Move item to trash. 
-        sed -n $item"p" "$TODO_FILE" >> "${TRASH_FILE:-$TODO_DIR/trash.txt}"
+        sed -e "$item!d" "$TODO_FILE" >> "${TRASH_FILE:-$TODO_DIR/trash.txt}"
         if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
             # delete line (changes line numbers)
             sed -i.bak -e $item"s/^.*//" -e '/./!d' "$TODO_FILE"
