@@ -71,8 +71,8 @@ export TODOTXT_DEFAULT_ACTION=listpri
 # priority, context, and project.
 #
 # export TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k2'
-# Sort only on the second colum (containing the priority or first project, after
-# the todo number)
+# Sort only on the second column (containing the priority or first project,
+# after the todo number)
 export TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k2,2'
 
 # TODOTXT_FINAL_FILTER will filter list output after colorization,
@@ -82,3 +82,16 @@ export TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k2,2'
 # export TODOTXT_FINAL_FILTER='cat'
 # Filter out future tasks, based on markers of the form "t:YYYY-MM-DD". 
 export TODOTXT_FINAL_FILTER="$HOME/.todo/futureTasks"
+
+# Set correct browser for Windows systems so that the nav addon doesn't fall
+# back to non-GUI stuff (like w3m, via git-web--browse) when run under Cygwin. 
+if [ ! "$TODOTXT_BROWSER" ]; then
+    export TODOTXT_BROWSER="/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe"
+    if [ ! -x "$TODOTXT_BROWSER" ]; then
+	export TODOTXT_BROWSER="/cygdrive/c/Program Files (x86)/Mozilla Firefox/firefox.exe"
+	if [ ! -x "$TODOTXT_BROWSER" ]; then
+	    unset TODOTXT_BROWSER
+	fi
+    fi
+fi
+
