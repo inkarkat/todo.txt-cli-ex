@@ -14,7 +14,7 @@ import re
 from datetime import datetime
 
 
-pattern = re.compile(r"t:(\d{4})-(\d{2})-(\d{2})")
+pattern = re.compile(r" t:(\d{4})-(\d{2})-(\d{2})")
 
 
 def main(args=None):
