@@ -13,8 +13,8 @@ errmsg="usage: $TODO_SH $syntax"
 
 die()
 {
-    echo "$*"
-    exit 1
+	echo "$*"
+	exit 1
 }
 usage()
 {
@@ -30,22 +30,27 @@ usage()
 
 list()
 {
-	$TODO_FULL_SH -x list | sed -ne "/$pattern/p"
+	$TODO_FULL_SH -x list | sed -e "/$pattern/!d"
+}
+
+getTask()
+{
+	item=$1
+	# Remove threshold, item number and priority. 
+	sed	-e "$item!d" \
+		-e "s/$pattern//" \
+		-e "s/^[0-9]* //" \
+		-e "s/^([A-Z])* //" \
+		"$TODO_FILE"
 }
 
 remove()
 {
 	item=$1
-        [ -z "$item" ] && die "$errmsg"
-        [[ "$item" = +([0-9]) ]] || die "$errmsg"
+	[ -z "$item" ] && die "$errmsg"
+	[[ "$item" = +([0-9]) ]] || die "$errmsg"
 
-	verbose=$TODOTXT_VERBOSE
-	TODOTXT_VERBOSE=0
-	task=$($TODO_FULL_SH -x -p list $item | tail -n1 | sed \
-		-e "s/$pattern//" \
-		-e "s/^[0-9]* //" \
-		-e "s/^([A-Z])* //") # remove threshold, item number and priority
-	TODOTXT_VERBOSE=$verbose
+	task=$(getTask "$item")
 	$TODO_FULL_SH replace $item "$task" # N.B.: retains priority
 }
 
@@ -53,17 +58,11 @@ replace()
 {
 	item=$1
 	threshold=$2
-        [ -z "$item" ] && die "$errmsg"
-        [[ "$item" = +([0-9]) ]] || die "$errmsg"
-        [ -z "$threshold" ] && die "$errmsg"
+	[ -z "$item" ] && die "$errmsg"
+	[[ "$item" = +([0-9]) ]] || die "$errmsg"
+	[ -z "$threshold" ] && die "$errmsg"
 
-	verbose=$TODOTXT_VERBOSE
-	TODOTXT_VERBOSE=0
-	task=$($TODO_FULL_SH -x -p list $item | tail -n1 | sed \
-		-e "s/$pattern//" \
-		-e "s/^[0-9]* //" \
-		-e "s/^([A-Z])* //") # remove threshold, item number and priority
-	TODOTXT_VERBOSE=$verbose
+	task=$(getTask "$item")
 	$TODO_FULL_SH replace $item "$task t:$(date -d "$threshold" +%F)"
 }
 
