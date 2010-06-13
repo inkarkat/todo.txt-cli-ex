@@ -61,8 +61,8 @@ export TODOTXT_AUTO_ARCHIVE=0
 # was open. 
 export TODOTXT_DATE_ON_ADD=1
 
-# Default action is showing all prioritized tasks. 
-export TODOTXT_DEFAULT_ACTION=listpri
+# Default action is showing all prioritized and due tasks. 
+export TODOTXT_DEFAULT_ACTION=what
 
 ## customize list output
 #
