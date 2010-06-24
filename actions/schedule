@@ -30,7 +30,7 @@ usage()
 
 list()
 {
-	$TODO_FULL_SH -x list | sed -e "/$pattern/!d"
+	$TODO_FULL_SH -x list | sed -e '/^[0-9]\+ x /d' -e "/$pattern/!d"
 }
 
 getTask()
