@@ -1,0 +1,41 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [TERM...]"
+    echo "      Displays detailed summary of tasks."
+    echo "      If TERM specified, considers only tasks that contain TERM."
+    echo ""
+    exit
+}
+
+export TODOTXT_VERBOSE=0
+
+summarizeList()
+{
+    "$TODO_FULL_SH" ls "$@" | wc -l
+}
+summarizeDone()
+{
+    "$TODO_FULL_SH" lsdo "$@" | wc -l
+}
+summarizePrioritized()
+{
+    "$TODO_FULL_SH" lsp "$@" | wc -l
+}
+summarizeScheduled()
+{
+    "$TODO_FULL_SH" lsdue "$@" | wc -l
+}
+summarizeWaiting()
+{
+    "$TODO_FULL_SH" lswait "$@" | wc -l
+}
+
+summarizeList "$@"
+summarizeDone "$@"
+summarizePrioritized "$@"
+summarizeScheduled "$@"
+summarizeWaiting "$@"
