@@ -1,0 +1,48 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
+    echo "      Unblock the task(s) on line ITEM#"
+    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] PRIORITY"
+    echo "      Unblock the task(s) on line ITEM# and prioritize as PRIORITY."
+    echo ""
+    exit
+}
+
+die()
+{
+    echo "$*"
+    exit 1
+}
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [PRIORITY]"
+
+[ $# -eq 0 ] && die "$errmsg"
+
+items=
+while [[ "$1" =~ ^[,0-9]+$ ]]
+do
+    items="$items $1"
+    shift
+done
+[ "$items" ] || die "$errmsg"
+
+pri=
+if [[ "$1" = [a-zA-Z] ]]; then
+    pri=$1
+    shift
+fi
+
+[ $# -eq 0 ] || die "$errmsg"
+
+# Split multiple unwait's, if comma separated change to whitespace separated. 
+for item in `echo $items | tr ',' ' '`; do 
+    (
+        "$TODO_FULL_SH" subst $item ' w:([^)]*)' ''
+        "$TODO_FULL_SH" subst $item ' w:[^ \t]\+' ''
+    ) | grep -v '^No replacement done for'
+    [ "$pri" ] && "$TODO_FULL_SH" command pri $item $pri
+
+done
