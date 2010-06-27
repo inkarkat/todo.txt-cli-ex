@@ -5,8 +5,8 @@ shift
 
 [ "$action" = "usage" ] && {
   echo "    $(basename $0) [TERM...]"
-  echo "      Displays all done items."
-  echo "      If TERM specified, lists only lines that contain TERM."
+  echo "      Displays all done tasks."
+  echo "      If TERM specified, lists only tasks that contain TERM."
   echo ""
   exit
 }
