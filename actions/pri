@@ -4,10 +4,11 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "    $(basename $0) PRIORITY ITEM#[, ITEM#, ITEM#, ...]"
-  echo "      Adds PRIORITY to task(s) on line ITEM#."
-  echo ""
-  exit
+    echo "    $(basename $0) PRIORITY ITEM#[, ITEM#, ITEM#, ...]"
+    echo "    $(basename $0) ITEM# PRIORITY"
+    echo "      Adds PRIORITY to task(s) on line ITEM#."
+    echo ""
+    exit
 }
 
 die()
@@ -20,6 +21,9 @@ errmsg="usage: $TODO_SH pri PRIORITY ITEM#[, ITEM#, ITEM#, ...]"
 if [[ "$1" = [a-zA-Z] ]]; then
     pri=$1
     shift
+elif [[ $# -eq 2 && "$2" = [a-zA-Z] ]]; then
+    pri=$2
+    set -- "$1"
 else
     die "$errmsg"
 fi
