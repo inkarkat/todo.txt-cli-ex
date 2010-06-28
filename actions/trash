@@ -17,14 +17,14 @@ die()
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH trash ITEM#[, ITEM#, ITEM#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 BASE=$(basename "$TRASH_FILE")
 PREFIX=$(echo ${BASE%%.[^.]*} | tr [a-z] [A-Z])
 
 [ $# -eq 0 ] && die "$errmsg"
-# Split multiple trash's, if comma seperated change to whitespace sepereated
+# Split multiple trash's, if comma separated change to whitespace separated
 # Loop the 'trash' function for each item
 for item in `echo $* | tr ',' ' '`; do 
     [ -z "$item" ] && die "$errmsg"
@@ -34,7 +34,7 @@ for item in `echo $* | tr ',' ' '`; do
     [ -z "$todo" ] && die "$item: No such task."
 
     # Check if this item has already been done. 
-    if [ $(echo $todo | grep -c "^x ") -eq 0 ] ; then
+    if [ $(echo $todo | grep -c "^x ") -eq 0 ]; then
         now=`date '+%Y-%m-%d'`
         # Remove priority once item is trashed. 
         sed -i.bak $item"s/^(.) //" "$TODO_FILE"
@@ -54,6 +54,6 @@ for item in `echo $* | tr ',' ' '`; do
             echo "TODO: $item put into $PREFIX."
         }
     else
-        echo "$item is already marked done"
+        echo "$item is already marked done."
     fi
 done
