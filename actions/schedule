@@ -51,7 +51,7 @@ remove()
 	[[ "$item" = +([0-9]) ]] || die "$errmsg"
 
 	task=$(getTask "$item")
-	$TODO_FULL_SH replace $item "$task" # N.B.: retains priority
+	"$TODO_FULL_SH" replace $item "$task" # N.B.: retains priority
 }
 
 replace()
@@ -63,7 +63,8 @@ replace()
 	[ -z "$threshold" ] && die "$errmsg"
 
 	task=$(getTask "$item")
-	$TODO_FULL_SH replace $item "$task t:$(date -d "$threshold" +%F)"
+	date=$(date -d "$threshold" +%F) || return 1
+	"$TODO_FULL_SH" replace $item "$task t:$date"
 }
 
 [ "$action" = "usage" ] && usage
