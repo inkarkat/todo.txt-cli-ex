@@ -23,7 +23,7 @@ item=$1; shift
 [ -z "$item" ] && die "$errmsg"
 [[ "$item" = +([0-9]) ]] || die "$errmsg"
 # Get item without potential priority. 
-todo=$(sed -n -e $item"s/^(.) //" -e $item"p" "$TODO_FILE")
+todo=$(sed -e "$item!d" -e "s/^(.) //" "$TODO_FILE")
 [ -z "$todo" ] && die "$item: No such task."
 
 if [[ $# -ne 2 && $TODOTXT_FORCE = 0 ]]; then
