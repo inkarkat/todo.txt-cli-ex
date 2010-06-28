@@ -38,11 +38,14 @@ fi
 [ $# -eq 0 ] || die "$errmsg"
 
 # Split multiple unwait's, if comma separated change to whitespace separated. 
+set -o pipefail
 for item in `echo $items | tr ',' ' '`; do 
     (
-        "$TODO_FULL_SH" subst $item ' w:([^)]*)' ''
-        "$TODO_FULL_SH" subst $item ' w:[^ \t]\+' ''
-    ) | grep -v '^No replacement done for'
+        isWaiting=
+        "$TODO_FULL_SH" subst $item ' w:([^)]*)' '' && isWaiting='true'
+        "$TODO_FULL_SH" subst $item ' w:[^ \t]\+' '' && isWaiting='true'
+        [ "$isWaiting" ] || echo >&2 "TODO: $item not blocked"
+    ) | grep -v '^No replacement done for' || continue
     [ "$pri" ] && "$TODO_FULL_SH" command pri $item $pri
 
 done
