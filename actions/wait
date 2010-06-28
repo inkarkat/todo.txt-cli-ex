@@ -28,11 +28,16 @@ done
 [ "$items" -a $# -gt 0 ] || die "$errmsg"
 
 waitReasons=
-for waitReason
+# Split REASONs based on commas, not whitespace. A multi-word single REASON is
+# far more frequent than multiple REASONs. Splitting on whitespace would
+# necessitate enclosing each REASON in double quotes. 
+IFS=,
+for waitReason in $(echo "$@" | sed -e 's/, \+/,/g')
 do
-    # Enclose REASON's in parentheses if they consist of multiple words. 
+    # Enclose REASONs in parentheses if they consist of multiple words. 
     waitReasons=${waitReasons}${waitReasons:+ }w:$(echo "$waitReason" | sed -e '/[ \t]/s/.*/(\0)/')
 done
+unset IFS
 
 # Split multiple wait's, if comma separated change to whitespace separated. 
 for item in `echo $items | tr ',' ' '`; do 
