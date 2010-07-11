@@ -5,9 +5,10 @@
 # Stop Verbose lines, thanks to Mark Harrison
 TODOTXT_VERBOSE=0
 usage () {
-  echo "$(basename $0) [BASENAME] [TERM]"
-  echo "  Show todo items containing TERM, grouped by project, and displayed in priority order."
-  echo "  If no TERM provided, displays entire todo.txt."
+  echo "    $(basename $0) [TERM]"
+  echo "      Show todo items containing TERM, grouped by project, and displayed in"
+  echo "      priority order. If no TERM provided, displays entire todo.txt."
+  echo ""
 }
 
 case $1 in
