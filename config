@@ -1,3 +1,5 @@
+# todo.txt configuration. 
+#
 # === EDIT FILE LOCATIONS BELOW ===
 
 # Your todo.txt directory
@@ -45,9 +47,9 @@ export TMP_FILE="$TODO_DIR/todo.tmp"
 ## Colors are supported for the first three.
 ## Uncomment and edit to override these defaults.
 
-# export PRI_A=$YELLOW        # color for A priority
-# export PRI_B=$GREEN         # color for B priority
-# export PRI_C=$LIGHT_BLUE    # color for C priority
+export PRI_A=$RED
+export PRI_B=$GREEN
+export PRI_C=$BLUE
 # export PRI_X=$WHITE         # color for rest of them
 
 # === BEHAVIOR ===
