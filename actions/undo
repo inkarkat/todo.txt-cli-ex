@@ -11,12 +11,6 @@ shift
     exit
 }
 
-die()
-{
-    echo "$*"
-    exit 1
-}
-
 shopt -s extglob
 errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
 
