@@ -30,5 +30,8 @@ else
     replacement=$2
 fi
 newtodo=$(echo "$todo"|sed "s|$pattern|$replacement|g")
-[ "$todo" = "$newtodo" ] && die "No replacement done for $pattern"
+if [ "$todo" = "$newtodo" ]; then
+    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item: $todo"
+    die "No replacement done for $pattern"
+fi
 "$TODO_FULL_SH" command replace $item "$newtodo"
