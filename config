@@ -50,7 +50,7 @@ export TMP_FILE="$TODO_DIR/todo.tmp"
 export PRI_A=$RED
 export PRI_B=$GREEN
 export PRI_C=$BLUE
-# export PRI_X=$WHITE         # color for rest of them
+export PRI_X=$PURPLE         # color for rest of them
 
 # === BEHAVIOR ===
 
