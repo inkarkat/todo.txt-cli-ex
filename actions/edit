@@ -1,15 +1,42 @@
 #!/bin/bash
 # 2009 Matt Brubeck
 # License:  GPL, http://www.gnu.org/copyleft/gpl.html
-case $1 in
-  "usage")
-      echo "    $(basename $0) [BASENAME]"
-      echo "      Open \$TODO_DIR/BASENAME.txt in \$EDITOR."
-      echo "      If BASENAME is not given, defaults to 'todo'."
-      echo ""
-      ;;
-  *)
-      FILE=${2:-todo}.txt
-      "$EDITOR" "$TODO_DIR/$FILE"
-      ;;
-esac
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && { 
+    echo "    $(basename $0) [ITEM#] [BASENAME]"
+    echo "      Open ITEM# in \$TODO_DIR/BASENAME.txt in \$EDITOR for editing."
+    echo "      If ITEM# is omitted, the entire file is edited."
+    echo "      If BASENAME is not given, defaults to 'todo'."
+    echo ""
+    exit
+}
+
+item=
+if [[ "$1" =~ ^[0-9]+$ ]]; then
+    # We got an ITEM#. 
+    item=$1
+    shift
+fi
+FILE=$TODO_DIR/${1:-todo}.txt
+
+if [ ! "$item" ]; then
+    exec "$EDITOR" "$FILE"
+fi
+
+TMPEDIT="${TEMP:-/tmp}/todo-edit.$$.txt"
+# Retrieve item without priority. 
+sed -e "$item!d" -e "$item s/^(.) //" "$FILE" > "$TMPEDIT"
+
+TMPMODTIME=$(stat -c %Y "$TMPEDIT")
+"$EDITOR" "$TMPEDIT" || { echo 2>&1 "Unclean exit of editor; aborting!"; exit $?; }
+NEWMODTIME=$(stat -c %Y "$TMPEDIT")
+
+if [ $NEWMODTIME -eq $TMPMODTIME ]; then
+    echo 2>&1 "No changes done."
+else
+    newContent=$(head -n 1 "$TMPEDIT")
+    "$TODO_FULL_SH" replace $item "$newContent"
+fi
