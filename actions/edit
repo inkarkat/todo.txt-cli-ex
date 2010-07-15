@@ -32,8 +32,7 @@ fi
 
 TMPEDIT="${TEMP:-/tmp}/todo-edit.$$.txt"
 # Retrieve item without priority. 
-EDITME=$(sed -e "$item!d" -e "$item s/^(.) //" "$FILE")
-echo "$EDITME" > "$TMPEDIT"
+sed -e "$item!d" -e "$item s/^(.) //" "$FILE" > "$TMPEDIT"
 
 TMPMODTIME=$(stat -c %Y "$TMPEDIT")
 "$EDITOR" "$TMPEDIT" || { echo 2>&1 "Unclean exit of editor; aborting!"; exit $?; }
@@ -46,17 +45,9 @@ fi
 
 newContent=$(head -n 1 "$TMPEDIT")
 if [ -z "$newContent" ]; then
-    if [ $TODOTXT_FORCE = 0 ]; then
-        echo "Delete '$EDITME'?  (y/n)"
-        read ANSWER
-    else
-        ANSWER="y"
-    fi
-    if [ "$ANSWER" = "y" ]; then
-        "$TODO_FULL_SH" command del $item
-    else
-        echo "TODO: No changes done."
-    fi
+    # We don't need to ask for confirmation here, the "del" command will take
+    # care of that. 
+    "$TODO_FULL_SH" command del $item
 else
     "$TODO_FULL_SH" replace $item "$newContent"
 fi
