@@ -23,20 +23,40 @@ fi
 FILE=$TODO_DIR/${1:-todo}.txt
 
 if [ ! "$item" ]; then
+    # Edit entire file. 
     exec "$EDITOR" "$FILE"
 fi
 
+
+# Edit single task. 
+
 TMPEDIT="${TEMP:-/tmp}/todo-edit.$$.txt"
 # Retrieve item without priority. 
-sed -e "$item!d" -e "$item s/^(.) //" "$FILE" > "$TMPEDIT"
+EDITME=$(sed -e "$item!d" -e "$item s/^(.) //" "$FILE")
+echo "$EDITME" > "$TMPEDIT"
 
 TMPMODTIME=$(stat -c %Y "$TMPEDIT")
 "$EDITOR" "$TMPEDIT" || { echo 2>&1 "Unclean exit of editor; aborting!"; exit $?; }
 NEWMODTIME=$(stat -c %Y "$TMPEDIT")
 
 if [ $NEWMODTIME -eq $TMPMODTIME ]; then
-    echo 2>&1 "No changes done."
+    echo "No changes done."
+    exit 0
+fi
+
+newContent=$(head -n 1 "$TMPEDIT")
+if [ -z "$newContent" ]; then
+    if [ $TODOTXT_FORCE = 0 ]; then
+        echo "Delete '$EDITME'?  (y/n)"
+        read ANSWER
+    else
+        ANSWER="y"
+    fi
+    if [ "$ANSWER" = "y" ]; then
+        "$TODO_FULL_SH" command del $item
+    else
+        echo "TODO: No changes done."
+    fi
 else
-    newContent=$(head -n 1 "$TMPEDIT")
     "$TODO_FULL_SH" replace $item "$newContent"
 fi
