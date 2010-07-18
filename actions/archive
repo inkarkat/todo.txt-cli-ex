@@ -4,12 +4,12 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "  Customized archive:"
   echo "    archive KEYWORD"
-  echo "      Moves done items containing KEYWORD from todo.txt to done.txt and removes blank lines."
+  echo "      Moves done items containing KEYWORD from todo.txt to done.txt and removes"
+  echo "      blank lines."
   echo "    archive ITEM#"
   echo "      Moves done item number ITEM# and removes blank lines."
-  echo "    Note that if KEYWORD is a number it is considered as an ITEM# number"
+  echo "      Note that if KEYWORD is a number it is considered as an ITEM# number"
   echo ""
   exit
 }
