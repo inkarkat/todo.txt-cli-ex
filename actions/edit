@@ -60,12 +60,19 @@ numLines=$(grep -cve '^\s*$' "$TMPEDIT")
 if [ $numLines -gt 1 ]; then
     if  [ $TODOTXT_FORCE = 0 ]; then
         echo
-        echo "There are $((numLines - 1)) additional lines. Add them as individual tasks? (y/n)"
+        if [ $numLines -eq 2 ]; then
+            echo "There is one additional line. Add it as another task? (y/n)"
+        else
+            echo "There are $((numLines - 1)) additional lines. Add them as individual tasks? (y/n)"
+        fi
         read ANSWER
     else
         ANSWER="y"
     fi
     if [ "$ANSWER" = "y" ]; then
+        # The additional lines should be added as-is. 
+        export TODOTXT_DATE_ON_ADD=0
+
         IFS=$'\n'
         sed -e '1d' -e '/^[ \t]*$/d' "$TMPEDIT" | while IFS=$'\n' read newtask
         do
