@@ -6,10 +6,12 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && { 
-    echo "    $(basename $0) [ITEM#] [BASENAME]"
-    echo "      Open ITEM# in \$TODO_DIR/BASENAME.txt in \$EDITOR for editing."
+    echo "    $(basename $0) [ITEM#] [SRC]"
+    echo "      Open ITEM# in \$TODO_DIR/SRC in \$EDITOR for editing."
     echo "      If ITEM# is omitted, the entire file is edited."
     echo "      If BASENAME is not given, defaults to 'todo'."
+    echo "      ITEM# can be removed by deleting the line."
+    echo "      Additional tasks can be added by appending more lines."
     echo ""
     exit
 }
@@ -32,7 +34,9 @@ fi
 
 TMPEDIT="${TEMP:-/tmp}/todo-edit.$$.txt"
 # Retrieve item without priority. 
-sed -e "$item!d" -e "$item s/^(.) //" "$FILE" > "$TMPEDIT"
+EDITME=$(sed -e "$item!d" -e "$item s/^(.) //" "$FILE")
+[ -z "$EDITME" ] && die "TODO: No task $item." 
+echo "$EDITME" > "$TMPEDIT"
 
 TMPMODTIME=$(stat -c %Y "$TMPEDIT")
 "$EDITOR" "$TMPEDIT" || { echo 2>&1 "Unclean exit of editor; aborting!"; exit $?; }
@@ -50,4 +54,22 @@ if [ -z "$newContent" ]; then
     "$TODO_FULL_SH" command del $item
 else
     "$TODO_FULL_SH" replace $item "$newContent"
+fi
+
+numLines=$(grep -cve '^\s*$' "$TMPEDIT")
+if [ $numLines -gt 1 ]; then
+    if  [ $TODOTXT_FORCE = 0 ]; then
+        echo
+        echo "There are $((numLines - 1)) additional lines. Add them as individual tasks? (y/n)"
+        read ANSWER
+    else
+        ANSWER="y"
+    fi
+    if [ "$ANSWER" = "y" ]; then
+        IFS=$'\n'
+        sed -e '1d' -e '/^[ \t]*$/d' "$TMPEDIT" | while IFS=$'\n' read newtask
+        do
+            "$TODO_FULL_SH" command add "$newtask"
+        done
+    fi
 fi
