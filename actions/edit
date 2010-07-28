@@ -52,8 +52,21 @@ if [ -z "$newContent" ]; then
     # We don't need to ask for confirmation here, the "del" command will take
     # care of that. 
     "$TODO_FULL_SH" command del $item
+elif [ "$newContent" = "$EDITME" ]; then
+    echo "No changes done to original line."
 else
-    "$TODO_FULL_SH" replace $item "$newContent"
+    case "$newContent" in
+        "x "*)
+            # The 'replace' command doesn't handle done items. 
+            newContent=$(echo "$newContent" | sed 's/\&/\\\&/g')
+            sed -i.bak "$item s|^.*|${newContent}|" "$TODO_FILE"
+            echo "$item $EDITME"
+            echo "TODO: Replaced task with:"
+            echo "$item $newContent"
+            ;;
+        *)
+            "$TODO_FULL_SH" replace $item "$newContent";;
+    esac
 fi
 
 numLines=$(grep -cve '^\s*$' "$TMPEDIT")
@@ -71,12 +84,20 @@ if [ $numLines -gt 1 ]; then
     fi
     if [ "$ANSWER" = "y" ]; then
         # The additional lines should be added as-is. 
-        export TODOTXT_DATE_ON_ADD=0
+        # We have to amend the config in order to override a "date on add"
+        # setting located there. 
+        TMPCONF=$(mktemp --tmpdir "todo-$(basename -- "$0")-XXXXXX")
+        cat > "$TMPCONF" <<-EOF
+            source "$TODOTXT_CFG_FILE"
+            export TODOTXT_DATE_ON_ADD=0
+EOF
 
         IFS=$'\n'
         sed -e '1d' -e '/^[ \t]*$/d' "$TMPEDIT" | while IFS=$'\n' read newtask
         do
-            "$TODO_FULL_SH" command add "$newtask"
+            "$TODO_FULL_SH" -d "$TMPCONF" command add "$newtask"
         done
+
+        rm "$TMPCONF"
     fi
 fi
