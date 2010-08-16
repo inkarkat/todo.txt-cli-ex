@@ -1,0 +1,46 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+  echo "    addm [-b prefix] [-e suffix] \"FIRST THING I NEED TO DO +project1 @context"
+  echo "    SECOND THING I NEED TO DO +project2 @context\""
+  echo "      Adds FIRST THING I NEED TO DO to your todo.txt on its own line and"
+  echo "      Adds SECOND THING I NEED TO DO to you todo.txt on its own line."
+  echo "      Project and context notation optional."
+  echo "      Quotes optional."
+  echo "      -b prefix adds \"prefix\" to the beginning of each line"
+  echo "      -e suffix adds \"suffix\" to the end of each line"
+  echo ""
+  exit
+}
+
+# use getopt to validate and parse arguments
+args=$(getopt --name $TODO_SH --options b:e: -- "$@")
+
+if [ $? != 0 ]; then exit 1; fi
+
+# evaulate standardized arguments to set prefix and suffix
+prefix=''
+suffix=''
+eval set -- "$args"
+
+while true ; do
+  case "$1" in
+    -b) prefix="$2 "; shift 2 ;;
+    -e) suffix=" $2"; shift 2 ;;
+    --) shift ; break ;;
+    *) echo "Internal error!" ; exit 1 ;;
+  esac
+done
+
+# apply prefix and suffix, if either are set
+if [ -n "$prefix" ] || [ -n "$suffix" ]; then
+  items=$( echo "$@" | sed -e "s/.*/$prefix&$suffix/" )
+else
+  items="$@"
+fi
+
+# call back to the main script to addm
+"$TODO_FULL_SH" command addm "$items"
