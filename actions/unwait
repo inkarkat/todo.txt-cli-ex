@@ -35,14 +35,21 @@ fi
 # Split multiple unwait's, if comma separated change to whitespace separated. 
 set -o pipefail
 for item in `echo $items | tr ',' ' '`; do 
-    (
-        isWaiting=
-        "$TODO_FULL_SH" subst $item ' w:([^)]*)' '' && isWaiting='true'
-        "$TODO_FULL_SH" subst $item ' w:[^ \t]\+' '' && isWaiting='true'
-        [ "$isWaiting" ] || echo >&2 "TODO: $item not blocked"
-    ) | grep -v '^No replacement done for' || continue
+    wasWaiting=
+    TODOTXT_VERBOSE=0 "$TODO_FULL_SH" subst $item ' w:([^)]*)'  '' && wasWaiting='true'
+    TODOTXT_VERBOSE=0 "$TODO_FULL_SH" subst $item ' w:[^ \t]\+' '' && wasWaiting='true'
+    if [ "$wasWaiting" ]; then
+        if [ $TODOTXT_VERBOSE -gt 0 ]; then
+            newtodo=$(sed "$item!d" "$TODO_FILE")
+            echo "$item $newtodo"
+            echo "TODO: $item unblocked."
+        fi
+    else
+        echo >&2 "TODO: $item not blocked"
+        continue
+    fi
 
     if [ "$pri" ]; then
         "$TODO_FULL_SH" command pri $item $pri
     fi
-done
+done | grep -v '^No replacement done for'
