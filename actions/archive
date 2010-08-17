@@ -4,28 +4,29 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "    archive KEYWORD"
-  echo "      Moves done items containing KEYWORD from todo.txt to done.txt and removes"
-  echo "      blank lines."
-  echo "    archive ITEM#"
-  echo "      Moves done item number ITEM# and removes blank lines."
-  echo "      Note that if KEYWORD is a number it is considered as an ITEM# number"
-  echo ""
-  exit
+    echo "    archive KEYWORD"
+    echo "      Moves done items containing KEYWORD from todo.txt to done.txt and removes"
+    echo "      blank lines."
+    echo "    archive ITEM#"
+    echo "      Moves item number ITEM# and removes blank lines."
+    echo "      Note that if KEYWORD is a number it is considered as an ITEM# number"
+    echo ""
+    exit
 }
 
-KEYWORD=$1
-if [[ "$KEYWORD" =~ ^[0-9]+$ ]]; then
-    # we got an ITEM to archive
-    [ $TODOTXT_VERBOSE -gt 0 ] && sed "$KEYWORD!d" "$TODO_FILE"
-    sed "$KEYWORD!d" "$TODO_FILE" >> "$DONE_FILE"
-    sed -i.bak "${KEYWORD}d" "$TODO_FILE"
+if [[ "$1" =~ ^[0-9]+$ ]]; then
+    item=$1 # we got an ITEM to archive
+    what="$item"
+    [ $TODOTXT_VERBOSE -gt 0 ] && sed "$item!d" "$TODO_FILE"
+    sed "$item!d" "$TODO_FILE" >> "$DONE_FILE"
+    sed -i.bak "${item}d" "$TODO_FILE"
 else
-    # we got a keyword, or nothing
-    [ $TODOTXT_VERBOSE -gt 0 ] && grep "^x .*$KEYWORD" "$TODO_FILE"
-    grep "^x .*$KEYWORD" "$TODO_FILE" >> "$DONE_FILE"
-    sed -i.bak "/^x .*$KEYWORD/d" "$TODO_FILE"
+    keyword=$1 # we got a keyword, or nothing
+    what="$(grep -c "^x .*$keyword" "$TODO_FILE") item(s)"
+    [ $TODOTXT_VERBOSE -gt 0 ] && grep "^x .*$keyword" "$TODO_FILE"
+    grep "^x .*$keyword" "$TODO_FILE" >> "$DONE_FILE"
+    sed -i.bak "/^x .*$keyword/d" "$TODO_FILE"
 fi
-[ $TODOTXT_VERBOSE -gt 0 ] && echo "TODO:  $TODO_FILE archived."
-#defragment blank lines
+[ $TODOTXT_VERBOSE -gt 0 ] && echo "TODO: $what archived."
+# Defragment blank lines. 
 sed -i.bak -e '/./!d' "$TODO_FILE"
