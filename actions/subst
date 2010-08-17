@@ -18,7 +18,7 @@ item=$1; shift
 [[ "$item" = +([0-9]) ]] || die "$errmsg"
 # Get item without potential priority. 
 todo=$(sed -e "$item!d" -e "s/^(.) //" "$TODO_FILE")
-[ -z "$todo" ] && die "$item: No such task."
+[ -z "$todo" ] && die "TODO: No task $item."
 
 if [[ $# -ne 2 && $TODOTXT_FORCE = 0 ]]; then
     echo -n "Pattern: "
