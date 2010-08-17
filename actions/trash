@@ -25,7 +25,7 @@ for item in `echo $* | tr ',' ' '`; do
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
 
     todo=$(sed "$item!d" "$TODO_FILE")
-    [ -z "$todo" ] && die "$item: No such task."
+    [ -z "$todo" ] && die "TODO: No task $item."
 
     # Check if this item has already been done. 
     if [ $(echo $todo | grep -c "^x ") -eq 0 ]; then
