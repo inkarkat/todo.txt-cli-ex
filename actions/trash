@@ -37,17 +37,24 @@ for item in `echo $* | tr ',' ' '`; do
         # Move item to trash. 
         sed -e "$item!d" "$TODO_FILE" >> "$TRASH_FILE"
         if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
-            # delete line (changes line numbers)
-            sed -i.bak -e $item"s/^.*//" -e '/./!d' "$TODO_FILE"
+            # Delete line (changes line numbers). 
+            # Note: Cannot actually remove lines inside the loop, as this may
+            # make following task numbers invalid. 
+            sed -i.bak -e $item"s/^.*/!DELETED/" "$TODO_FILE"
         else
             # leave blank line behind (preserves line numbers)
             sed -i.bak -e $item"s/^.*//" "$TODO_FILE"
         fi
-        [ $TODOTXT_VERBOSE -gt 0 ] && {
+        if [ $TODOTXT_VERBOSE -gt 0 ]; then
             echo "$item: $todo"
             echo "TODO: $item put into $PREFIX."
-        }
+        fi
     else
         echo "$item is already marked done."
     fi
 done
+
+if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
+    # Finally delete the marked lines; see above. 
+    sed -i.bak -e '/^!DELETED$/d' "$TODO_FILE"
+fi
