@@ -22,7 +22,7 @@ for item in `echo $* | tr ',' ' '`; do
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
 
     todo=$(sed "$item!d" "$TODO_FILE")
-    [ -z "$todo" ] && die "$item: No such task. Has it been archived?"
+    [ -z "$todo" ] && die "TODO: No task $item. Has it been archived?"
 
     # Check if this item has already been done. 
     if [ $(echo $todo | grep -c "^x ") -eq 1 ]; then
@@ -33,6 +33,6 @@ for item in `echo $* | tr ',' ' '`; do
             echo "TODO: $item re-activated."
         }
     else
-        echo "$item is not marked done. Has it been archived?"
+        echo "TODO: $item is not marked done. Has it been archived?"
     fi
 done
