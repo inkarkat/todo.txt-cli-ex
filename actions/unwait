@@ -4,15 +4,21 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
+    echo "    $(basename $0) ITEM#[, ITEM#, ...]"
     echo "      Unblock the task(s) on line ITEM#"
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] PRIORITY"
+    echo "    $(basename $0) ITEM#[, ITEM#, ...] PRIORITY"
     echo "      Unblock the task(s) on line ITEM# and prioritize as PRIORITY."
+    echo "    $(basename $0) [ITEM#, ...] \"REASON for Waiting\"[, REASON, ...]"
+    echo "      Remove REASON as a blocker for the task(s) on line ITEM#,"
+    echo "      or (if not specified) all tasks that are blocked because of it."
+    echo "    $(basename $0) [ITEM#, ...] for DEPITEM#[, DEPITEM#, ...]"
+    echo "      Remove DEPITEM# as a dependency for the task(s) on line ITEM#,"
+    echo "      or (if not specified) all tasks that are blocked because of it."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [PRIORITY]"
+errmsg="usage: $TODO_SH $(basename $0) [ITEM#, ...] \"REASON for Waiting\"[, REASON, ...] | for DEPITEM#[, #DEPITEM, ...] | [PRIORITY]"
 
 [ $# -eq 0 ] && die "$errmsg"
 
@@ -22,30 +28,73 @@ do
     items="$items $1"
     shift
 done
-[ "$items" ] || die "$errmsg"
 
 pri=
-if [[ "$1" = [a-zA-Z] ]]; then
+
+# This is the general pattern for all wait reasons. 
+generalReasonPattern='[^ \t]\+\|([^)]*)'
+waitPattern=$generalReasonPattern
+
+if [ $# -eq 0 ]; then
+    [ "$items" ] || die "$errmsg"
+elif [[ "$1" = [a-zA-Z] ]]; then
     pri=$1
     shift
-fi
+elif [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
+    # We have dependent items: DEPITEM#. 
+    waitDescription="dependent tasks"
+    shift # Remove the "for" filler argument. 
 
-[ $# -eq 0 ] || die "$errmsg"
+    waitPattern=
+    for waitDependentTaskNum in $(echo $* | tr ',' ' ')
+    do
+        waitPattern=${waitPattern}${waitPattern:+\\|}${waitDependentTaskNum}
+    done
+else
+    # We have reason(s). 
+    waitDescription="wait reasons"
+    # Split REASONs based on commas, not whitespace. A multi-word single REASON is
+    # far more frequent than multiple REASONs. Splitting on whitespace would
+    # necessitate enclosing each REASON in double quotes. 
+    waitPattern=
+    IFS=,
+    for waitReason in $(echo "$@" | sed -e 's/, \+/,/g')
+    do
+        # Enclose REASONs in parentheses if they consist of multiple words. 
+        waitPattern=${waitPattern}${waitPattern:+\\|}$(echo "$waitReason" | sed -e '/[ \t]/s/.*/(&)/')
+    done
+    unset IFS
+fi
+# The wait pattern is always preceded by a space character, and is anchored to
+# the next whitespace or end of line. 
+waitPattern=' w:\('$waitPattern'\)\([ \t]\|$\)'
+generalWaitPattern=' w:\('$generalReasonPattern'\)\([ \t]\|$\)'
+
+if [ ! "$items" ]; then
+    # No tasks have been specified; we must generate the list of tasks that
+    # contain the waitPattern ourselves. 
+    items=$(sed -ne "/${waitPattern}/=" "$TODO_FILE")
+
+    [ "$items" ] || die "TODO: No tasks that contain the ${waitDescription:?} found."
+fi
 
 # Split multiple unwait's, if comma separated change to whitespace separated. 
 set -o pipefail
 for item in `echo $items | tr ',' ' '`; do 
-    wasWaiting=
-    TODOTXT_VERBOSE=0 "$TODO_FULL_SH" subst $item ' w:([^)]*)'  '' && wasWaiting='true'
-    TODOTXT_VERBOSE=0 "$TODO_FULL_SH" subst $item ' w:[^ \t]\+' '' && wasWaiting='true'
-    if [ "$wasWaiting" ]; then
+    TODOTXT_VERBOSE=0 "$TODO_FULL_SH" subst $item "$waitPattern" '\2'
+    if [ $? -eq 0 ]; then
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
+            if [ "$(sed -e "$item!d" -e "/$generalWaitPattern/d" "$TODO_FILE")" = "" ]; then
+                newState="got blockers removed"
+            else
+                newState="unblocked"
+            fi
             newtodo=$(sed "$item!d" "$TODO_FILE")
             echo "$item $newtodo"
-            echo "TODO: $item unblocked."
+            echo "TODO: $item $newState."
         fi
     else
-        echo >&2 "TODO: $item not blocked"
+        die "TODO: $item not blocked"
         continue
     fi
 
