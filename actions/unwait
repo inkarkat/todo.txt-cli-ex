@@ -41,6 +41,8 @@ for item in `echo $items | tr ',' ' '`; do
         "$TODO_FULL_SH" subst $item ' w:[^ \t]\+' '' && isWaiting='true'
         [ "$isWaiting" ] || echo >&2 "TODO: $item not blocked"
     ) | grep -v '^No replacement done for' || continue
-    [ "$pri" ] && "$TODO_FULL_SH" command pri $item $pri
 
+    if [ "$pri" ]; then
+        "$TODO_FULL_SH" command pri $item $pri
+    fi
 done
