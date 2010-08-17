@@ -1,0 +1,34 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0)"
+    echo "      Cleans empty lines from todo.txt while adapting cross-task references."
+    echo ""
+    exit
+}
+
+referencePattern='w:[0-9]+'
+
+TODO_FILE=~/todo/todo2.txt
+# Defragment blank lines. 
+for emptyLineNum in $(sed -n '/./!=' "$TODO_FILE")
+do
+    echo "$emptyLineNum"
+    awk -v referencePattern=$referencePattern -v lineNum=$emptyLineNum '
+        BEGIN { FS=" \t" }
+        NR == lineNum { next }
+        NR > lineNum {
+            for (i=1; i<=NF; i++) {
+                if ($i ~ referencePattern) {
+                    match($i, /[0-9]+/)
+                    oldNum = substr($i, RSTART, RLENGTH)
+                    newNum = sprintf("%0" RLENGTH "d", oldNum - 1)
+                    sub(/[0-9]+/, newNum, $i)
+                }
+            }
+        }; 1' \
+        "$TODO_FILE" > "${TODO_FILE}.bak"
+done
