@@ -81,8 +81,17 @@ fi
 # Split multiple unwait's, if comma separated change to whitespace separated. 
 set -o pipefail
 for item in `echo $items | tr ',' ' '`; do 
-    TODOTXT_VERBOSE=0 "$TODO_FULL_SH" subst $item "$waitPattern" '\2'
-    if [ $? -eq 0 ]; then
+    # Unfortunately, sed doesn't understand the /\>/ "match end of word" regex
+    # atom, so the wait pattern needs to be specified in a way that it may
+    # overlap with a following blocker. Due to that, even a global sed
+    # substitute will not remove all blockers in one pass. Thus, we repeat the
+    # substitution until it fails. 
+    isRemoved=
+    while true
+    do
+        TODOTXT_VERBOSE=0 "$TODO_FULL_SH" subst $item "$waitPattern" '\2' && isRemoved='true' || break
+    done
+    if [ "$isRemoved" ]; then
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             if [ "$(sed -e "$item!d" -e "/$generalWaitPattern/d" "$TODO_FILE")" = "" ]; then
                 newState="got blockers removed"
