@@ -28,5 +28,12 @@ else
     sed -i.bak "/^x .*$keyword/d" "$TODO_FILE"
 fi
 [ $TODOTXT_VERBOSE -gt 0 ] && echo "TODO: $what archived."
+
 # Defragment blank lines. 
-sed -i.bak -e '/./!d' "$TODO_FILE"
+if [ -x "$TODO_ACTIONS_DIR/defragment" ]; then
+    # We have a customized defragment script that not only removes the empty
+    # lines, but also adapts cross-task references; use it. 
+    "$TODO_FULL_SH" defragment
+else
+    sed -i.bak -e '/./!d' "$TODO_FILE"
+fi
