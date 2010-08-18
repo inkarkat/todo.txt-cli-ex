@@ -41,7 +41,7 @@ elif [[ "$1" = [a-zA-Z] ]]; then
     pri=$1
     shift
 elif [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
-    # We have dependent items: DEPITEM#. 
+    # We have dependent tasks: DEPITEM#. 
     waitDescription="dependent tasks"
     shift # Remove the "for" filler argument. 
 
@@ -100,7 +100,7 @@ t repeat
     else
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             if [ "$(sed -e "$item!d" -e "/$generalWaitPattern/d" "$TODO_FILE")" = "" ]; then
-                newState="had blocker removed, still blocked"
+                newState="had blocker(s) removed, still blocked"
             else
                 newState="unblocked"
             fi
