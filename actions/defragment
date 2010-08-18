@@ -29,6 +29,15 @@ do
                     } else if (oldNum == lineNum) {
                         sub(/[0-9]+/, "???", $i)
                     }
+                } else if ($(i - 1) == "task" && $i ~ /^[0-9]+$/) {
+                    oldNum = $i
+                    oldLength = length($i)
+                    if (oldNum > lineNum) {
+                        newNum = sprintf("%0" oldLength "d", oldNum - 1)
+                        sub(/[0-9]+/, newNum, $i)
+                    } else if (oldNum == lineNum) {
+                        sub(/[0-9]+/, "???", $i)
+                    }
                 }
             }
         }; 1' \
