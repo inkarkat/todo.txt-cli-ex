@@ -4,10 +4,10 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "    $(basename $0) ITEM# PATTERN REPLACEMENT"
-  echo "      Replaces PATTERN with REPLACEMENT on line ITEM#."
-  echo ""
-  exit
+    echo "    $(basename $0) ITEM# PATTERN REPLACEMENT"
+    echo "      Replaces PATTERN with REPLACEMENT on line ITEM#."
+    echo ""
+    exit
 }
 
 shopt -s extglob
@@ -29,8 +29,14 @@ else
     pattern=$1
     replacement=$2
 fi
-newtodo=$(echo "$todo"|sed "s|$pattern|$replacement|g")
-if [ "$todo" = "$newtodo" ]; then
+
+# XXX: Find a separator that doesn't occur in $pattern, sed cannot handle it. 
+for sep in '%' '#' '@' ':'
+do
+    [[ "$pattern" = *${sep}* ]] || break 
+done
+newtodo=$(echo "$todo" | sed "s${sep}${pattern}${sep}${replacement}${sep}g")
+if [ "$newtodo" = "$todo" ]; then
     [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item: $todo"
     die "No replacement done for $pattern"
 fi
