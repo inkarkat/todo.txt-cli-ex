@@ -79,35 +79,37 @@ if [ ! "$items" ]; then
 fi
 
 # Split multiple unwait's, if comma separated change to whitespace separated. 
-set -o pipefail
 for item in `echo $items | tr ',' ' '`; do 
+    todo=$(sed "$item!d" "$TODO_FILE")
+    [ -z "$todo" ] && die "TODO: No task $item."
+
     # Unfortunately, sed doesn't understand the /\>/ "match end of word" regex
     # atom, so the wait pattern needs to be specified in a way that it may
     # overlap with a following blocker. Due to that, even a global sed
     # substitute will not remove all blockers in one pass. Thus, we repeat the
-    # substitution until it fails. 
-    isRemoved=
-    while true
-    do
-        TODOTXT_VERBOSE=0 "$TODO_FULL_SH" subst $item "$waitPattern" '\2' && isRemoved='true' || break
-    done
-    if [ "$isRemoved" ]; then
+    # substitution until there's nothing left to substitute. 
+    sed -i.bak -e "$item {
+:repeat
+s/$waitPattern/\\2/g
+t repeat
+}" "$TODO_FILE"
+    newtodo=$(sed "$item!d" "$TODO_FILE")
+    if [ "$newtodo" = "$todo" ]; then
+        die "TODO: $item not blocked"
+        continue
+    else
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             if [ "$(sed -e "$item!d" -e "/$generalWaitPattern/d" "$TODO_FILE")" = "" ]; then
-                newState="got blockers removed"
+                newState="had blocker removed, still blocked"
             else
                 newState="unblocked"
             fi
-            newtodo=$(sed "$item!d" "$TODO_FILE")
             echo "$item $newtodo"
             echo "TODO: $item $newState."
         fi
-    else
-        die "TODO: $item not blocked"
-        continue
     fi
 
     if [ "$pri" ]; then
         "$TODO_FULL_SH" command pri $item $pri
     fi
-done | grep -v '^No replacement done for'
+done
