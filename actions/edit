@@ -33,7 +33,7 @@ fi
 # Edit single task. 
 
 TMPEDIT="${TEMP:-/tmp}/todo-edit.$$.txt"
-# Retrieve item without priority. 
+# Retrieve task without priority. 
 EDITME=$(sed -e "$item!d" -e "$item s/^(.) //" "$FILE")
 [ -z "$EDITME" ] && die "TODO: No task $item." 
 echo "$EDITME" > "$TMPEDIT"
@@ -57,7 +57,7 @@ elif [ "$newContent" = "$EDITME" ]; then
 else
     case "$newContent" in
         "x "*)
-            # The 'replace' command doesn't handle done items. 
+            # The 'replace' command doesn't handle done tasks. 
             newContent=$(echo "$newContent" | sed 's/\&/\\\&/g')
             sed -i.bak "$item s|^.*|${newContent}|" "$TODO_FILE"
             echo "$item $EDITME"
