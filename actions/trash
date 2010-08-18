@@ -18,6 +18,16 @@ BASE=$(basename "$TRASH_FILE")
 PREFIX=$(echo ${BASE%%.[^.]*} | tr [a-z] [A-Z])
 
 [ $# -eq 0 ] && die "$errmsg"
+
+cleanup()
+{
+    if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
+        # Finally delete the marked lines. 
+        sed -i.bak -e '/^!DELETED$/d' "$TODO_FILE"
+    fi
+}
+trap 'cleanup' 0
+
 # Split multiple trash's, if comma separated change to whitespace separated
 # Loop the 'trash' function for each item
 for item in `echo $* | tr ',' ' '`; do 
@@ -53,8 +63,3 @@ for item in `echo $* | tr ',' ' '`; do
         echo "$item is already marked done."
     fi
 done
-
-if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
-    # Finally delete the marked lines; see above. 
-    sed -i.bak -e '/^!DELETED$/d' "$TODO_FILE"
-fi
