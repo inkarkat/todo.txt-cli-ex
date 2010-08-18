@@ -25,7 +25,8 @@ usage()
 
 list()
 {
-	$TODO_FULL_SH -x list | sed -e '/^[0-9]\+ x /d' -e "/$pattern/!d"
+	export post_filter_command="sed -e '/^[0-9]\+ x /d' -e '/$pattern/!d'"
+	"$TODO_FULL_SH" -x command list
 }
 
 getTask()
@@ -46,7 +47,7 @@ remove()
 	[[ "$item" = +([0-9]) ]] || die "$errmsg"
 
 	task=$(getTask "$item")
-	"$TODO_FULL_SH" replace $item "$task" # N.B.: retains priority
+	"$TODO_FULL_SH" command replace $item "$task" # N.B.: retains priority
 }
 
 replace()
@@ -59,7 +60,7 @@ replace()
 
 	task=$(getTask "$item")
 	date=$(date -d "$threshold" +%F) || return 1
-	"$TODO_FULL_SH" replace $item "$task t:$date"
+	"$TODO_FULL_SH" command replace $item "$task t:$date"
 }
 
 [ "$action" = "usage" ] && usage
