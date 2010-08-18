@@ -4,13 +4,15 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] \"REASON for Waiting\"[, REASON, ...]"
+    echo "    $(basename $0) ITEM#[, ITEM#, ...] \"REASON for Waiting\"[, REASON, ...]"
     echo "      Mark the task(s) on line ITEM# as blocked due to REASON."
+    echo "    $(basename $0) ITEM#[, ITEM#, ...] for DEPITEM#[, DEPITEM#, ...]"
+    echo "      Mark the task(s) on line ITEM# as dependent on task(s) DEPITEM#."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] \"REASON for Waiting\"[, REASON, ...]"
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ...] \"REASON for Waiting\"[, REASON, ...] | for DEPITEM#[, DEPITEM#, ...]"
 
 [ $# -eq 0 ] && die "$errmsg"
 
@@ -22,17 +24,32 @@ do
 done
 [ "$items" -a $# -gt 0 ] || die "$errmsg"
 
-waitReasons=
-# Split REASONs based on commas, not whitespace. A multi-word single REASON is
-# far more frequent than multiple REASONs. Splitting on whitespace would
-# necessitate enclosing each REASON in double quotes. 
-IFS=,
-for waitReason in $(echo "$@" | sed -e 's/, \+/,/g')
-do
-    # Enclose REASONs in parentheses if they consist of multiple words. 
-    waitReasons=${waitReasons}${waitReasons:+ }w:$(echo "$waitReason" | sed -e '/[ \t]/s/.*/(\0)/')
-done
-unset IFS
+if [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
+    # We have dependent items: DEPITEM#. 
+    shift # Remove the "for" filler argument. 
+    waitDescription="has become dependent on"
+
+    waitReasons=
+    for waitDependentTaskNum in $(echo $* | tr ',' ' ')
+    do
+        waitReasons=${waitReasons}${waitReasons:+ }w:${waitDependentTaskNum}
+    done
+else
+    # We have reason(s). 
+    waitDescription="is blocked due to"
+    
+    waitReasons=
+    # Split REASONs based on commas, not whitespace. A multi-word single REASON is
+    # far more frequent than multiple REASONs. Splitting on whitespace would
+    # necessitate enclosing each REASON in double quotes. 
+    IFS=,
+    for waitReason in $(echo "$@" | sed -e 's/, \+/,/g')
+    do
+        # Enclose REASONs in parentheses if they consist of multiple words. 
+        waitReasons=${waitReasons}${waitReasons:+ }w:$(echo "$waitReason" | sed -e '/[ \t]/s/.*/(&)/')
+    done
+    unset IFS
+fi
 
 # Split multiple wait's, if comma separated change to whitespace separated. 
 for item in `echo $items | tr ',' ' '`; do 
@@ -42,4 +59,7 @@ for item in `echo $items | tr ',' ' '`; do
     fi
 
     "$TODO_FULL_SH" command append $item "$waitReasons"
+    if [ $TODOTXT_VERBOSE -gt 0 ]; then
+        echo "TODO: $item $waitDescription ${waitReasons}."
+    fi
 done
