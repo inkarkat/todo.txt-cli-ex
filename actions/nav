@@ -4,9 +4,8 @@ action=$1
 shift
 
 function usage(){
-  echo "  Navigate to URL:"
   echo "    nav ITEM#"
-  echo "      Searches for a URL in the todo line and launches a browser."
+  echo "      Searches for a URL in the task text and launches a browser."
   echo ""
   exit
 }
@@ -32,7 +31,9 @@ fi
 
 # Trying to be smart...
 # on Debian alike:
-if $(which x-www-browser >/dev/null 2>&1); then
+if [ "$TODOTXT_BROWSER" ]; then
+    exec "$TODOTXT_BROWSER" "$URL"
+elif $(which x-www-browser >/dev/null 2>&1); then
     exec x-www-browser "$URL"
 # with freedesktop.org utils:
 elif $(which xdg-open >/dev/null 2>&1); then
