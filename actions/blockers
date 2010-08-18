@@ -1,0 +1,29 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [TERM...]"
+    echo "      Displays all waiting tasks grouped by blocker (w:... marker)."
+    echo "      If TERM specified, lists only tasks that contain TERM."
+    echo ""
+    exit
+}
+
+TODOTXT_VERBOSE=0
+# Show projects in alphabetical order and todo items in priority order
+echo "===== Blockers ====="
+echo ""
+# Find all wait markers and sort. 
+IFS=$'\n'
+for waitMarker in $(sed -e 's/ w:[^ ]/\n\0/g' "$TODO_FILE" | sed -n -e '/ w:[^ ]/s/^.* \(w:([^)]*)\).*$/\1/p' -e '/ w:[^ ]/s/^.* \(w:[^ ]*\).*$/\1/p' | sort -u )
+do
+    blocker=$(echo "$waitMarker" | sed -e 's/w:(\([^)]*\))/\1/' -e 's/w:\([^ ]*\)/\1/') 
+    waitList=$(_list "$TODO_FILE" "$waitMarker" | sed -e "s/ $waitMarker//g")
+    if [[ -n "$waitList" ]]; then
+	echo "--- $blocker ---"
+	echo "$waitList"
+	echo ""
+    fi
+done
