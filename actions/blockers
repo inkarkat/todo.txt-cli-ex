@@ -5,14 +5,14 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [TERM...]"
-    echo "      Displays all waiting tasks grouped by blocker (w:... marker)."
+    echo "      Displays all waiting tasks grouped by blocker (wait reason, w:... marker)."
     echo "      If TERM specified, lists only tasks that contain TERM."
     echo ""
     exit
 }
 
 TODOTXT_VERBOSE=0
-# Show projects in alphabetical order and todo items in priority order
+# Show wait reasons in alphabetical order and blocked tasks in priority order. 
 echo "===== Blockers ====="
 echo ""
 # Find all wait markers and sort. 
