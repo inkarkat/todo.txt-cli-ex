@@ -11,6 +11,13 @@ shift
     exit
 }
 
+readonly taskNum=$( sed -n '$ =' "$TODO_FILE" )
+readonly taskNumWidth=${#tashNum}
+padTaskNumber()
+{
+    printf "%0${taskNumWidth}d" $1
+}
+
 TODOTXT_VERBOSE=0
 # Show wait reasons in alphabetical order and blocked tasks in priority order. 
 echo "===== Blockers ====="
@@ -20,6 +27,13 @@ IFS=$'\n'
 for waitMarker in $(sed -e 's/ w:[^ ]/\n\0/g' "$TODO_FILE" | sed -n -e '/ w:[^ ]/s/^.* \(w:([^)]*)\).*$/\1/p' -e '/ w:[^ ]/s/^.* \(w:[^ ]*\).*$/\1/p' | sort -u )
 do
     blocker=$(echo "$waitMarker" | sed -e 's/w:(\([^)]*\))/\1/' -e 's/w:\([^ ]*\)/\1/') 
+
+    if [[ "$blocker" =~ ^[0-9]+$ ]]; then
+	# Translate dependent task number into a shortened task description. 
+	deptodo=$(sed -e "$blocker!d" -e $blocker's/ \([a-zA-Z]:\|[+@]\)[^ \t]\+//g' -e $blocker's/^\(([A-Z]) \)\{0,1\}\([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\{0,1\}//g' "$TODO_FILE")
+	blocker="$(padTaskNumber $blocker) $deptodo"
+    fi
+
     waitList=$(_list "$TODO_FILE" "$waitMarker" | sed -e "s/ $waitMarker//g")
     if [[ -n "$waitList" ]]; then
 	echo "--- $blocker ---"
