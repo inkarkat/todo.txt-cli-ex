@@ -10,25 +10,27 @@ shift
     exit
 }
 
-referencePattern='w:[0-9]+'
+referencePattern='^w:[0-9]+$'
 
-TODO_FILE=~/todo/todo2.txt
 # Defragment blank lines. 
 for emptyLineNum in $(sed -n '/./!=' "$TODO_FILE")
 do
-    echo "$emptyLineNum"
     awk -v referencePattern=$referencePattern -v lineNum=$emptyLineNum '
-        BEGIN { FS=" \t" }
+        BEGIN { FS = "[ \t]" }
         NR == lineNum { next }
-        NR > lineNum {
-            for (i=1; i<=NF; i++) {
+        {
+            for (i = 1; i <= NF; ++i) {
                 if ($i ~ referencePattern) {
                     match($i, /[0-9]+/)
-                    oldNum = substr($i, RSTART, RLENGTH)
-                    newNum = sprintf("%0" RLENGTH "d", oldNum - 1)
-                    sub(/[0-9]+/, newNum, $i)
+                    oldNum = substr($i, RSTART, RLENGTH) + 0
+                    if (oldNum > lineNum) {
+                        newNum = sprintf("%0" RLENGTH "d", oldNum - 1)
+                        sub(/[0-9]+/, newNum, $i)
+                    } else if (oldNum == lineNum) {
+                        sub(/[0-9]+/, "???", $i)
+                    }
                 }
             }
         }; 1' \
-        "$TODO_FILE" > "${TODO_FILE}.bak"
+        "$TODO_FILE" > "${TODO_FILE}.bak" && mv "${TODO_FILE}.bak" "${TODO_FILE}" || die "Fatal Error: Unable to process tasks."
 done
