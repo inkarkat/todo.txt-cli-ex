@@ -65,7 +65,7 @@ else
             echo "$item $newContent"
             ;;
         *)
-            "$TODO_FULL_SH" replace $item "$newContent";;
+            "$TODO_FULL_SH" command replace $item "$newContent";;
     esac
 fi
 
