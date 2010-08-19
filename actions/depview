@@ -18,7 +18,7 @@ fi
 
 referencePattern='^w:[0-9]+$'
 
-awk -v referencePattern=$referencePattern -v callback=$0 '
+awk -v referencePattern=$referencePattern -v callback=$0 -v verbose=$TODOTXT_VERBOSE '
     BEGIN { FS = "[ \t]" }
     {
         for (i = 1; i <= NF; ++i) {
@@ -43,7 +43,7 @@ awk -v referencePattern=$referencePattern -v callback=$0 '
                 rtsort(node)
         }
         if (pncnt != nodecnt)
-            print "error: input contains a cycle"
+            errmsgs[errmsgcnt++] = "Note: Some task dependencies contain a cycle and are not shown."
 
         # Find all roots (i.e. nodes without a predecessor). 
         for (i = pncnt; i > 0; --i) {
@@ -57,8 +57,23 @@ awk -v referencePattern=$referencePattern -v callback=$0 '
                 }
             }
         }
-        for (ri = 1; ri <= rcnt; ++ri)
+        for (ri = 1; ri <= rcnt; ++ri) {
+            if (hasPrinted) {
+                printf("\n")
+            }
             printtree(rilist[ri], 0)
+            hasPrinted = 1
+        }
+
+        if (verbose > 0) {
+            printf("--\nTODO: %d block(s) of %d dependent tasks.\n", rcnt, nodecnt)
+            for (o in omitted)
+                ++omittedcnt
+            if (omittedcnt > 0)
+                printf("TODO: %s task(s) have been filtered out.\n", omittedcnt)
+        }
+        for (errmsg in errmsgs)
+            print errmsgs[errmsg]
     }
     function rtsort(node,     i, s) {
         visited[node] = 1
@@ -66,11 +81,11 @@ awk -v referencePattern=$referencePattern -v callback=$0 '
             if (visited[s = slist[node, i]] == 0)
                 rtsort(s)
             else if (visited[s] == 1)
-                printf("error: nodes %s and %s are in a cycle\n", s, node)
+                errmsgs[errmsgcnt++] = sprintf("Note: Tasks %0" WIDTH "d and %0" WIDTH "d are in a cycle; the block will not be shown.", s, node)
             visited[node] = 2
             sorted[++pncnt] = node
     }
-    function gettask1(num) {
+    function gettaskDEBUG(num) {
         return sprintf("%0" WIDTH "d", num)
     }
     function gettask(num,     taskcall, task) {
@@ -81,10 +96,27 @@ awk -v referencePattern=$referencePattern -v callback=$0 '
         taskcache[num] = task
         return task
     }
-    function printtree(i, level,     node, j, k) {
+    function filtermarkers(text) {
+        # Plain AWK does not support backreferences via gensub, but it is okay to
+        # include a trailing space at the end. Due to the inclusion of the
+        # trailing space, the regex is overlapping, and we need to iterate until
+        # there are no more replacements. 
+        while (gsub(/ w:[0-9]+( |$)/, " ", text)) {}
+
+        # The final marker may be followed by an ANSI escape sequence for highlighting. 
+        gsub(/ w:[0-9]+\033/, "\033", text)
+
+        return text
+    }
+    function printtree(i, level,     node, task, j, k) {
         node = sorted[i]
+        task = gettask(node)
         # printf("%s%s=%s(%s)\n", level, i, node, scnt[node])
-        printf("%" (level * (WIDTH + 1)) "s%s\n", "", gettask(node))
+        if (task == "")
+            omitted[node] += 1
+        else
+            printf("%" (level * (WIDTH + 1)) "s%s\n", "", filtermarkers(task))
+
         if (scnt[node] > 0) {
             for (j = i - 1; j >= 0; --j)
                 for (k = 1; k <= scnt[node]; ++k)
