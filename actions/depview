@@ -21,7 +21,7 @@ awk -v referencePattern=$referencePattern '
                 match($i, /[0-9]+/)
                 s = substr($i, RSTART, RLENGTH) + 0
                 p = NR
-                print p "->" s
+                # print p "->" s
 
                 if (!(p in pcnt))
                     pcnt[p] = 0
@@ -38,7 +38,6 @@ awk -v referencePattern=$referencePattern '
         }
         if (pncnt != nodecnt)
             print "error: input contains a cycle"
-        printf("\n")
 
         for (i = pncnt - 1; i >= 0; --i) {
             node = sorted[i]
@@ -49,13 +48,12 @@ awk -v referencePattern=$referencePattern '
     }
     function rtsort(node,     i, s) {
         visited[node] = 1
-        for (i = 1; i <= scnt[node]; ++i)
+        for (i = scnt[node]; i > 0; --i)
             if (visited[s = slist[node, i]] == 0)
                 rtsort(s)
             else if (visited[s] == 1)
                 printf("error: nodes %s and %s are in a cycle\n", s, node)
             visited[node] = 2
-            printf(" %s", node)
             sorted[pncnt++] = node
     }
     function printtree(i, padding,     node, j, k) {
