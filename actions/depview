@@ -54,8 +54,6 @@ awk -v referencePattern=$referencePattern '
         }
         for (ri = 1; ri <= rcnt; ++ri)
             printtree(rilist[ri], 0)
-        
-        printf("\n")
     }
     function rtsort(node,     i, s) {
         visited[node] = 1
@@ -78,6 +76,6 @@ awk -v referencePattern=$referencePattern '
             for (j = i - 1; j >= 0; --j)
                 for (k = 1; k <= scnt[node]; ++k)
                     if (sorted[j] == slist[node, k])
-                        printtree(j, ++level)
+                        printtree(j, (level + 1))
         }
     }' "$TODO_FILE"
