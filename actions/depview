@@ -3,17 +3,22 @@
 action=$1
 shift
 
-[ "$action" = "usage" ] && {
+if [ "$action" = "usage" ]; then
     echo "    $(basename $0) [TERM...]"
     echo "      Show dependency tree of tasks containing TERM."
     echo "      If no TERM provided, displays all tasks with dependencies."
     echo ""
     exit
-}
+elif [ "$action" = "list" -o "$2" = "debug" ]; then
+    export TODOTXT_VERBOSE=0
+    export post_filter_command="grep -e '^ \\{0,\\}$1 '" # Note: '^ *$1' doesn't match for $1="1". 
+    _list "$TODO_FILE"
+    exit
+fi
 
 referencePattern='^w:[0-9]+$'
 
-awk -v referencePattern=$referencePattern '
+awk -v referencePattern=$referencePattern -v callback=$0 '
     BEGIN { FS = "[ \t]" }
     {
         for (i = 1; i <= NF; ++i) {
@@ -31,7 +36,7 @@ awk -v referencePattern=$referencePattern '
         }
     }
     END {
-        WIDTH = length(NR " ")
+        WIDTH = length(NR "")
         for (node in pcnt) {
             ++nodecnt
             if (pcnt[node] == 0)
@@ -65,13 +70,21 @@ awk -v referencePattern=$referencePattern '
             visited[node] = 2
             sorted[++pncnt] = node
     }
-    function gettask(num) {
-        return num
+    function gettask1(num) {
+        return sprintf("%0" WIDTH "d", num)
+    }
+    function gettask(num,     taskcall, task) {
+        if (taskcache[num] != "")
+            return taskcache[num]
+        taskcall = callback " list " num
+        taskcall | getline task
+        taskcache[num] = task
+        return task
     }
     function printtree(i, level,     node, j, k) {
         node = sorted[i]
         # printf("%s%s=%s(%s)\n", level, i, node, scnt[node])
-        printf("%" (level * (WIDTH + 1)) "s%0" WIDTH "d\n", "", gettask(node))
+        printf("%" (level * (WIDTH + 1)) "s%s\n", "", gettask(node))
         if (scnt[node] > 0) {
             for (j = i - 1; j >= 0; --j)
                 for (k = 1; k <= scnt[node]; ++k)
