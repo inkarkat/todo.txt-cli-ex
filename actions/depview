@@ -6,6 +6,7 @@ shift
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [TERM...]"
     echo "      Show dependency tree of tasks containing TERM."
+    echo "      If no TERM provided, displays all tasks with dependencies."
     echo ""
     exit
 }
@@ -18,10 +19,53 @@ awk -v referencePattern=$referencePattern '
         for (i = 1; i <= NF; ++i) {
             if ($i ~ referencePattern) {
                 match($i, /[0-9]+/)
-                dependent = substr($i, RSTART, RLENGTH) + 0
-                dependee = NR
-                print dependee "->" dependent
+                s = substr($i, RSTART, RLENGTH) + 0
+                p = NR
+                print p "->" s
+
+                if (!(p in pcnt))
+                    pcnt[p] = 0
+                ++pcnt[s]
+                slist[p, ++scnt[p]] = s
             }
         }
-    }' \
-    "$TODO_FILE" # > "${TODO_FILE}.bak" && mv "${TODO_FILE}.bak" "${TODO_FILE}" || die "Fatal Error: Unable to process tasks."
+    }
+    END {
+        for (node in pcnt) {
+            ++nodecnt
+            if (pcnt[node] == 0)
+                rtsort(node)
+        }
+        if (pncnt != nodecnt)
+            print "error: input contains a cycle"
+        printf("\n")
+
+        for (i = pncnt - 1; i >= 0; --i) {
+            node = sorted[i]
+            if (pcnt[node] == 0)
+                printtree(i, "")
+        }
+        printf("\n")
+    }
+    function rtsort(node,     i, s) {
+        visited[node] = 1
+        for (i = 1; i <= scnt[node]; ++i)
+            if (visited[s = slist[node, i]] == 0)
+                rtsort(s)
+            else if (visited[s] == 1)
+                printf("error: nodes %s and %s are in a cycle\n", s, node)
+            visited[node] = 2
+            printf(" %s", node)
+            sorted[pncnt++] = node
+    }
+    function printtree(i, padding,     node, j, k) {
+        node = sorted[i]
+        # printf("%s%s=%s(%s)\n", padding, i, node, scnt[node])
+        print padding node
+        if (scnt[node] > 0) {
+            for (j = i - 1; j >= 0; --j)
+                for (k = 1; k <= scnt[node]; ++k)
+                    if (sorted[j] == slist[node, k])
+                        printtree(j, padding " ")
+        }
+    }' "$TODO_FILE"
