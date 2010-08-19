@@ -5,7 +5,8 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0)"
-    echo "      Cleans empty lines from todo.txt while adapting cross-task references."
+    echo "      Cleans empty lines from todo.txt while adapting cross-task references"
+    echo "      of the form w:### or \"task ###\". "
     echo ""
     exit
 }
@@ -16,6 +17,16 @@ referencePattern='^w:[0-9]+$'
 for emptyLineNum in $(sed -n '/./!=' "$TODO_FILE")
 do
     awk -v referencePattern=$referencePattern -v lineNum=$emptyLineNum '
+        function adapt(oldNum, oldLength) {
+            if (oldNum > lineNum) {
+                newNum = sprintf("%0" oldLength "d", oldNum - 1)
+                return newNum
+            } else if (oldNum == lineNum) {
+                return "???"
+            } else {
+                return oldNum
+            }
+        }
         BEGIN { FS = "[ \t]" }
         NR == lineNum { next }
         {
@@ -23,21 +34,10 @@ do
                 if ($i ~ referencePattern) {
                     match($i, /[0-9]+/)
                     oldNum = substr($i, RSTART, RLENGTH) + 0
-                    if (oldNum > lineNum) {
-                        newNum = sprintf("%0" RLENGTH "d", oldNum - 1)
-                        sub(/[0-9]+/, newNum, $i)
-                    } else if (oldNum == lineNum) {
-                        sub(/[0-9]+/, "???", $i)
-                    }
+                    sub(/[0-9]+/, adapt(oldNum, RLENGTH), $i)
                 } else if ($(i - 1) == "task" && $i ~ /^[0-9]+$/) {
-                    oldNum = $i
-                    oldLength = length($i)
-                    if (oldNum > lineNum) {
-                        newNum = sprintf("%0" oldLength "d", oldNum - 1)
-                        sub(/[0-9]+/, newNum, $i)
-                    } else if (oldNum == lineNum) {
-                        sub(/[0-9]+/, "???", $i)
-                    }
+                    oldNum = $i + 0
+                    $i = adapt(oldNum, length($i))
                 }
             }
         }; 1' \
