@@ -1,0 +1,27 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [TERM...]"
+    echo "      Show dependency tree of tasks containing TERM."
+    echo ""
+    exit
+}
+
+referencePattern='^w:[0-9]+$'
+
+awk -v referencePattern=$referencePattern '
+    BEGIN { FS = "[ \t]" }
+    {
+        for (i = 1; i <= NF; ++i) {
+            if ($i ~ referencePattern) {
+                match($i, /[0-9]+/)
+                dependent = substr($i, RSTART, RLENGTH) + 0
+                dependee = NR
+                print dependee "->" dependent
+            }
+        }
+    }' \
+    "$TODO_FILE" # > "${TODO_FILE}.bak" && mv "${TODO_FILE}.bak" "${TODO_FILE}" || die "Fatal Error: Unable to process tasks."
