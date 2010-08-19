@@ -31,6 +31,7 @@ awk -v referencePattern=$referencePattern '
         }
     }
     END {
+        WIDTH = length(NR " ")
         for (node in pcnt) {
             ++nodecnt
             if (pcnt[node] == 0)
@@ -39,11 +40,21 @@ awk -v referencePattern=$referencePattern '
         if (pncnt != nodecnt)
             print "error: input contains a cycle"
 
-        for (i = pncnt - 1; i >= 0; --i) {
+        # Find all roots (i.e. nodes without a predecessor). 
+        for (i = pncnt; i > 0; --i) {
             node = sorted[i]
-            if (pcnt[node] == 0)
-                printtree(i, "")
+            if (pcnt[node] == 0) {
+                # Insert into rilist so that it is sorted by the nodes that the indices are referring to. 
+                rilist[++rcnt] = i
+                for (j = rcnt; j > 1 && (sorted[rilist[j-1]] + 0) > (sorted[rilist[j]] + 0); j--) {
+                    # Swap rilist[j-1] and rilist[j]. 
+                    t = rilist[j-1]; rilist[j-1] = rilist[j]; rilist[j] = t
+                }
+            }
         }
+        for (ri = 1; ri <= rcnt; ++ri)
+            printtree(rilist[ri], 0)
+        
         printf("\n")
     }
     function rtsort(node,     i, s) {
@@ -54,16 +65,19 @@ awk -v referencePattern=$referencePattern '
             else if (visited[s] == 1)
                 printf("error: nodes %s and %s are in a cycle\n", s, node)
             visited[node] = 2
-            sorted[pncnt++] = node
+            sorted[++pncnt] = node
     }
-    function printtree(i, padding,     node, j, k) {
+    function gettask(num) {
+        return num
+    }
+    function printtree(i, level,     node, j, k) {
         node = sorted[i]
-        # printf("%s%s=%s(%s)\n", padding, i, node, scnt[node])
-        print padding node
+        # printf("%s%s=%s(%s)\n", level, i, node, scnt[node])
+        printf("%" (level * (WIDTH + 1)) "s%0" WIDTH "d\n", "", gettask(node))
         if (scnt[node] > 0) {
             for (j = i - 1; j >= 0; --j)
                 for (k = 1; k <= scnt[node]; ++k)
                     if (sorted[j] == slist[node, k])
-                        printtree(j, padding " ")
+                        printtree(j, ++level)
         }
     }' "$TODO_FILE"
