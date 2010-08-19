@@ -12,7 +12,7 @@ shift
 }
 
 readonly taskNum=$( sed -n '$ =' "$TODO_FILE" )
-readonly taskNumWidth=${#tashNum}
+readonly taskNumWidth=${#taskNum}
 padTaskNumber()
 {
     printf "%0${taskNumWidth}d" $1
@@ -24,13 +24,13 @@ echo "===== Blockers ====="
 echo ""
 # Find all wait markers and sort. 
 IFS=$'\n'
-for waitMarker in $(sed -e 's/ w:[^ ]/\n\0/g' "$TODO_FILE" | sed -n -e '/ w:[^ ]/s/^.* \(w:([^)]*)\).*$/\1/p' -e '/ w:[^ ]/s/^.* \(w:[^ ]*\).*$/\1/p' | sort -u )
+for waitMarker in $(sed -e '/^x /d' -e 's/ w:[^ ]/\n&/g' "$TODO_FILE" | sed -n -e '/ w:[^ ]/s/^.* \(w:([^)]*)\).*$/\1/p' -e '/ w:[^ ]/s/^.* \(w:[^ ]*\).*$/\1/p' | sort -u )
 do
     blocker=$(echo "$waitMarker" | sed -e 's/w:(\([^)]*\))/\1/' -e 's/w:\([^ ]*\)/\1/') 
 
     if [[ "$blocker" =~ ^[0-9]+$ ]]; then
 	# Translate dependent task number into a shortened task description. 
-	deptodo=$(sed -e "$blocker!d" -e $blocker's/ \([a-zA-Z]:\|[+@]\)[^ \t]\+//g' -e $blocker's/^\(([A-Z]) \)\{0,1\}\([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\{0,1\}//g' "$TODO_FILE")
+	deptodo=$(sed -e "$blocker!d" -e 's/ \([[:alpha:]]:\|[+@]\)[^[:space:]]\+//g' -e 's/^\(([[:upper:]]) \)\{0,1\}\([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\{0,1\}//g' "$TODO_FILE")
 	blocker="$(padTaskNumber $blocker) $deptodo"
     fi
 
