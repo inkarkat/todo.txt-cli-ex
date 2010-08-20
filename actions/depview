@@ -9,17 +9,46 @@ if [ "$action" = "usage" ]; then
     echo "      If no TERM provided, displays all tasks with dependencies."
     echo ""
     exit
-elif [ "$action" = "list" -o "$2" = "debug" ]; then
+elif [ "$action" = "list" ]; then
     export TODOTXT_VERBOSE=0
     export post_filter_command="grep -e '^ \\{0,\\}$1 '" # Note: '^ *$1' doesn't match for $1="1". 
     _list "$TODO_FILE"
     exit
+elif [ "$action" = "filter" ]; then
+    echo "$filterTasks"
+    exit
 fi
 
+if [ $# -gt 0 ]; then
+    isFilter=1
+
+    # Only the blocks that contain at least one task that matches TERM should be
+    # printed. We need to obtain the task numbers and pass them to the AWK
+    # script. 
+    export TODOTXT_VERBOSE=0
+    export TODOTXT_PLAIN=1
+    export post_filter_command="sed -ne 's/^ *\([0-9]\+\) .*$/\1/p'"
+    # It's difficult to store "$@" in a variable and keep the quoting. Thus, we
+    # generate the list already here and store the result for the AWK to fetch
+    # it later by re-invoking this script with the "filter" action argument. 
+    export filterTasks=$(_list "$TODO_FILE" "$@")
+else
+    isFilter=0
+fi
 referencePattern='^w:[0-9]+$'
 
-awk -v referencePattern=$referencePattern -v callback=$0 -v verbose=$TODOTXT_VERBOSE '
-    BEGIN { FS = "[ \t]" }
+awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -v verbose=$TODOTXT_VERBOSE '
+    BEGIN {
+        FS = "[ \t]"
+        if (isFilter) {
+            filtercall = callback " filter"
+            while((filtercall | getline filterNum) > 0) {
+                # print "filter task: " unfilteredNum
+                unfiltered[unfilteredNum] = 1
+            }
+            close(filtercall)
+        }
+    }
     {
         for (i = 1; i <= NF; ++i) {
             if ($i ~ referencePattern) {
@@ -93,6 +122,7 @@ awk -v referencePattern=$referencePattern -v callback=$0 -v verbose=$TODOTXT_VER
             return taskcache[num]
         taskcall = callback " list " num
         taskcall | getline task
+        close(taskcall)
         taskcache[num] = task
         return task
     }
@@ -107,6 +137,15 @@ awk -v referencePattern=$referencePattern -v callback=$0 -v verbose=$TODOTXT_VER
         gsub(/ w:[0-9]+\033/, "\033", text)
 
         return text
+    }
+    function intree(i, level,     node, task, j, k) {
+        node = sorted[i]
+        if (scnt[node] > 0) {
+            for (j = i - 1; j >= 0; --j)
+                for (k = 1; k <= scnt[node]; ++k)
+                    if (sorted[j] == slist[node, k])
+                        intree(j, (level + 1))
+        }
     }
     function printtree(i, level,     node, task, j, k) {
         node = sorted[i]
