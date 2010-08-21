@@ -2,9 +2,6 @@
 # 2009 Paul Mansfield
 # License:  GPL, http://www.gnu.org/copyleft/gpl.html
 
-# Stop Verbose lines, thanks to Mark Harrison
-TODOTXT_VERBOSE=0
-
 action=$1
 shift
 
@@ -16,23 +13,27 @@ shift
   exit
 }
 
+# Stop Verbose lines, thanks to Mark Harrison
+TODOTXT_VERBOSE=0
+
 # Show projects in alphabetical order and tasks in priority order. 
 echo "===== Projects ====="
 echo ""
 # Find all projects and sort
-PROJECTS=`grep -o '[^ ]*+[^ ]\+' "$TODO_FILE" | grep '^+' | sort -u | sed 's/^+//g'` 
+PROJECTS=$(grep -o '[^ ]*+[^ ]\+' "$TODO_FILE" | grep '^+' | sort -u | sed 's/^+//g')
 # For each project show header and the list of tasks. 
 for i in $PROJECTS ; do 
-  # Use core _list function, does numbering and colouring for us
-              PROJECT_LIST=`_list "$TODO_FILE" "+$i" "$@" | sed 's/\ *+[a-zA-Z0-9\{._\-\}]*\ */ /g'`
+  # Use core _list function, does numbering and coloring for us. 
+  PROJECT_LIST=$(_list "$TODO_FILE" "+$i\( \|$\)" "$@" | sed 's/\( *+[^ ]\+\)\+ */ /g')
     if [[ -n "${PROJECT_LIST}" ]]; then
         echo "--- $i ---"
         echo "${PROJECT_LIST}"
         echo ""
     fi
 done
+
 # Show tasks not associated to a project. 
-PROJECT_LIST=`_list "$TODO_FILE" "$@" | grep -v "+\w"`
+PROJECT_LIST=$(_list "$TODO_FILE" "$@" | grep -v " \++[^ ]")
 if [[ -n "${PROJECT_LIST}" ]]; then
     echo "--- Not in projects ---"
     echo "${PROJECT_LIST}"
