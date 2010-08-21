@@ -34,7 +34,7 @@ do
 	blocker="$(padTaskNumber $blocker) $deptodo"
     fi
 
-    waitList=$(_list "$TODO_FILE" "$waitMarker" | sed -e "s/ $waitMarker//g")
+    waitList=$(_list "$TODO_FILE" "$waitMarker" "$@" | sed -e "s/ $waitMarker//g")
     if [[ -n "$waitList" ]]; then
 	echo "--- $blocker ---"
 	echo "$waitList"
