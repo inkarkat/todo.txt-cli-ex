@@ -1,0 +1,56 @@
+#!/bin/bash
+# 2009 Paul Mansfield
+# License:  GPL, http://www.gnu.org/copyleft/gpl.html
+
+action=$1
+shift
+
+if [ "$action" = "usage" ]; then
+    echo "    $(basename $0) [TERM...]"
+    echo "      Show tasks containing TERM, grouped by context, and displayed in"
+    echo "      priority order. If no TERM provided, displays entire todo.txt."
+    echo ""
+    exit
+fi
+
+# Stop Verbose lines, thanks to Mark Harrison
+original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
+TODOTXT_VERBOSE=0
+
+# Show contexts in alphabetical order and tasks in priority order. 
+let CONTEXT_CNT=0
+let TASK_CNT=0
+
+# Find all contexts and sort. 
+CONTEXTS=$(grep -o '[^ ]*@[^ ]\+' "$TODO_FILE" | grep '^@' | sort -u)
+# For each project show header and the list of tasks. 
+for i in $CONTEXTS ; do 
+    # Use core _list function, does numbering and coloring for us. 
+    CONTEXT_LIST=$(_list "$TODO_FILE" "$i\( \|$\)" "$@" | sed 's/\( *@[^ ]\+\)\+ */ /g')
+    if [[ -n "${CONTEXT_LIST}" ]]; then
+        echo "--- $i ---"
+        echo "${CONTEXT_LIST}"
+        echo ""
+
+        if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
+            let CONTEXT_CNT+=1
+            let TASK_CNT+=$(echo "${CONTEXT_LIST}" | sed -n '$=')
+        fi
+    fi
+done
+
+# Show tasks not associated to a project. 
+CONTEXT_LIST=$(_list "$TODO_FILE" "$@" | grep -v " \+@[^ ]")
+if [[ -n "${CONTEXT_LIST}" ]]; then
+    echo "--- Without context ---"
+    echo "${CONTEXT_LIST}"
+fi
+
+if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
+    echo "--"
+    if [ $CONTEXT_CNT -gt 0 ]; then
+        echo "TODO: $TASK_CNT task(s) with $CONTEXT_CNT contexts."
+    else
+        echo "TODO: No contexts found."
+    fi
+fi
