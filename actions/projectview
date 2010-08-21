@@ -14,27 +14,43 @@ shift
 }
 
 # Stop Verbose lines, thanks to Mark Harrison
+original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 TODOTXT_VERBOSE=0
 
 # Show projects in alphabetical order and tasks in priority order. 
-echo "===== Projects ====="
-echo ""
-# Find all projects and sort
+let PROJECT_CNT=0
+let TASK_CNT=0
+
+# Find all projects and sort. 
 PROJECTS=$(grep -o '[^ ]*+[^ ]\+' "$TODO_FILE" | grep '^+' | sort -u | sed 's/^+//g')
 # For each project show header and the list of tasks. 
 for i in $PROJECTS ; do 
   # Use core _list function, does numbering and coloring for us. 
   PROJECT_LIST=$(_list "$TODO_FILE" "+$i\( \|$\)" "$@" | sed 's/\( *+[^ ]\+\)\+ */ /g')
     if [[ -n "${PROJECT_LIST}" ]]; then
-        echo "--- $i ---"
-        echo "${PROJECT_LIST}"
-        echo ""
+      echo "--- $i ---"
+      echo "${PROJECT_LIST}"
+      echo ""
+
+      if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
+        let PROJECT_CNT+=1
+        let TASK_CNT+=$(echo "${PROJECT_LIST}" | sed -n '$=')
+      fi
     fi
 done
 
 # Show tasks not associated to a project. 
 PROJECT_LIST=$(_list "$TODO_FILE" "$@" | grep -v " \++[^ ]")
 if [[ -n "${PROJECT_LIST}" ]]; then
-    echo "--- Not in projects ---"
-    echo "${PROJECT_LIST}"
+  echo "--- Not in projects ---"
+  echo "${PROJECT_LIST}"
+fi
+
+if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
+  echo "--"
+  if [ $PROJECT_CNT -gt 0 ]; then
+    echo "TODO: $TASK_CNT task(s) in $PROJECT_CNT projects."
+  else
+    echo "TODO: No projects found."
+  fi
 fi
