@@ -10,18 +10,18 @@ shift
 
 [ "$action" = "usage" ] && {
   echo "    $(basename $0) [TERM...]"
-  echo "      Show todo items containing TERM, grouped by project, and displayed in"
+  echo "      Show tasks containing TERM, grouped by project, and displayed in"
   echo "      priority order. If no TERM provided, displays entire todo.txt."
   echo ""
   exit
 }
 
-# Show projects in alphabetical order and todo items in priority  order
+# Show projects in alphabetical order and tasks in priority order. 
 echo "===== Projects ====="
 echo ""
 # Find all projects and sort
 PROJECTS=`grep -o '[^ ]*+[^ ]\+' "$TODO_FILE" | grep '^+' | sort -u | sed 's/^+//g'` 
-# For each project show header and the list of todo items
+# For each project show header and the list of tasks. 
 for i in $PROJECTS ; do 
   # Use core _list function, does numbering and colouring for us
               PROJECT_LIST=`_list "$TODO_FILE" "+$i" "$@" | sed 's/\ *+[a-zA-Z0-9\{._\-\}]*\ */ /g'`
@@ -31,7 +31,7 @@ for i in $PROJECTS ; do
         echo ""
     fi
 done
-# Show todo items not associated to a project
+# Show tasks not associated to a project. 
 PROJECT_LIST=`_list "$TODO_FILE" "$@" | grep -v "+\w"`
 if [[ -n "${PROJECT_LIST}" ]]; then
     echo "--- Not in projects ---"
