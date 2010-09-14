@@ -17,7 +17,7 @@ referencePattern='^w:[0-9]+$'
 for emptyLineNum in $(sed -n '/./!=' "$TODO_FILE")
 do
     awk -v referencePattern=$referencePattern -v lineNum=$emptyLineNum '
-        function adapt(oldNum, oldLength) {
+        function adapt(oldNum, oldLength,     newNum) {
             if (oldNum > lineNum) {
                 newNum = sprintf("%0" oldLength "d", oldNum - 1)
                 return newNum
