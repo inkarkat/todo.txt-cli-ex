@@ -55,18 +55,14 @@ if [ -z "$newContent" ]; then
 elif [ "$newContent" = "$EDITME" ]; then
     echo "No changes done to original line."
 else
-    case "$newContent" in
-        "x "*)
-            # The 'replace' command doesn't handle done tasks. 
-            newContent=$(echo "$newContent" | sed 's/\&/\\\&/g')
-            sed -i.bak "$item s|^.*|${newContent}|" "$TODO_FILE"
-            echo "$item $EDITME"
-            echo "TODO: Replaced task with:"
-            echo "$item $newContent"
-            ;;
-        *)
-            "$TODO_FULL_SH" command replace $item "$newContent";;
-    esac
+    # The 'replace' command doesn't handle done tasks, and may do
+    # surprising things to existing priorities and dates. To avoid surprises,
+    # do the complete replacement of the line here. 
+    newContent=$(echo "$newContent" | sed 's/\&/\\\&/g')
+    sed -i.bak "$item s|^.*|${newContent}|" "$TODO_FILE"
+    echo "$item $EDITME"
+    echo "TODO: Replaced task with:"
+    echo "$item $newContent"
 fi
 
 newLinesNum=$(sed '1d' "$TMPEDIT" | grep -cve '^\s*$')
