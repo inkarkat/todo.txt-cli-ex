@@ -1,0 +1,16 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+  echo "    $(basename $0) [TERM...]"
+  echo "      Displays the last few tasks sorted by priority with line numbers."
+  echo ""
+  exit
+}
+
+TODOTXT_SORT_COMMAND="tail -n 10 | $TODOTXT_SORT_COMMAND"
+TODOTXT_FINAL_FILTER='cat'
+
+_list "$TODO_FILE" "$@"
