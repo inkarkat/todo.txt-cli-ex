@@ -29,6 +29,14 @@ else
 fi
 [ $TODOTXT_VERBOSE -gt 0 ] && echo "TODO: $what archived."
 
+if [ $# -eq 0 ]; then
+    # This is a complete, regular archive. 
+    # Use this occasion to make a backup. 
+    if type -P writebackup.sh >/dev/null; then
+        writebackup.sh "$TODO_FILE"
+    fi
+fi
+
 # Defragment blank lines. 
 if [ -x "$TODO_ACTIONS_DIR/defragment" ]; then
     # We have a customized defragment script that not only removes the empty
