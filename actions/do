@@ -6,6 +6,7 @@ shift
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
     echo "      Marks task(s) on line ITEM# as done in todo.txt, appending COMMENT."
+    echo "      Task(s) that were dependent on ITEM# have that blocker removed."
     echo ""
     exit
 }
@@ -21,14 +22,17 @@ do
 done
 [ "$items" ] || die "$errmsg"
 
-if [ $# -eq 0 ]; then
-    # No comment was given, just pass everything to the built-in 'do' command. 
-    "$TODO_FULL_SH" command do $items
-else
-    for item in `echo $items | tr ',' ' '`
-    do 
-        # Call back to the main script to append the comment and mark the task
-        # done. 
-        "$TODO_FULL_SH" command append $item "$@" && "$TODO_FULL_SH" command do $item
-    done
-fi
+for item in `echo $items | tr ',' ' '`
+do 
+    if [ $# -gt 0 ]; then
+        "$TODO_FULL_SH" command append $item "$@" || exit $?
+    fi
+
+    "$TODO_FULL_SH" command 'do' $item || exit $?
+
+    if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
+        # Unblock tasks that depended on the now done task. 
+        "$TODO_FULL_SH" unwait 'for' $item | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
+        : # Always exit with a successful exit code even when the "todo.txt unwait" command complained. 
+    fi
+done
