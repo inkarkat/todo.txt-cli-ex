@@ -11,4 +11,4 @@ shift
   exit
 }
 
-_list "$TODO_FILE" "^[0-9]\+ x" "$@"
+_list "$TODO_FILE" "^[0-9]\+ x " "$@"
