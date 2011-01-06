@@ -14,7 +14,7 @@ errmsg="usage: $TODO_SH $syntax"
 usage()
 {
 	echo "    $syntax"
-	echo "      Set, change or remove date threshold of an item."
+	echo "      Set, change or remove date threshold of a task."
 	echo "      If arguments are omitted, all scheduled tasks are listed."
 	echo "      Intended to be used with futureTasks "
 	echo "      (http://github.com/FND/todo.txt-cli/blob/extensions/futureTasks)."
