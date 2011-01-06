@@ -13,7 +13,7 @@ shift
 
 export TODOTXT_VERBOSE=0
 
-listNum=$("$TODO_FULL_SH" -x ls "$@" | wc -l) # All tasks, including future and done. 
+listNum=$("$TODO_FULL_SH" -x command ls "$@" | wc -l) # All tasks, including future and done. 
 doneNum=$("$TODO_FULL_SH" lsdo "$@" | wc -l)  # All tasks marked with "x". 
 prioNum=$("$TODO_FULL_SH" lsp "$@" | wc -l)   # All prioritized tasks; includes future tasks depending on active filter. 
 dueNum=$("$TODO_FULL_SH" lsdue "$@" | wc -l)  # All tasks that are due now. 
@@ -26,7 +26,7 @@ export TODOTXT_DISABLE_FILTER=0
 # threshold. 
 export TODOTXT_FINAL_FILTER="$HOME/.todo/futureTasks"
 export post_filter_command="grep -v -e '^[0-9]\+ x ' -e ' w:[^ ]'"
-activeNum=$("$TODO_FULL_SH" ls "$@" | wc -l)    # All tasks not done, future, or waiting. 
+activeNum=$("$TODO_FULL_SH" command ls "$@" | wc -l)    # All tasks not done, future, or waiting. 
 
 futureNum=$((listNum - activeNum - waitNum - doneNum))  # All tasks that will only come due in the future. 
 
