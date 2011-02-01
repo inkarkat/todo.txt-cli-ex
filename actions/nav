@@ -21,9 +21,9 @@ URL=$(sed "$1!d" "$TODO_FILE"|grep -E -o "([a-z]*)://[^ ]+")
 if [ "$URL" = "" ]; then
     LINE=$(sed "$1!d" "$TODO_FILE")
     if [ "$LINE" = "" ]; then
-        echo "Error, no item #$1 found!"
+        echo "Error, task $1 not found!"
     else
-        echo "Error, no URL seen in item #$1!"
+        echo "Error, no URL seen in task $1!"
         echo "$LINE"
     fi
     exit 1
