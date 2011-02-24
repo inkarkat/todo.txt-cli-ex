@@ -33,8 +33,7 @@ fi
 # Edit single task. 
 
 TMPEDIT="${TEMP:-/tmp}/todo-edit.$$.txt"
-# Retrieve task without priority. 
-EDITME=$(sed -e "$item!d" -e "$item s/^(.) //" "$FILE")
+EDITME=$(sed -e "$item!d" "$FILE")
 [ -z "$EDITME" ] && die "TODO: No task $item." 
 echo "$EDITME" > "$TMPEDIT"
 
