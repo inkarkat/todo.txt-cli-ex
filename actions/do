@@ -11,7 +11,7 @@ shift
     exit
 }
 
-errmsg="usage: $TODO_SH do ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
 [ $# -eq 0 ] && die "$errmsg"
 
 items=
