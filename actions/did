@@ -4,14 +4,14 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] DATE [COMMENT]"
+    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [on] DATE [COMMENT]"
     echo "      Marks task(s) on line ITEM# as done at DATE in todo.txt, appending COMMENT."
     echo "      Task(s) that were dependent on ITEM# have that blocker removed."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] DATE [COMMENT]"
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [on] DATE [COMMENT]"
 [ $# -eq 0 ] && die "$errmsg"
 
 items=
@@ -22,6 +22,7 @@ do
 done
 [ "$items" ] || die "$errmsg"
 
+[ "$1" = "on" ] && shift
 [ "$1" ] || die "$errmsg"
 doneDate=$(date -d "$1" +%F) || exit 1
 shift
