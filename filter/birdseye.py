@@ -60,6 +60,8 @@ def printTaskGroups(title, taskDict, priorityList, percentages):
 	if not taskDict:
 		print "No items to list."
 	else:
+		itemMaxLength = len(max(taskDict, key=len))
+
 		# sort the dictionary by value
 		# http://python.fyxm.net/peps/pep-0265.html
 		items = [(v, k) for k, v in taskDict.items()]
@@ -70,18 +72,18 @@ def printTaskGroups(title, taskDict, priorityList, percentages):
 		for item in items:	
 			if item[0] in priorityList:
 				if item[0] not in percentages:
-					printTaskGroup(item, -1, "*")
+					printTaskGroup(item, itemMaxLength, -1, "*")
 				else:
-					printTaskGroup(item, percentages[item[0]], "*")
+					printTaskGroup(item, itemMaxLength, percentages[item[0]], "*")
 
 		for item in items:
 			if item[0] not in priorityList:
 				if item[0] not in percentages:
-					printTaskGroup(item, -1, " ")
+					printTaskGroup(item, itemMaxLength, -1, " ")
 				else:
-					printTaskGroup(item, percentages[item[0]], " ")
+					printTaskGroup(item, itemMaxLength, percentages[item[0]], " ")
 			
-def printTaskGroup(p, pctage, star):
+def printTaskGroup(p, pMaxLen, pctage, star):
 	if pctage > -1:
 		progressBar = ""
 		numStars = (pctage/10)
@@ -94,9 +96,9 @@ def printTaskGroup(p, pctage, star):
 			displayTotal = " %d%%"% (pctage, );
 		else:
 			displayTotal = "  %d%%"% (pctage, );
-		print "%s %s [%s] %s \t(%*d task%s)"% (star, displayTotal, progressBar,  p[0], taskWidth, p[1], ("" if p[1] == 1 else "s"), )
+		print "%s %s [%s] %*s (%*d task%s)"% (star, displayTotal, progressBar, (-1 * pMaxLen), p[0], taskWidth, p[1], (" " if p[1] == 1 else "s"), )
 	else:
-		print "%s %s (%d task%s)"% (star, p[0], p[1], ("" if p[1] == 1 else "s"), )
+		print "%s %*s (%*d task%s)"% (star, (-1 * pMaxLen), p[0], taskWidth, p[1], (" " if p[1] == 1 else "s"), )
 	
 def separator(c):
 	sep = ""
