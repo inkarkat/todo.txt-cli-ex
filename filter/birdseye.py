@@ -94,9 +94,9 @@ def printTaskGroup(p, pctage, star):
 			displayTotal = " %d%%"% (pctage, );
 		else:
 			displayTotal = "  %d%%"% (pctage, );
-		print "%s %s [%s] %s (%d todo's)"% (star, displayTotal, progressBar,  p[0], p[1],)
+		print "%s %s [%s] %s (%d tasks)"% (star, displayTotal, progressBar,  p[0], p[1],)
 	else:
-		print "%s %s (%d todo's)"% (star, p[0], p[1], )
+		print "%s %s (%d tasks)"% (star, p[0], p[1], )
 	
 def separator(c):
 	sep = ""
@@ -185,16 +185,15 @@ def main(argv):
 
 	separator("=")
 
-	printTaskGroups("Projects with Open TODO's", projects, projectPriority, projectPercentages)
-	printTaskGroups("Contexts with Open TODO's", contexts, contextPriority, projectPercentages)
-	printTaskGroups("Completed Projects (No open TODO's)", projectsWithNoIncompletes, projectPriority, projectPercentages)
+	printTaskGroups("Projects with Open tasks", projects, projectPriority, projectPercentages)
+	printTaskGroups("Contexts with Open tasks", contexts, contextPriority, projectPercentages)
+	printTaskGroups("Completed Projects (No open tasks)", projectsWithNoIncompletes, projectPriority, projectPercentages)
 	print ""
-	print "* Projects and contexts with an asterisk next to them denote prioritized tasks."
-	print "Project with prioritized tasks are listed first, then sorted by number of open todo's."
+	print "* prioritized tasks, listed first. Items are sorted by number of open tasks."
 	print ""
 
 
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+	main(sys.argv[1:])
