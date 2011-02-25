@@ -22,6 +22,7 @@ do
 done
 [ "$items" ] || die "$errmsg"
 
+printf '' > ~/.todo-lastdone
 for item in `echo $items | tr ',' ' '`
 do 
     if [ $# -gt 0 ]; then
@@ -29,6 +30,7 @@ do
     fi
 
     "$TODO_FULL_SH" command 'do' $item || exit $?
+    printf '%s ' $item >> ~/.todo-lastdone
 
     if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
         # Unblock tasks that depended on the now done task. 
