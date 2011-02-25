@@ -37,7 +37,7 @@ CHANGELOG:
 """
 
 
-import sys
+import math, sys
 #import datetime
 
 __version__ = "1.1"
@@ -94,7 +94,7 @@ def printTaskGroup(p, pctage, star):
 			displayTotal = " %d%%"% (pctage, );
 		else:
 			displayTotal = "  %d%%"% (pctage, );
-		print "%s %s [%s] %s \t(%3d task%s)"% (star, displayTotal, progressBar,  p[0], p[1], ("" if p[1] == 1 else "s"), )
+		print "%s %s [%s] %s \t(%*d task%s)"% (star, displayTotal, progressBar,  p[0], taskWidth, p[1], ("" if p[1] == 1 else "s"), )
 	else:
 		print "%s %s (%d task%s)"% (star, p[0], p[1], ("" if p[1] == 1 else "s"), )
 	
@@ -113,11 +113,14 @@ def main(argv):
 	# process todo.txt
 	try:
 		f = open (argv[0], "r")
+		global taskNum
+		taskNum = 0
 		projects = {}
 		contexts = {}
 		projectPriority = []
 		contextPriority = []
 		for line in f:
+			taskNum += 1
 			prioritized = False
 			words = line.split()
 			if words[0][0:1] == ("("):
@@ -138,6 +141,8 @@ def main(argv):
 					if prioritized:
 						contextPriority.append(word)
 		f.close()
+		global taskWidth
+		taskWidth = int(math.ceil(math.log(taskNum,10)))
 	except IOError:
 		print "ERROR:  The file named %s could not be read."% (argv[0], )
 		usage()
