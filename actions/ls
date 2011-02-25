@@ -4,14 +4,14 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "    $(basename $0) [TERM...]"
-  echo "      Displays all tasks that aren't done yet and contain TERM(s)"
-  echo "      sorted by priority with line numbers."
-  echo ""
-  exit
+    echo "    $(basename $0) [TERM...]"
+    echo "      Displays all tasks that aren't done yet and contain TERM(s)"
+    echo "      sorted by priority with line numbers."
+    echo ""
+    exit
 }
 
 # Consider only tasks that are not yet done. The tasks are already numbered when
 # the filter is applied, so there definitely is a space in front of the marker. 
-export post_filter_command="grep -ve '^[0-9]\+ x '"
+export post_filter_command="grep -ve '^ *[0-9]\+ x '"
 _list "$TODO_FILE" "$@"
