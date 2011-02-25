@@ -27,6 +27,7 @@ done
 doneDate=$(date -d "$1" +%F) || exit 1
 shift
 
+printf '' > ~/.todo-lastdone
 for item in `echo $items | tr ',' ' '`
 do 
     if [ $# -gt 0 ]; then
@@ -48,6 +49,7 @@ do
         echo "$item $newtodo"
         echo "TODO: $item marked as done on $doneDate."
     fi
+    printf '%s ' $item >> ~/.todo-lastdone
 
     if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
         # Unblock tasks that depended on the now done task. 
