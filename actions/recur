@@ -7,38 +7,73 @@ shift
     echo "    $(basename $0) ITEM# RELATIVEDATE"
     echo "      Make task ITEM# recurrent each RELATIVEDATE."
     echo "    $(basename $0) ITEM# none|never"
+    echo "      Completely remove the scheduling of task ITEM#."
+    echo "    $(basename $0) ITEM# off"
     echo "      Remove the recurrent scheduling of task ITEM#."
+    echo "      The task will still be scheduled once more." 
     echo ""
     exit
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH $(basename $0) ITEM# RELATIVEDATE|none|never"
+errmsg="usage: $TODO_SH $(basename $0) ITEM# RELATIVEDATE|none|never|off"
 item=$1; shift
 
 [ -z "$item" ] && die "$errmsg"
 [[ "$item" = +([0-9]) ]] || die "$errmsg"
-# Get task without potential priority. 
+# Get task without potential priority, the "replace" command will maintain the
+# priority. 
 todo=$(sed -e "$item!d" -e "s/^(.) //" "$TODO_FILE")
 [ -z "$todo" ] && die "TODO: No task $item."
 
 recur=$*; shift
-isRemove=
-if [ "$recur" = "none" -o "$recur" = "never" ]; then
-    isRemove='true'
-    newtodo=$(echo "$todo" | sed 's#[[:space:]]\+{[^}]\+}\([[:space:]]\|$\)#\1#')
-else
-    nextdate=$(date -d "$recur" +%F) || exit 1
-    recurrence="{${recur}} t:${nextdate}"
-    newtodo=$(echo "$todo" | sed -e 's#[[:space:]]\+t:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}##g' -e 's#\([[:space:]]\+\){[^}]\+}\([[:space:]]\|$\)#\1'"${recurrence}"'\2#;b' -e 's#$# '"${recurrence}"'#')
+recurType=
+command="replace $item"
+
+if [ "$recur" = "apply" ]; then
+    # This hidden subcommand is invoked by the "do" command to trigger the
+    # recurrence. A new recurrent task is created from the old done task. 
+    
+    recur=$(echo "$todo" | sed -ne 's#^.*[[:space:]]\+{\([^}]\+\)}\([[:space:]].*$\|$\)#\1#p')
+    [ "$recur" ] || exit 0
+    command='add'
+
+    # Clone the current task: 
+    # - Re-get task with potential priority, we want to keep it. 
+    # - Remove the done flag and done date. 
+    # - Update the creation date if the task has one. An additional entry date
+    #   via TODOTXT_DATE_ON_ADD will be suppressed by the -T option. 
+    # - The scheduling marker will be updated by the regular code below. 
+    today=$(date +%F)
+    todo=$(sed -e "$item!d" -e 's/^x [0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} //' -e 's/^\(([A-Z]) \)\{0,1\}[0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} /\1'"${today}"' /' "$TODO_FILE")
 fi
-if [ "$newtodo" = "$todo" ]; then
+
+case $recur in
+    none|never)
+        newtodo=$(echo "$todo" | sed -e 's#[[:space:]]\+t:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}##g' -e 's#[[:space:]]\+{[^}]\+}\([[:space:]]\|$\)#\1#')
+        ;;
+    off)
+        recurType='Last'
+        nextdate=$(echo "$todo" | sed -e 's#^.*[[:space:]]\+t:\(\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}\).*$#\1#g')
+        newtodo=$(echo "$todo" | sed -e 's#[[:space:]]\+{[^}]\+}\([[:space:]]\|$\)#\1#')
+        ;;
+    *)
+        recurType='Next'
+        nextdate=$(date -d "$recur" +%F) || exit 1
+        recurrence="{${recur}} t:${nextdate}"
+        newtodo=$(echo "$todo" | sed -e 's#[[:space:]]\+t:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}##g' | sed -e 's#\([[:space:]]\+\){[^}]\+}\([[:space:]]\|$\)#\1'"${recurrence}"'\2#;t' -e 's#$# '"${recurrence}"'#')
+        ;;
+esac
+
+if [ "$command" != "add" -a "$newtodo" = "$todo" ]; then
     [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item: $todo"
     die "TODO: Recurrence didn't change"
 fi
-"$TODO_FULL_SH" command replace $item "$newtodo"
-if [ ! "$isRemove" ]; then
-    nowSeconds=$(date +%s)
-    nextSeconds=$(date -d "$recur" +%s)
-    echo "TODO: Next scheduled for $nextdate, in $(((nextSeconds - nowSeconds) / (24 * 3600))) day(s)"
+"$TODO_FULL_SH" -T command $command "$newtodo"
+
+if [ "$recurType" ]; then
+    today=$(date +%F)   # Need to calculate time differences from midnight. 
+    todaySeconds=$(date -d "$today" +%s)
+    nextSeconds=$(date -d "$nextdate" +%s)
+    echo "TODO: $recurType scheduled for $nextdate, in $(((nextSeconds - todaySeconds) / (24 * 3600))) day(s)"
 fi
