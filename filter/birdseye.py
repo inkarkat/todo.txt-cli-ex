@@ -94,9 +94,9 @@ def printTaskGroup(p, pctage, star):
 			displayTotal = " %d%%"% (pctage, );
 		else:
 			displayTotal = "  %d%%"% (pctage, );
-		print "%s %s [%s] %s (%d tasks)"% (star, displayTotal, progressBar,  p[0], p[1],)
+		print "%s %s [%s] %s \t(%3d task%s)"% (star, displayTotal, progressBar,  p[0], p[1], ("" if p[1] == 1 else "s"), )
 	else:
-		print "%s %s (%d tasks)"% (star, p[0], p[1], )
+		print "%s %s (%d task%s)"% (star, p[0], p[1], ("" if p[1] == 1 else "s"), )
 	
 def separator(c):
 	sep = ""
