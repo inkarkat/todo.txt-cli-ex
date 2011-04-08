@@ -75,5 +75,11 @@ if [ "$recurType" ]; then
     today=$(date +%F)   # Need to calculate time differences from midnight. 
     todaySeconds=$(date -d "$today" +%s)
     nextSeconds=$(date -d "$nextdate" +%s)
-    echo "TODO: $recurType scheduled for $nextdate, in $(((nextSeconds - todaySeconds) / (24 * 3600))) day(s)"
+    recurTimespan=$(((nextSeconds - todaySeconds) / (24 * 3600)))
+    case $recurTimespan in
+        0)  recurTimespan="that's today!"
+        1)  recurTimespan="in $recurTimespan day";;
+        *)  recurTimespan="in $recurTimespan days";;
+    esac
+    echo "TODO: $recurType scheduled for $nextdate, $recurTimespan"
 fi
