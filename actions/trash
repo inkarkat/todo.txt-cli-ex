@@ -4,14 +4,14 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
-    echo "      Puts the task(s) on line ITEM# into trash.txt."
+    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
+    echo "      Puts the task(s) on line ITEM# into trash.txt, appending COMMENT."
     echo ""
     exit
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 BASE=$(basename "$TRASH_FILE")
@@ -28,11 +28,21 @@ cleanup()
 }
 trap 'cleanup' 0
 
+items=
+while [[ "$1" =~ ^[,0-9]+$ ]]
+do
+    items="$items $1"
+    shift
+done
+[ "$items" ] || die "$errmsg"
+
 # Split multiple trash's, if comma separated change to whitespace separated. 
 # Loop the 'trash' function for each task. 
-for item in `echo $* | tr ',' ' '`; do 
-    [ -z "$item" ] && die "$errmsg"
-    [[ "$item" = +([0-9]) ]] || die "$errmsg"
+for item in `echo $items | tr ',' ' '`
+do 
+    if [ $# -gt 0 ]; then
+        "$TODO_FULL_SH" command append $item "$@" || exit $?
+    fi
 
     todo=$(sed "$item!d" "$TODO_FILE")
     [ -z "$todo" ] && die "TODO: No task $item."
