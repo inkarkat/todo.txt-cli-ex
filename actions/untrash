@@ -26,8 +26,8 @@ cleanup()
 }
 trap 'cleanup' 0
 
-# Split multiple untrash's, if comma separated change to whitespace separated
-# Loop the 'untrash' function for each item
+# Split multiple untrash's, if comma separated change to whitespace separated. 
+# Loop the 'untrash' function for each task. 
 for item in `echo $* | tr ',' ' '`; do 
     [ -z "$item" ] && die "$errmsg"
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
@@ -35,7 +35,7 @@ for item in `echo $* | tr ',' ' '`; do
     todo=$(sed "$item!d" "$TRASH_FILE")
     [ -z "$todo" ] && die "$PREFIX: No task $item."
 
-    # Move item to todo.txt, without the "trashed on" timestamp that has been
+    # Move task to todo.txt, without the "trashed on" timestamp that has been
     # prepended by the 'trash' command. 
     sed -e "$item!d" -e $item's/^[0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} //' "$TRASH_FILE" >> "$TODO_FILE"
 
