@@ -28,8 +28,8 @@ cleanup()
 }
 trap 'cleanup' 0
 
-# Split multiple trash's, if comma separated change to whitespace separated
-# Loop the 'trash' function for each item
+# Split multiple trash's, if comma separated change to whitespace separated. 
+# Loop the 'trash' function for each task. 
 for item in `echo $* | tr ',' ' '`; do 
     [ -z "$item" ] && die "$errmsg"
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
@@ -37,14 +37,14 @@ for item in `echo $* | tr ',' ' '`; do
     todo=$(sed "$item!d" "$TODO_FILE")
     [ -z "$todo" ] && die "TODO: No task $item."
 
-    # Check if this item has already been done. 
+    # Check if this task has already been done. 
     if [ $(echo $todo | grep -c "^x ") -eq 0 ]; then
         now=`date '+%Y-%m-%d'`
-        # Remove priority once item is trashed. 
+        # Remove priority once task is trashed. 
         sed -i.bak $item"s/^(.) //" "$TODO_FILE"
         # Add timestamp like the 'do' command. 
         sed -i.bak $item"s|^|$now |" "$TODO_FILE"
-        # Move item to trash. 
+        # Move task to trash. 
         sed -e "$item!d" "$TODO_FILE" >> "$TRASH_FILE"
         if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
             # Delete line (changes line numbers). 
