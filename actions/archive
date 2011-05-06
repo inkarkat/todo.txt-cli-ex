@@ -23,7 +23,7 @@ if [[ "$1" =~ ^[0-9]+$ ]]; then
 else
     keyword=$1 # we got a keyword, or nothing
     what="$(grep -c "^x .*$keyword" "$TODO_FILE") task(s)"
-    [ $TODOTXT_VERBOSE -gt 0 ] && TODOTXT_VERBOSE=0 TODOTXT_DISABLE_FILTER=1 _list "$TODO_FILE" "^[0-9]\+ x .*$keyword" "$@"
+    [ $TODOTXT_VERBOSE -gt 0 ] && TODOTXT_VERBOSE=0 TODOTXT_DISABLE_FILTER=1 _list "$TODO_FILE" "^ *[0-9]\+ x .*$keyword" "$@"
     grep "^x .*$keyword" "$TODO_FILE" >> "$DONE_FILE"
     sed -i.bak "/^x .*$keyword/s/^.*//" "$TODO_FILE"
 fi
