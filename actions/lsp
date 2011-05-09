@@ -5,8 +5,8 @@ shift
 
 [ "$action" = "usage" ] && {
   echo "    $(basename $0) [PRIORITY] [TERM...]"
-  echo "      Displays all items prioritized PRIORITY (or all prioritized items)."
-  echo "      If TERM specified, lists only lines that contain TERM."
+  echo "      Displays all tasks prioritized PRIORITY (or all prioritized tasks)."
+  echo "      If TERM specified, lists only tasks that contain TERM."
   echo ""
   exit
 }
