@@ -12,5 +12,5 @@ shift
 }
 
 pri=$( printf "%s\n" "$1" | tr 'a-z' 'A-Z' | grep '^[A-Z]$' ) && shift || pri="[[:upper:]]"
-pri="($pri)"
-_list "$TODO_FILE" "$pri" "$@"
+post_filter_command="grep -e '^ *[0-9]\+ (${pri})'"
+_list "$TODO_FILE" "$@"
