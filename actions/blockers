@@ -25,8 +25,8 @@ TODOTXT_VERBOSE=0
 let blockerCnt=0
 let dependentTaskCnt=0
 let invalidDependentTaskCnt=0
-let taskOnBlockerCnt=0
-let taskOnDependentTaskCnt=0
+tasksOnBlocker=
+tasksOnDependentTask=
 
 # Find all wait markers and sort. 
 IFS=$'\n'
@@ -47,28 +47,33 @@ do
         isTaskDependency=
     fi
 
-    waitList=$(_list "$TODO_FILE" "$waitMarker" "$@" | sed -e "s/ $waitMarker//g")
+    waitList=$(_list "$TODO_FILE" "$waitMarker" "$@")
     if [[ -n "$waitList" ]]; then
         echo "--- $blocker ---"
-        echo "$waitList"
+        echo "$waitList" | sed -e "s/ $waitMarker//g"
         echo ""
 
         if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
             if [ "$isTaskDependency" ]; then
                 let dependentTaskCnt+=1
-                let taskOnDependentTaskCnt+=$(echo "${waitList}" | sed -n '$=')
+                tasksOnDependentTask="${tasksOnDependentTask}${tasksOnDependentTask:+
+}${waitList}"
             else
                 let blockerCnt+=1
-                let taskOnBlockerCnt+=$(echo "${waitList}" | sed -n '$=')
+                tasksOnBlocker="${tasksOnBlocker}${tasksOnBlocker:+
+}${waitList}"
             fi
         fi
     fi
 done
 
 if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
+    let taskOnBlockerCnt=$(echo "$tasksOnBlocker" | sort -u | sed -n '$ =')
+    let taskOnDependentTaskCnt=$(echo "$tasksOnDependentTask" | sort -u | sed -n '$ =')
+
     echo "--"
     if [ $blockerCnt -gt 0 ]; then
-        echo "TODO: $taskOnBlockerCnt blocked task(s) waiting for $blockerCnt blockers."
+        echo "TODO: $taskOnBlockerCnt blocked task(s) waiting for $blockerCnt blocker(s)."
     fi
     if [ $dependentTaskCnt -gt 0 ]; then
         echo "TODO: $taskOnDependentTaskCnt blocked task(s) waiting for $dependentTaskCnt dependent task(s)."
@@ -77,6 +82,7 @@ if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
         echo "TODO: No blockers or dependent tasks found."
     fi
 fi
+
 if [ $invalidDependentTaskCnt -eq 1 ]; then
     echo "TODO: The list contains a dependency to an invalid task (marked ???)."
 elif [ $invalidDependentTaskCnt -eq 1 ]; then
