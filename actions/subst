@@ -16,7 +16,7 @@ item=$1; shift
 
 [ -z "$item" ] && die "$errmsg"
 [[ "$item" = +([0-9]) ]] || die "$errmsg"
-# Get item without potential priority. 
+# Get task without potential priority. 
 todo=$(sed -e "$item!d" -e "s/^(.) //" "$TODO_FILE")
 [ -z "$todo" ] && die "TODO: No task $item."
 
@@ -38,6 +38,6 @@ done
 newtodo=$(echo "$todo" | sed "s${sep}${pattern}${sep}${replacement}${sep}g")
 if [ "$newtodo" = "$todo" ]; then
     [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item: $todo"
-    die "No replacement done for $pattern"
+    die "TODO: No replacement done for $pattern"
 fi
 "$TODO_FULL_SH" command replace $item "$newtodo"
