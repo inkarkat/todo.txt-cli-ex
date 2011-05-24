@@ -28,6 +28,7 @@
 ::				in the dateStore. 
 ::	001	29-Jun-2010	file creation
 ::*****************************************************************************/
+setlocal enableextensions
 
 set dateStore=%TEMP%\%~n0.dat
 set cacheFile=%TEMP%\%~n0.txt
@@ -45,6 +46,8 @@ for %%f in ("%dateStore%") do set cacheModificationDate=%%~tf
 
 :: Refresh the cache when a new day has started, to avoid showing stale data. 
 :: (New tasks may have been scheduled on a new day.) 
+:: Note: This assumes a date format that starts with the day,
+:: i.e. 12-May-2011 10:53
 if not "%date:~0,2%" == "%cacheModificationDate:~0,2%" (goto:run)
 
 :: Use the cache when the data file has not been changed today. 
@@ -58,6 +61,8 @@ if "%oldModificationDate%" == "%modificationDate%" (
 echo.%modificationDate%> "%dateStore%"
 
 :: Refresh cache contents. 
-(call tt.cmd -p what && call tt.cmd -p summary)>"%cacheFile%"
+(set DEBUG=&call tt.cmd -p what && call tt.cmd -p summary)>"%cacheFile%"
 :: And print them. 
 type "%cacheFile%"
+
+endlocal
