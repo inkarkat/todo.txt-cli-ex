@@ -30,10 +30,11 @@ else
     replacement=$2
 fi
 
-# XXX: Find a separator that doesn't occur in $pattern, sed cannot handle it. 
-for sep in '%' '#' '@' ':'
+# XXX: Find a separator that doesn't occur in $pattern, sed cannot handle it,
+# and escaping doesn't work. 
+for sep in '%' '#' '@' ':' '!' '|'
 do
-    [[ "$pattern" = *${sep}* ]] || break 
+    [[ "$pattern" = *${sep}* ]] || break
 done
 newtodo=$(echo "$todo" | sed "s${sep}${pattern}${sep}${replacement}${sep}g")
 if [ "$newtodo" = "$todo" ]; then
