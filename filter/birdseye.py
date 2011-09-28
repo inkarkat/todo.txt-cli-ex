@@ -118,6 +118,7 @@ def main(argv):
 
 	# process todo.txt
 	try:
+		completedTasks = {}
 		f = open (argv[0], "r")
 		global taskNum
 		taskNum = 0
@@ -131,21 +132,29 @@ def main(argv):
 			words = line.split()
 			if words[0][0:1] == ("("):
 				prioritized = True
-			for word in words:
-				if word[0:2] == "p:" or word[0:2] == "p-" or word[0:1] == "+":
-					if word not in projects:
-						projects[word] = 1
-					else:
-						projects[word] = projects.setdefault(word,0)  + 1
-					if prioritized:
-						projectPriority.append(word)
-				if word[0:1] == "@":
-					if word not in contexts:
-						contexts[word] = 1
-					else:
-						contexts[word] = contexts.setdefault(word, 0)  + 1
-					if prioritized:
-						contextPriority.append(word)
+			if words[0] == ("x"):
+				for word in words:
+					if word[0:2] == "p:" or word[0:2] == "p-" or word[0:1] == "+":
+						if word not in completedTasks:
+							completedTasks[word] = 1
+						else:
+							completedTasks[word] = completedTasks.setdefault(word, 0) + 1
+			else:
+				for word in words:
+					if word[0:2] == "p:" or word[0:2] == "p-" or word[0:1] == "+":
+						if word not in projects:
+							projects[word] = 1
+						else:
+							projects[word] = projects.setdefault(word,0)  + 1
+						if prioritized:
+							projectPriority.append(word)
+					if word[0:1] == "@":
+						if word not in contexts:
+							contexts[word] = 1
+						else:
+							contexts[word] = contexts.setdefault(word, 0)  + 1
+						if prioritized:
+							contextPriority.append(word)
 		f.close()
 		global taskWidth
 		taskWidth = int(math.ceil(math.log(taskNum,10)))
@@ -156,7 +165,6 @@ def main(argv):
 
 	# process done.txt
 	try:
-		completedTasks = {}
 		f = open (argv[1], "r")
 		for line in f:
 			words = line.split()
