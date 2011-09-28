@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
 """ TODO.TXT Bird's Eye View Reporter
-USAGE:  
-	birdseye.py [todo.txt] [done.txt]
-	
 USAGE NOTES:
 	Expects two text files as parameters, each of which formatted as follows:
 	- One todo per line, ie, "call Mom"
@@ -51,7 +48,7 @@ __history__ = """
 """
 
 def usage():
-	print "    %s [(open|completed|all)-(project|context) [...]]"% (os.path.basename(sys.argv[0]), )
+	print "    %s [(open|completed|all)-(projects|contexts) [...]]"% (os.path.basename(sys.argv[0]), )
 	print "      Generates a textual report of open and completed tasks"
 	print "      for all projects and contexts"
 	print ""
@@ -174,7 +171,7 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
 			totalTasks = openTasks + closedTasks
 			percentages[task] = (closedTasks*100) / totalTasks
 
-		printTaskGroups("%s with open tasks"% (prefixDescription, ), tasks, priority, percentages)
+		printTaskGroups("%s with open tasks (* = prioritized)"% (prefixDescription, ), tasks, priority, percentages)
 
 	if isPrintCompleted:
 		tasksWithNoIncompletes = {}
@@ -187,31 +184,34 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
 def main(argv):
 	if len(argv) == 0 or argv[0] == 'usage':
 		usage()
-		sys.exit(0)
+		return
+	elif len(argv) == 1:
+		argv += ['all-projects', 'open-contexts']
 
-	wasPrintOpen = False
-	for arg in argv[1:]:
-		isPrintOpen = False
-		isPrintCompleted = False
+	try:
+		for arg in argv[1:]:
+			isPrintOpen = False
+			isPrintCompleted = False
 
-		[which, item] = arg.split('-')
-		if which == 'open':
-			isPrintOpen = True
-		elif which == 'completed':
-			isPrintCompleted = True
-		elif which == 'all':
-			isPrintOpen = isPrintCompleted = True
+			[which, item] = arg.split('-')
+			if which == 'open':
+				isPrintOpen = True
+			elif which == 'completed':
+				isPrintCompleted = True
+			elif which == 'all':
+				isPrintOpen = isPrintCompleted = True
+			else:
+				raise Exception("Invalid selector: " + which)
 
-		wasPrintOpen |= isPrintOpen
-
-		if item == 'project':
-			run('+', 'projects', isPrintOpen, isPrintCompleted)
-		elif item == 'context':
-			run('@', 'contexts', isPrintOpen, isPrintCompleted)
-
-	if wasPrintOpen:
-		print ''
-		print '* prioritized tasks, listed first. Items are sorted by number of open tasks.'
+			if item == 'projects':
+				run('+', item, isPrintOpen, isPrintCompleted)
+			elif item == 'contexts':
+				run('@', item, isPrintOpen, isPrintCompleted)
+			else:
+				raise Exception("Invalid item: " + item)
+	except Exception, e:
+		print e
+		sys.exit(1)
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
