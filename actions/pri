@@ -11,7 +11,7 @@ shift
     exit
 }
 
-errmsg="usage: $TODO_SH pri PRIORITY ITEM#[, ITEM#, ITEM#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) PRIORITY ITEM#[, ITEM#, ITEM#, ...]"
 if [[ "$1" = [a-zA-Z] ]]; then
     pri=$1
     shift
