@@ -24,19 +24,15 @@ if [[ $# -ne 2 && $TODOTXT_FORCE = 0 ]]; then
     echo -n "Pattern: "
     read pattern
     echo -n "Replacement: "
-    read replacement
+    read input
 else
     pattern=$1
-    replacement=$2
+    input=$2
 fi
-
-# XXX: Find a separator that doesn't occur in $pattern, sed cannot handle it,
-# and escaping doesn't work. 
-for sep in '%' '#' '@' ':' '!' '|'
-do
-    [[ "$pattern" = *${sep}* ]] || break
-done
-newtodo=$(echo "$todo" | sed "s${sep}${pattern}${sep}${replacement}${sep}g")
+cleaninput 'for sed'
+# Above takes care of the replacement; for the pattern, we only have to escape
+# the substitution delimiter, as it's supposed to be an sed regexp. 
+newtodo=$(echo "$todo" | sed "s|${pattern//|/\\|}|${input}|g") || exit 1
 if [ "$newtodo" = "$todo" ]; then
     [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item: $todo"
     die "TODO: No replacement done for $pattern"
