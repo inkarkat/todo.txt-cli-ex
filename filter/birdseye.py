@@ -37,7 +37,7 @@ CHANGELOG:
 """
 
 
-import math, sys
+import math, sys, os
 #import datetime
 
 __version__ = "1.1"
@@ -51,7 +51,7 @@ __history__ = """
 """
 
 def usage():
-	print "USAGE:  %s [todo.txt] [done.txt]"% (sys.argv[0], )
+	print "USAGE:  %s [(open|closed|all)-(project|context) [...]] todo.txt done.txt"% (sys.argv[0], )
 
 def printTaskGroups(title, taskDict, priorityList, percentages):
 	print ""	
@@ -110,23 +110,10 @@ def separator(c, width):
 	print sep
 
 
-def main(argv):
-	# make sure you have all your args
-	if len(argv) < 2:
-		usage()
-		sys.exit(2)
-
-	# process todo.txt
+def process(filespec, prefix, tasks, completed, priority):
 	try:
-		completedProjects = {}
-		completedContexts = {}
-		f = open (argv[0], "r")
-		global taskNum
+		f = open (filespec, "r")
 		taskNum = 0
-		projects = {}
-		contexts = {}
-		projectPriority = []
-		contextPriority = []
 		for line in f:
 			taskNum += 1
 			prioritized = False
@@ -135,104 +122,70 @@ def main(argv):
 				prioritized = True
 			if words[0] == ("x"):
 				for word in words:
-					if word[0:2] == "p:" or word[0:2] == "p-" or word[0:1] == "+":
-						if word not in completedProjects:
-							completedProjects[word] = 1
+					if word[0:1] == prefix:
+						if word not in completed:
+							completed[word] = 1
 						else:
-							completedProjects[word] = completedProjects.setdefault(word, 0) + 1
-						if word[0:1] == "@":
-							if word not in completedContexts:
-								completedContexts[word] = 1
-							else:
-								completedContexts[word] = completedContexts.setdefault(word, 0)  + 1
+							completed[word] = completed.setdefault(word, 0) + 1
 			else:
 				for word in words:
-					if word[0:2] == "p:" or word[0:2] == "p-" or word[0:1] == "+":
-						if word not in projects:
-							projects[word] = 1
+					if word[0:1] == prefix:
+						if word not in tasks:
+							tasks[word] = 1
 						else:
-							projects[word] = projects.setdefault(word,0)  + 1
+							tasks[word] = tasks.setdefault(word,0)  + 1
 						if prioritized:
-							projectPriority.append(word)
-					if word[0:1] == "@":
-						if word not in contexts:
-							contexts[word] = 1
-						else:
-							contexts[word] = contexts.setdefault(word, 0)  + 1
-						if prioritized:
-							contextPriority.append(word)
+							priority.append(word)
 		f.close()
-		global taskWidth
-		taskWidth = int(math.ceil(math.log(taskNum,10)))
+		return taskNum
 	except IOError:
-		print "ERROR:  The file named %s could not be read."% (argv[0], )
+		print "ERROR:  The file named %s could not be read."% (filespec, )
 		usage()
 		sys.exit(2)
 
-	# process done.txt
-	try:
-		f = open (argv[1], "r")
-		for line in f:
-			words = line.split()
-			for word in words:
-				if word[0:2] == "p:" or word[0:2] == "p-" or word[0:1] == "+":
-					if word not in completedProjects:
-						completedProjects[word] = 1
-					else:
-						completedProjects[word] = completedProjects.setdefault(word, 0) + 1
-				if word[0:1] == "@":
-					if word not in completedContexts:
-						completedContexts[word] = 1
-					else:
-						completedContexts[word] = completedContexts.setdefault(word, 0)  + 1
-		f.close()
-	except IOError:
-		print "ERROR:  The file named %s could not be read."% (argv[1], )
-		usage()
-		sys.exit(2)
+def gather(prefix, tasks, completed, priority):
+	global taskNum
+	taskNum = process(os.environ['TODO_FILE'], prefix, tasks, completed, priority)
+	global taskWidth
+	taskWidth = int(math.ceil(math.log(taskNum,10)))
 
-	# calculate percentages
-	projectPercentages = {}
-	for project in projects:
-		openTasks = projects[project]
-		if project in completedProjects:
-			closedTasks = completedProjects[project]
+	process(os.environ['DONE_FILE'], prefix, completed, completed, priority)
+
+def run(prefix, prefixDescription):
+	tasks = {}
+	completed = {}
+	priority = []
+	gather(prefix, tasks, completed, priority)
+
+	percentages = {}
+	for task in tasks:
+		openTasks = tasks[task]
+		if task in completed:
+			closedTasks = completed[task]
 		else:
 			closedTasks = 0
 		totalTasks = openTasks + closedTasks
-		projectPercentages[project] = (closedTasks*100) / totalTasks
+		percentages[task] = (closedTasks*100) / totalTasks
 
-	contextPercentages = {}
-	for context in contexts:
-		openTasks = contexts[context]
-		if context in completedContexts:
-			closedTasks = completedContexts[context]
-		else:
-			closedTasks = 0
-		totalTasks = openTasks + closedTasks
-		contextPercentages[context] = (closedTasks*100) / totalTasks
-
-	# get projects all done
-	projectsWithNoIncompletes = {}
-	for project in completedProjects:
-		if project not in projects:
-			projectsWithNoIncompletes[project] = completedProjects[project]
+	# get tasks all done
+	tasksWithNoIncompletes = {}
+	for task in completed:
+		if task not in tasks:
+			tasksWithNoIncompletes[task] = completed[task]
 	
-	# print out useful info
-	#print "TODO.TXT Bird's Eye View Report %s"% ( datetime.date.today().isoformat(), )
-	#print ""
-	#print "TODO.TXT Bird's Eye View Report"
+	printTaskGroups("%s with open tasks"% (prefixDescription, ), tasks, priority, percentages)
+	printTaskGroups("completed %s (no open tasks)"% (prefixDescription, ), tasksWithNoIncompletes, priority, percentages)
 
-	#separator("=")
+def main(argv):
+	# make sure you have all your args
+	if len(argv) < 2:
+		usage()
+		sys.exit(2)
 
-	printTaskGroups("Projects with Open tasks", projects, projectPriority, projectPercentages)
-	printTaskGroups("Contexts with Open tasks", contexts, contextPriority, contextPercentages)
-	printTaskGroups("Completed Projects (No open tasks)", projectsWithNoIncompletes, projectPriority, projectPercentages)
+	run('+', 'projects')
+	run('@', 'contexts')
 	print ""
 	print "* prioritized tasks, listed first. Items are sorted by number of open tasks."
-
-
-
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
