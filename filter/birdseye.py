@@ -118,7 +118,8 @@ def main(argv):
 
 	# process todo.txt
 	try:
-		completedTasks = {}
+		completedProjects = {}
+		completedContexts = {}
 		f = open (argv[0], "r")
 		global taskNum
 		taskNum = 0
@@ -135,10 +136,15 @@ def main(argv):
 			if words[0] == ("x"):
 				for word in words:
 					if word[0:2] == "p:" or word[0:2] == "p-" or word[0:1] == "+":
-						if word not in completedTasks:
-							completedTasks[word] = 1
+						if word not in completedProjects:
+							completedProjects[word] = 1
 						else:
-							completedTasks[word] = completedTasks.setdefault(word, 0) + 1
+							completedProjects[word] = completedProjects.setdefault(word, 0) + 1
+						if word[0:1] == "@":
+							if word not in completedContexts:
+								completedContexts[word] = 1
+							else:
+								completedContexts[word] = completedContexts.setdefault(word, 0)  + 1
 			else:
 				for word in words:
 					if word[0:2] == "p:" or word[0:2] == "p-" or word[0:1] == "+":
@@ -170,10 +176,15 @@ def main(argv):
 			words = line.split()
 			for word in words:
 				if word[0:2] == "p:" or word[0:2] == "p-" or word[0:1] == "+":
-					if word not in completedTasks:
-						completedTasks[word] = 1
+					if word not in completedProjects:
+						completedProjects[word] = 1
 					else:
-						completedTasks[word] = completedTasks.setdefault(word, 0) + 1
+						completedProjects[word] = completedProjects.setdefault(word, 0) + 1
+				if word[0:1] == "@":
+					if word not in completedContexts:
+						completedContexts[word] = 1
+					else:
+						completedContexts[word] = completedContexts.setdefault(word, 0)  + 1
 		f.close()
 	except IOError:
 		print "ERROR:  The file named %s could not be read."% (argv[1], )
@@ -184,18 +195,28 @@ def main(argv):
 	projectPercentages = {}
 	for project in projects:
 		openTasks = projects[project]
-		if project in completedTasks:
-			closedTasks = completedTasks[project]
+		if project in completedProjects:
+			closedTasks = completedProjects[project]
 		else:
 			closedTasks = 0
 		totalTasks = openTasks + closedTasks
 		projectPercentages[project] = (closedTasks*100) / totalTasks
 
+	contextPercentages = {}
+	for context in contexts:
+		openTasks = contexts[context]
+		if context in completedContexts:
+			closedTasks = completedContexts[context]
+		else:
+			closedTasks = 0
+		totalTasks = openTasks + closedTasks
+		contextPercentages[context] = (closedTasks*100) / totalTasks
+
 	# get projects all done
 	projectsWithNoIncompletes = {}
-	for task in completedTasks:
-		if task not in projects:
-			projectsWithNoIncompletes[task] = 0
+	for project in completedProjects:
+		if project not in projects:
+			projectsWithNoIncompletes[project] = completedProjects[project]
 	
 	# print out useful info
 	#print "TODO.TXT Bird's Eye View Report %s"% ( datetime.date.today().isoformat(), )
@@ -205,7 +226,7 @@ def main(argv):
 	#separator("=")
 
 	printTaskGroups("Projects with Open tasks", projects, projectPriority, projectPercentages)
-	printTaskGroups("Contexts with Open tasks", contexts, contextPriority, projectPercentages)
+	printTaskGroups("Contexts with Open tasks", contexts, contextPriority, contextPercentages)
 	printTaskGroups("Completed Projects (No open tasks)", projectsWithNoIncompletes, projectPriority, projectPercentages)
 	print ""
 	print "* prioritized tasks, listed first. Items are sorted by number of open tasks."
