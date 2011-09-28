@@ -11,4 +11,4 @@ shift
   exit
 }
 
-python ~/.todo/birdseye.py "$TODO_FILE" "$DONE_FILE"
+python ~/.todo/birdseye.py all all "$TODO_FILE" "$DONE_FILE"
