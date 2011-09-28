@@ -35,6 +35,11 @@ do
     if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
         # Unblock tasks that depended on the now done task. 
         "$TODO_FULL_SH" unwait 'for' $item | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
-        : # Always exit with a successful exit code even when the "todo.txt unwait" command complained. 
+        : # Always exit with a successful exit code even when the command complained. 
+    fi
+
+    if [ -x "$TODO_ACTIONS_DIR/recur" ]; then
+        "$TODO_FULL_SH" recur $item apply
+        : # Always exit with a successful exit code even when the command complained. 
     fi
 done
