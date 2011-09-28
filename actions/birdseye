@@ -4,13 +4,11 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "  Bird's eye report:"
   echo "    birdseye"
-  echo "      generates a textual report of pending and completed tasks in all projects and contexts"
+  echo "      Generates a textual report of pending and completed tasks"
+  echo "      in all projects and contexts"
   echo ""
   exit
 }
 
-[ "$action" = "birdseye" ] && {
-     python ~/.todo.actions.d/birdseye.py "$TODO_FILE" "$DONE_FILE"
-}
+python ~/.todo/birdseye.py "$TODO_FILE" "$DONE_FILE"
