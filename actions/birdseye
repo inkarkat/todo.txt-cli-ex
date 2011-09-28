@@ -125,14 +125,14 @@ def process(filespec, prefix, tasks, completed, priority):
 				prioritized = True
 			if words[0] == ("x"):
 				for word in words:
-					if word[0:1] == prefix:
+					if word[0:1] == prefix and len(word) > 1:
 						if word not in completed:
 							completed[word] = 1
 						else:
 							completed[word] = completed.setdefault(word, 0) + 1
 			else:
 				for word in words:
-					if word[0:1] == prefix:
+					if word[0:1] == prefix and len(word) > 1:
 						if word not in tasks:
 							tasks[word] = 1
 						else:
@@ -147,7 +147,6 @@ def process(filespec, prefix, tasks, completed, priority):
 		sys.exit(2)
 
 def gather(prefix, tasks, completed, priority):
-	global taskNum
 	taskNum = process(os.environ['TODO_FILE'], prefix, tasks, completed, priority)
 	global taskWidth
 	taskWidth = int(math.ceil(math.log(taskNum,10)))
