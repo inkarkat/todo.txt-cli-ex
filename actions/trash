@@ -6,6 +6,7 @@ shift
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
     echo "      Puts the task(s) on line ITEM# into trash.txt, appending COMMENT."
+    echo "      Task(s) that were dependent on ITEM# have that blocker removed."
     echo ""
     exit
 }
@@ -68,6 +69,12 @@ do
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             echo "$item: $todo"
             echo "TODO: $item put into $PREFIX."
+        fi
+
+        if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
+            # Unblock tasks that depended on the trashed task. 
+            "$TODO_FULL_SH" unwait 'for' $item | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
+            : # Always exit with a successful exit code even when the command complained. 
         fi
     else
         echo "$item is already marked done."
