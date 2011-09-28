@@ -1,0 +1,35 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [TERM]"
+    echo "      Deletes the task(s) on line ITEM# in todo.txt."
+    echo "      Task(s) that were dependent on ITEM# have that blocker removed."
+    echo "      If TERM specified, deletes only TERM from the task."
+    echo ""
+    exit
+}
+
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [TERM]"
+[ $# -eq 0 ] && die "$errmsg"
+
+items=
+while [[ "$1" =~ ^[,0-9]+$ ]]
+do
+    items="$items $1"
+    shift
+done
+[ "$items" ] || die "$errmsg"
+
+for item in `echo $items | tr ',' ' '`
+do 
+    "$TODO_FULL_SH" command del $item "$@" || exit $?
+
+    if [ $# -eq 0 -a -x "$TODO_ACTIONS_DIR/unwait" ]; then
+        # Unblock tasks that depended on the deleted task. 
+        "$TODO_FULL_SH" unwait 'for' $item | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
+        : # Always exit with a successful exit code even when the command complained. 
+    fi
+done
