@@ -56,11 +56,11 @@ def usage():
 def printTaskGroups(title, taskDict, priorityList, percentages):
 	print ""	
 	print "%s"% (title,)
-	separator("-")
 	if not taskDict:
 		print "No items to list."
 	else:
 		itemMaxLength = len(max(taskDict, key=len))
+		separator("-", 33 + itemMaxLength)
 
 		# sort the dictionary by value
 		# http://python.fyxm.net/peps/pep-0265.html
@@ -100,9 +100,13 @@ def printTaskGroup(p, pMaxLen, pctage, star):
 	else:
 		print "%s %*s (%*d task%s)"% (star, (-1 * pMaxLen), p[0], taskWidth, p[1], (" " if p[1] == 1 else "s"), )
 	
-def separator(c):
+global sepWidth
+sepWidth = 0
+def separator(c, width):
+	global sepWidth
+	sepWidth = width if sepWidth == 0 else sepWidth
 	sep = ""
-	sep = c * 42
+	sep = c * sepWidth
 	print sep
 
 
@@ -187,17 +191,16 @@ def main(argv):
 	
 	# print out useful info
 	#print "TODO.TXT Bird's Eye View Report %s"% ( datetime.date.today().isoformat(), )
-	print ""
-	print "TODO.TXT Bird's Eye View Report"
+	#print ""
+	#print "TODO.TXT Bird's Eye View Report"
 
-	separator("=")
+	#separator("=")
 
 	printTaskGroups("Projects with Open tasks", projects, projectPriority, projectPercentages)
 	printTaskGroups("Contexts with Open tasks", contexts, contextPriority, projectPercentages)
 	printTaskGroups("Completed Projects (No open tasks)", projectsWithNoIncompletes, projectPriority, projectPercentages)
 	print ""
 	print "* prioritized tasks, listed first. Items are sorted by number of open tasks."
-	print ""
 
 
 
