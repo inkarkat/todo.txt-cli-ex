@@ -4,7 +4,7 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
+    echo "    $(basename $0) last|ITEM#[, ITEM#, ITEM#, ...]"
     echo "      Puts the trashed task(s) on line ITEM# back to todo.txt."
     echo ""
     exit
@@ -30,6 +30,7 @@ trap 'cleanup' 0
 # Loop the 'untrash' function for each task. 
 for item in `echo $* | tr ',' ' '`; do 
     [ -z "$item" ] && die "$errmsg"
+    [ "$item" = 'last' ] && item=$(sed -n '$ =' "$TRASH_FILE") 
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
 
     todo=$(sed "$item!d" "$TRASH_FILE")
