@@ -71,9 +71,9 @@ waitPattern=' w:\('$waitPattern'\)\([ \t]\|$\)'
 generalWaitPattern=' w:\('$generalReasonPattern'\)\([ \t]\|$\)'
 
 if [ ! "$items" ]; then
-    # No tasks have been specified; we must generate the list of tasks that
-    # contain the waitPattern ourselves. 
-    items=$(sed -ne "/${waitPattern}/=" "$TODO_FILE")
+    # No tasks have been specified; we must generate the list of (not yet done)
+    # tasks that contain the waitPattern ourselves. 
+    items=$(sed -n -e '/x /b' -e "/${waitPattern}/=" "$TODO_FILE")
 
     [ "$items" ] || die "TODO: No tasks that contain the ${waitDescription:?} found."
 fi
@@ -100,7 +100,7 @@ t repeat
     else
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             if [ "$(sed -e "$item!d" -e "/$generalWaitPattern/d" "$TODO_FILE")" = "" ]; then
-                newState="had blocker(s) removed, still blocked"
+                newState="had blocker(s) removed; still blocked"
             else
                 newState="unblocked"
             fi
