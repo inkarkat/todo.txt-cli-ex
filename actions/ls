@@ -17,7 +17,7 @@ shopt -s extglob
 
 # Consider only tasks that are not yet done. The tasks are already numbered when
 # the filter is applied, so there definitely is a space in front of the marker. 
-export post_filter_command="grep -ve '^ *[0-9]\+ x '"
+post_filter_command="grep -ve '^ *[0-9]\+ x '"
 
 if [[ $# -eq 1 && "$1" = +([0-9]) ]]; then
     # Listing of task numbers is unintuitive, because the search pattern is
