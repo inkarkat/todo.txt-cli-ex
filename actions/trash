@@ -39,7 +39,7 @@ done
 
 # Split multiple trash's, if comma separated change to whitespace separated. 
 # Loop the 'trash' function for each task. 
-for item in `echo $items | tr ',' ' '`
+for item in $(echo $items | tr ',' ' ')
 do 
     if [ $# -gt 0 ]; then
         "$TODO_FULL_SH" command append $item "$@" || exit $?
@@ -50,7 +50,7 @@ do
 
     # Check if this task has already been done. 
     if [ $(echo $todo | grep -c "^x ") -eq 0 ]; then
-        now=`date '+%Y-%m-%d'`
+        now=$(date '+%Y-%m-%d')
         # Remove priority once task is trashed. 
         sed -i.bak $item"s/^(.) //" "$TODO_FILE"
         # Add timestamp like the 'do' command. 
