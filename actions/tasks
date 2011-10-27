@@ -5,15 +5,33 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0)"
-    echo "      Extracts the ITEM# task numbers from another todo.sh command,"
-    echo "      so that these can be supplied to another command."
-    echo "      Example: Re-prioritize all +foo tasks with priority c to priority z:"
-    echo '        todo.sh pri z `todo.sh lsp c | todo.sh tasks`'
+    echo "      Extracts the ITEM# task numbers from the output of a todo.sh command,"
+    echo "      so that these can be processed or supplied to another command."
+    echo "      Example: Re-prioritize all tasks with priority c to priority z:"
+    echo "        todo.sh listpri c | todo.sh tasks"
+    echo "    $(basename $0) ACTION [ACTION_ARGUMENTS]"
+    echo "      Extracts the ITEM# task numbers from the output of a todo.sh command,"
+    echo "      and passes each to an individual invocation of"
+    echo "        todo.sh ACTION ITEM# [ACTION_ARGUMENTS]"
+    echo "      Example: Re-prioritize all tasks with priority c to priority z:"
+    echo "        todo.sh listpri c | todo.sh tasks pri z"
     echo ""
     exit
 }
 
-sed -n -e '
+typeset action=
+if [ $# -gt 0 ]; then
+    if [ "$1" = 'command' ]; then
+	action="$1 $2"
+	shift
+	shift
+    else
+	action=$1
+	shift
+    fi
+fi
+
+typeset tasks=$(sed -n -e '
 # Stop parsing when the todo.txt verbose footer is encountered, or at the end of
 # the output. 
 /^--$/b END
@@ -32,4 +50,16 @@ s/^\n\+//
 s/\n/ /g
 p
 q
-'
+')
+
+[ "$tasks" ] || exit 1
+
+if [ "$action" ]; then
+    typeset task
+    for task in $tasks
+    do
+	"$TODO_FULL_SH" $action $task "$@" || exit $?
+    done
+else
+    echo "$tasks"
+fi
