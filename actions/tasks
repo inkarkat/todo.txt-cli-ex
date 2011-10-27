@@ -1,0 +1,35 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0)"
+    echo "      Extracts the ITEM# task numbers from another todo.sh command,"
+    echo "      so that these can be supplied to another command."
+    echo "      Example: Re-prioritize all +foo tasks with priority c to priority z:"
+    echo '        todo.sh pri z `todo.sh lsp c | todo.sh tasks`'
+    echo ""
+    exit
+}
+
+sed -n -e '
+# Stop parsing when the todo.txt verbose footer is encountered, or at the end of
+# the output. 
+/^--$/b END
+$b END
+
+# Extract the task number. 
+/^ *[0-9]\+ /!b
+s/^ *\([0-9]\+\) .*$/\1/
+H
+b
+
+# Flatten all collected task numbers into a space-delimited list. 
+:END
+g
+s/^\n\+//
+s/\n/ /g
+p
+q
+'
