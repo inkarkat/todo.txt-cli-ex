@@ -111,3 +111,5 @@ if [ ! "$TODOTXT_BROWSER" ]; then
     fi
 fi
 
+# Make 'what' addon show only priorities A-F. 
+export TODOTXT_WHAT_PRIORITIES=A-F
