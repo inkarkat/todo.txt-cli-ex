@@ -36,7 +36,7 @@ do
 
     if [[ "$blocker" =~ ^[0-9]+$ ]]; then
         # Translate dependent task number into a shortened task description. 
-        deptodo=$(sed -e "$blocker!d" -e 's/ \([[:alpha:]]:\|[+@]\)[^[:space:]]\+//g' -e 's/^\(([[:upper:]]) \)\{0,1\}\([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\{0,1\}//g' "$TODO_FILE")
+        deptodo=$(sed -e "$blocker!d" -e 's/ \([[:alpha:]]:\|[+@]\)[^[:space:]]\+//g' -e 's/^\(([A-Z]) \)\{0,1\}\([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\{0,1\}//g' "$TODO_FILE")
         if [ ! "$deptodo" ]; then
             deptodo='???'
             let invalidDependentTaskCnt+=1
