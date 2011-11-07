@@ -25,7 +25,7 @@ export TODOTXT_DISABLE_FILTER=0
 # Also ensure that the correct filter is set, and pass the optionally set
 # threshold. 
 export TODOTXT_FINAL_FILTER="$HOME/.todo/futureTasks"
-export post_filter_command="grep -v -e '^[0-9]\+ x ' -e ' w:[^ ]'"
+export post_filter_command="grep -v -e '^ *[0-9]\+ x ' -e ' w:[^ ]'"
 activeNum=$("$TODO_FULL_SH" command ls "$@" | wc -l)    # All tasks not done, future, or waiting. 
 
 futureNum=$((listNum - activeNum - waitNum - doneNum))  # All tasks that will only come due in the future. 
