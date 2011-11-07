@@ -1,0 +1,14 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [TERM...]"
+    echo "      Lists all the wait reasons (w:... marker) in active tasks. "
+    echo "      If TERM specified, lists only tasks that contain TERM."
+    echo ""
+    exit
+}
+
+sed -e '/^x /d' -e 's/ w:[^ ]/\n&/g' "$TODO_FILE" | sed -n -e 's/^.* w:(\([^)]*\)).*$/\1/p;t' -e 's/^.* w:\([^ 0-9]*\)$/\1/p' | sort -u
