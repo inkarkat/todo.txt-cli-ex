@@ -15,9 +15,16 @@
 ::	been changed. 
 ::* REMARKS: 
 ::       	
-::* FILE_SCCS = "@(#)tt cache.cmd	003	(14-Aug-2010)	tools";
+::* FILE_SCCS = "@(#)tt cache.cmd	004	(25-May-2011)	tools";
 ::
 ::* REVISION	DATE		REMARKS 
+::	004	25-May-2011	XXX: Inexplicable caching of the former day's
+::				todos yet correctly updated modification date in
+::				conjunction with Dropbox sync, when run at the
+::				beginning of a new day. Strangely, the problem
+::				doesn't show when run under a wrapper that turns
+::				on debug output. Trying to workaround this via a
+::				30 second delay. 
 ::	003	14-Aug-2010	Simplified by determining the cache's age from
 ::				the modification date of the dateStore instead
 ::				of explicitly reading it. 
@@ -48,7 +55,7 @@ for %%f in ("%dateStore%") do set cacheModificationDate=%%~tf
 :: (New tasks may have been scheduled on a new day.) 
 :: Note: This assumes a date format that starts with the day,
 :: i.e. 12-May-2011 10:53
-if not "%date:~0,2%" == "%cacheModificationDate:~0,2%" (goto:run)
+if not "%date:~0,2%" == "%cacheModificationDate:~0,2%" (ping -n 30 localhost >NUL 2>&1 & goto:run)
 
 :: Use the cache when the data file has not been changed today. 
 if "%oldModificationDate%" == "%modificationDate%" (
