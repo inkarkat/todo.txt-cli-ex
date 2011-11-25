@@ -17,13 +17,12 @@ from datetime import datetime
 pattern = re.compile(r" t:(\d{4})-(\d{2})-(\d{2})")
 
 
-def main(args=None):
-	now = datetime.now()
+def main(threshold):
 	for line in sys.stdin:
 		match = pattern.search(line)
 		if match:
-			threshold = [int(i) for i in match.groups()]
-			if datetime(*threshold) < now:
+			found = [int(i) for i in match.groups()]
+			if datetime(*found) <= threshold:
 				print line.strip()
 		else:
 			print line.strip()
@@ -31,5 +30,14 @@ def main(args=None):
 
 
 if __name__ == "__main__":
-	status = not main(sys.argv)
+	if len(sys.argv) > 1:
+		match = re.compile("(\d{4})-(\d{2})-(\d{2})").search(sys.argv[1])
+		if match:
+			found = [int(i) for i in match.groups()]
+			threshold = datetime(*found)
+		else:
+			threshold = datetime.now()
+	else:
+		threshold = datetime.now()
+	status = not main(threshold)
 	sys.exit(status)
