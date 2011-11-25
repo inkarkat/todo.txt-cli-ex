@@ -27,22 +27,24 @@ readonly contexts=$(eval "$(filtercommand 'cat "$TODO_FILE"' '' "$@")" | grep -o
 # For each context show header and the list of tasks. 
 export HIDE_CONTEXTS_SUBSTITUTION='[[:space:]]@[[:graph:]]\{1,\}'   # Omitting all contexts from the list. 
 for context in $contexts; do 
-    echo "--- ${context} ---"
     # Use core _list function, does numbering and coloring for us. 
     contextList=$(_list "$TODO_FILE" "$context\( \|$\)" "$@")
-    echo "${contextList}"
-    echo ""
+    if [ "$contextList" ]; then # Even though we're operating only on context tasks containing TERM, a task filter may still filter away all tasks for a context. 
+        echo "--- ${context} ---"
+        echo "${contextList}"
+        echo ""
 
-    if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
-        let contextCnt+=1
-        tasks="${tasks}${tasks:+
+        if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
+            let contextCnt+=1
+            tasks="${tasks}${tasks:+
 }$contextList"
+        fi
     fi
 done
 
 # Show tasks not associated with a context 
 contextList=$(_list "$TODO_FILE" "-[[:space:]]@[[:graph:]]" "$@")
-if [[ -n "${contextList}" ]]; then
+if [ "${contextList}" ]; then
     echo "--- Without context ---"
     echo "${contextList}"
 fi
