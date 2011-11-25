@@ -113,3 +113,6 @@ fi
 
 # Make 'what' addon show only priorities A-F. 
 export TODOTXT_WHAT_PRIORITIES=A-F
+
+# Additional addons that handle multiple ITEM# arguments. 
+export TODOTXT_TASKS_MULTIACTIONS='depri dp do del did undo unwait wait'
