@@ -26,22 +26,24 @@ readonly projects=$("$TODO_FULL_SH" command listproj "$@")
 # For each project show header and the list of tasks. 
 export HIDE_PROJECTS_SUBSTITUTION='[[:space:]][+][[:graph:]]\{1,\}' # Omitting all projects from the list. 
 for project in $projects; do 
-    echo "--- ${project#+} ---"
     # Use core _list function, does numbering and coloring for us. 
     projectList=$(_list "$TODO_FILE" "$project\( \|$\)" "$@")
-    echo "${projectList}"
-    echo ""
+    if [ "$projectList" ]; then # Even though we're operating only on project tasks containing TERM, a task filter may still filter away all tasks for a project. 
+        echo "--- ${project#+} ---"
+        echo "${projectList}"
+        echo ""
 
-    if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
-        let projectCnt+=1
-        tasks="${tasks}${tasks:+
+        if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
+            let projectCnt+=1
+            tasks="${tasks}${tasks:+
 }$projectList"
+        fi
     fi
 done
 
 # Show tasks not associated to a project. 
 projectList=$(_list "$TODO_FILE" "-[[:space:]][+][[:graph:]]" "$@")
-if [[ -n "${projectList}" ]]; then
+if [ "${projectList}" ]; then
     echo "--- Not in projects ---"
     echo "${projectList}"
 fi
