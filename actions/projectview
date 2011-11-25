@@ -13,46 +13,45 @@ if [ "$action" = "usage" ]; then
     exit
 fi
 
-# Stop Verbose lines, thanks to Mark Harrison
 original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 TODOTXT_VERBOSE=0
 
 # Show projects in alphabetical order and tasks in priority order. 
-let PROJECT_CNT=0
-TASKS=
+let projectCnt=0
+tasks=
 
-# Find all projects and sort. 
-PROJECTS=$(grep -o '[^ ]*+[^ ]\+' "$TODO_FILE" | grep '^+' | sort -u | sed 's/^+//g')
+# Find all projects. 
+readonly projects=$("$TODO_FULL_SH" command listproj "$@")
+
 # For each project show header and the list of tasks. 
-for i in $PROJECTS; do 
+export HIDE_PROJECTS_SUBSTITUTION='[[:space:]][+][[:graph:]]\{1,\}' # Omitting all projects from the list. 
+for project in $projects; do 
+    echo "--- ${project#+} ---"
     # Use core _list function, does numbering and coloring for us. 
-    PROJECT_LIST=$(_list "$TODO_FILE" "+$i\( \|$\)" "$@")
-    if [[ -n "${PROJECT_LIST}" ]]; then
-        echo "--- $i ---"
-        echo "${PROJECT_LIST}" | sed 's/\( *+[^ ]\+\)\+ */ /g'
-        echo ""
+    projectList=$(_list "$TODO_FILE" "$project\( \|$\)" "$@")
+    echo "${projectList}"
+    echo ""
 
-        if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
-            let PROJECT_CNT+=1
-            TASKS="${TASKS}${TASKS:+
-}$PROJECT_LIST"
-        fi
+    if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
+        let projectCnt+=1
+        tasks="${tasks}${tasks:+
+}$projectList"
     fi
 done
 
 # Show tasks not associated to a project. 
-PROJECT_LIST=$(_list "$TODO_FILE" "$@" | grep -v " \++[^ ]")
-if [[ -n "${PROJECT_LIST}" ]]; then
+projectList=$(_list "$TODO_FILE" "-[[:space:]][+][[:graph:]]" "$@")
+if [[ -n "${projectList}" ]]; then
     echo "--- Not in projects ---"
-    echo "${PROJECT_LIST}"
+    echo "${projectList}"
 fi
 
 if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
-    let TASK_CNT=$(echo "$TASKS" | sort -u | sed -n '$ =')
+    let taskCnt=$(echo "$tasks" | sort -u | sed -n '$ =')
 
     echo "--"
-    if [ $PROJECT_CNT -gt 0 ]; then
-        echo "TODO: $TASK_CNT task(s) in $PROJECT_CNT projects."
+    if [ $projectCnt -gt 0 ]; then
+        echo "TODO: $taskCnt task(s) in $projectCnt projects."
     else
         echo "TODO: No projects found."
     fi
