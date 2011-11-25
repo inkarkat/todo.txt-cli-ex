@@ -18,41 +18,41 @@ original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 TODOTXT_VERBOSE=0
 
 # Show contexts in alphabetical order and tasks in priority order. 
-let CONTEXT_CNT=0
-TASKS=
+let contextCnt=0
+tasks=
 
-# Find all contexts and sort. 
-CONTEXTS=$(grep -o '[^ ]*@[^ ]\+' "$TODO_FILE" | grep '^@' | sort -u)
-# For each project show header and the list of tasks. 
-for i in $CONTEXTS ; do 
+# Find all contexts. 
+readonly contexts=$(eval "$(filtercommand 'cat "$TODO_FILE"' '' "$@")" | grep -o '[^ ]*@[^ ]\+' | grep '^@' | sort -u)
+
+# For each context show header and the list of tasks. 
+export HIDE_CONTEXTS_SUBSTITUTION='[[:space:]]@[[:graph:]]\{1,\}'   # Omitting all contexts from the list. 
+for context in $contexts; do 
+    echo "--- ${context} ---"
     # Use core _list function, does numbering and coloring for us. 
-    CONTEXT_LIST=$(_list "$TODO_FILE" "$i\( \|$\)" "$@")
-    if [[ -n "${CONTEXT_LIST}" ]]; then
-        echo "--- $i ---"
-        echo "${CONTEXT_LIST}" | sed 's/\( *@[^ ]\+\)\+ */ /g'
-        echo ""
+    contextList=$(_list "$TODO_FILE" "$context\( \|$\)" "$@")
+    echo "${contextList}"
+    echo ""
 
-        if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
-            let CONTEXT_CNT+=1
-            TASKS="${TASKS}${TASKS:+
-}$CONTEXT_LIST"
-        fi
+    if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
+        let contextCnt+=1
+        tasks="${tasks}${tasks:+
+}$contextList"
     fi
 done
 
-# Show tasks not associated to a project. 
-CONTEXT_LIST=$(_list "$TODO_FILE" "$@" | grep -v " \+@[^ ]")
-if [[ -n "${CONTEXT_LIST}" ]]; then
+# Show tasks not associated with a context 
+contextList=$(_list "$TODO_FILE" "-[[:space:]]@[[:graph:]]" "$@")
+if [[ -n "${contextList}" ]]; then
     echo "--- Without context ---"
-    echo "${CONTEXT_LIST}"
+    echo "${contextList}"
 fi
 
 if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
-    let TASK_CNT=$(echo "$TASKS" | sort -u | sed -n '$ =')
+    let TASK_CNT=$(echo "$tasks" | sort -u | sed -n '$ =')
 
     echo "--"
-    if [ $CONTEXT_CNT -gt 0 ]; then
-        echo "TODO: $TASK_CNT task(s) with $CONTEXT_CNT contexts."
+    if [ $contextCnt -gt 0 ]; then
+        echo "TODO: $TASK_CNT task(s) with $contextCnt contexts."
     else
         echo "TODO: No contexts found."
     fi
