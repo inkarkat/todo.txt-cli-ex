@@ -1,43 +1,18 @@
-#!/usr/bin/env python
-
-"""
-filter incoming lines based on date threshold
-
-Threshold markers are of the form "t:YYYY-MM-DD".
-
-This is intended to be used as TODOTXT_FINAL_FILTER.
-"""
-
-import sys
-import re
-
-from datetime import datetime
-
-
-pattern = re.compile(r" t:(\d{4})-(\d{2})-(\d{2})")
-
-
-def main(threshold):
-	for line in sys.stdin:
-		match = pattern.search(line)
-		if match:
-			found = [int(i) for i in match.groups()]
-			if datetime(*found) <= threshold:
-				print line.strip()
-		else:
-			print line.strip()
-	return True
-
-
-if __name__ == "__main__":
-	if len(sys.argv) > 1:
-		match = re.compile("(\d{4})-(\d{2})-(\d{2})").search(sys.argv[1])
-		if match:
-			found = [int(i) for i in match.groups()]
-			threshold = datetime(*found)
-		else:
-			threshold = datetime.now()
-	else:
-		threshold = datetime.now()
-	status = not main(threshold)
-	sys.exit(status)
+#!/bin/bash
+awk --re-interval -v date=$1 '
+BEGIN {
+    if (date == "") {
+        threshold = mktime(strftime("%Y %m %d 00 00 00", systime()))
+    } else {
+        threshold = mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
+    }
+}
+/ t:[0-9]{4}-[0-9]{2}-[0-9]{2}( |$)/ {
+    date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2})( .*)?$/, "\\1 \\2 \\3 00 00 00", ""))
+    if (date <= threshold) {
+        print
+    }
+    next
+}
+{ print }
+'
