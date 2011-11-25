@@ -19,22 +19,23 @@ TODOTXT_VERBOSE=0
 
 # Show projects in alphabetical order and tasks in priority order. 
 let PROJECT_CNT=0
-let TASK_CNT=0
+TASKS=
 
 # Find all projects and sort. 
 PROJECTS=$(grep -o '[^ ]*+[^ ]\+' "$TODO_FILE" | grep '^+' | sort -u | sed 's/^+//g')
 # For each project show header and the list of tasks. 
-for i in $PROJECTS ; do 
+for i in $PROJECTS; do 
     # Use core _list function, does numbering and coloring for us. 
-    PROJECT_LIST=$(_list "$TODO_FILE" "+$i\( \|$\)" "$@" | sed 's/\( *+[^ ]\+\)\+ */ /g')
+    PROJECT_LIST=$(_list "$TODO_FILE" "+$i\( \|$\)" "$@")
     if [[ -n "${PROJECT_LIST}" ]]; then
         echo "--- $i ---"
-        echo "${PROJECT_LIST}"
+        echo "${PROJECT_LIST}" | sed 's/\( *+[^ ]\+\)\+ */ /g'
         echo ""
 
         if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
             let PROJECT_CNT+=1
-            let TASK_CNT+=$(echo "${PROJECT_LIST}" | sed -n '$=')
+            TASKS="${TASKS}${TASKS:+
+}$PROJECT_LIST"
         fi
     fi
 done
@@ -47,6 +48,8 @@ if [[ -n "${PROJECT_LIST}" ]]; then
 fi
 
 if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
+    let TASK_CNT=$(echo "$TASKS" | sort -u | sed -n '$ =')
+
     echo "--"
     if [ $PROJECT_CNT -gt 0 ]; then
         echo "TODO: $TASK_CNT task(s) in $PROJECT_CNT projects."
