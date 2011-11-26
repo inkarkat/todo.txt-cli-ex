@@ -1,5 +1,6 @@
 #!/bin/bash
 if [ $TODOTXT_PLAIN -eq 0 ]; then
+export COLOR_DUE_FUTURE='(FUTURE)'
 export COLOR_DUE_TODAY='(TODAY)'
 export COLOR_DUE_1DAY='(1DAY)'
 export COLOR_DUE_2DAY='(2DAY)'
@@ -13,6 +14,7 @@ export COLOR_DUE_3MONTH='(3MONTH)'
 export COLOR_DUE_1YEAR='(1YEAR)'
 export COLOR_DUE_2YEAR='(2YEAR)'
 export COLOR_DUE_3YEAR='(3YEAR)'
+export COLOR_DUE_OLDEST='(OLDEST)'
 awk --re-interval -v date=$1 '
 function highlight(colorVar,      color) {
     color = ENVIRON[colorVar]
@@ -34,17 +36,33 @@ function getLineColor(      hl) {
         return highlight("DEFAULT")
     }
 }
-function getSpanClass(daySpan, what) {
+function getSpanClass(daySpan, what,      class) {
+    # We do not want the fallback to older span classes for future due dates, so
+    # they are handled specially. 
+    if (daySpan < 0) {
+        class = "COLOR_" what "_FUTURE"
+        return (ENVIRON[class] == "" ? "" : class)
+    }
+
+    # Find the bucket where the span falls into... 
     for (i = 1; i <= spanNum; i++) {
         if (daySpan < spanNumbers[i])
             break
     }
 
-    return "COLOR_" what "_" spanNames[i - 1]
+    # ...then find the next bucket for which an actual color definition actually
+    # exists, looking into progressively larger spans of time. (I.e. if there is
+    # no special highlighting for "due in 3 days", we use the highlighting for
+    # "due in 1 week" instead.) 
+    for (j = i; j <= spanNum + 1; j++) {
+        class = "COLOR_" what "_" spanNames[j]
+        if (ENVIRON[class] != "")
+            return class
+    }
 }
 BEGIN {
-                split("    0    1    2    3     7    14    21     30     60     91   365   730  1095", spanNumbers)
-    spanNum =   split("TODAY 1DAY 2DAY 3DAY 1WEEK 2WEEK 3WEEK 1MONTH 2MONTH 3MONTH 1YEAR 2YEAR 3YEAR", spanNames)
+    spanNum =   split("         1    2    3     7    14    21     30     60     91   365   730  1095   1461", spanNumbers)
+                split("TODAY 1DAY 2DAY 3DAY 1WEEK 2WEEK 3WEEK 1MONTH 2MONTH 3MONTH 1YEAR 2YEAR 3YEAR OLDEST", spanNames)
 
     if (date == "") {
         threshold = mktime(strftime("%Y %m %d 00 00 00", systime()))
@@ -71,7 +89,7 @@ BEGIN {
         $0 = highlight(dueClass) $0 highlightend(dueClass, highlight("DEFAULT"))
     } else {
         # The line is already colored, only highlight the due date itself. 
-        $0 = gensub(/ t:([0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(dueClass) "t:\\1" highlightend(dueClass, lineColor), "")
+        $0 = gensub(/ (t:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(dueClass) "\\1" highlightend(dueClass, lineColor), "")
     }
 }
 { print }
