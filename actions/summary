@@ -30,5 +30,13 @@ activeNum=$("$TODO_FULL_SH" command ls "$@" | wc -l)    # All tasks not done, fu
 
 futureNum=$((listNum - activeNum - waitNum - doneNum))  # All tasks that will only come due in the future. 
 
+waitReasons=
+if [ $waitNum -gt 0 ]; then
+    waitReasons=$("$TODO_FULL_SH" listreasons "$@" | sed -n -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /gp')
+fi
+
 echo "TODO: ${listNum} tasks, ${prioNum} prioritized, ${dueNum} due"
 echo "TODO: ${activeNum} available, ${waitNum} waiting, ${futureNum} future, ${doneNum} done"
+if [ "$waitReasons" ]; then
+    echo "TODO: waiting for $waitReasons"
+fi
