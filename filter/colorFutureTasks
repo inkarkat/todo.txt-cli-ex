@@ -1,0 +1,100 @@
+#!/bin/bash
+if [ $TODOTXT_PLAIN -eq 0 ]; then
+export COLOR_DUE_TODAY='(TODAY)'
+export COLOR_DUE_1DAY='(1DAY)'
+export COLOR_DUE_2DAY='(2DAY)'
+export COLOR_DUE_3DAY='(3DAY)'
+export COLOR_DUE_1WEEK='(1WEEK)'
+export COLOR_DUE_2WEEK='(2WEEK)'
+export COLOR_DUE_3WEEK='(3WEEK)'
+export COLOR_DUE_1MONTH='(1MONTH)'
+export COLOR_DUE_2MONTH='(2MONTH)'
+export COLOR_DUE_3MONTH='(3MONTH)'
+export COLOR_DUE_1YEAR='(1YEAR)'
+export COLOR_DUE_2YEAR='(2YEAR)'
+export COLOR_DUE_3YEAR='(3YEAR)'
+awk --re-interval -v date=$1 '
+function highlight(colorVar,      color) {
+    color = ENVIRON[colorVar]
+    gsub(/\\+033/, "\033", color)
+    return color
+}
+function highlightend(colorVar, defaultColor,      color) {
+    color = highlight(colorVar "_END")
+    if (color == "") {
+        return defaultColor
+    } else {
+        return color
+    }
+}
+function getLineColor(      hl) {
+    if (match($0, /[0-9]+ /) > 1) {
+        return substr($0, 1, RSTART - 1)
+    } else {
+        return highlight("DEFAULT")
+    }
+}
+function getSpanClass(daySpan) {
+    if (daySpan <= 0) return "TODAY"
+    else if (daySpan < 2) return "1DAY"
+    else if (daySpan < 3) return "2DAY"
+    else if (daySpan < 7) return "3DAY"
+    else if (daySpan < 14) return "1WEEK"
+    else if (daySpan < 21) return "2WEEK"
+    else if (daySpan < 30) return "3WEEK"
+    else if (daySpan < 60) return "1MONTH"
+    else if (daySpan < 91) return "2MONTH"
+    else if (daySpan < 365) return "3MONTH"
+    else if (daySpan < 730) return "1YEAR"
+    else if (daySpan < 1095) return "2YEAR"
+    else return "3YEAR"
+}
+BEGIN {
+    if (date == "") {
+        threshold = mktime(strftime("%Y %m %d 00 00 00", systime()))
+    } else {
+        threshold = mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
+    }
+}
+{
+    lineColor = getLineColor()
+}
+/ t:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
+    date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2}).*$/, "\\1 \\2 \\3 00 00 00", ""))
+    if (date > threshold) {
+        # Suppress tasks that are scheduled in the future. 
+        next
+    }
+
+    # Highlight scheduled tasks, depending on how long they are due now. 
+    daySpan = int((threshold - date) / 86400)
+    dueColor = "COLOR_DUE_" getSpanClass(daySpan)
+    if (lineColor == highlight("DEFAULT")) {
+        # No existing line color, apply to entire line. 
+        lineColor = dueColor
+        $0 = highlight(dueColor) $0 highlightend(dueColor, highlight("DEFAULT"))
+    } else {
+        # The line is already colored, only highlight the due date itself. 
+        $0 = gensub(/ (t:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(dueColor) "\\1" highlightend(dueColor, lineColor), "")
+    }
+}
+{ print }
+'
+else
+awk --re-interval -v date=$1 '
+BEGIN {
+    if (date == "") {
+        threshold = mktime(strftime("%Y %m %d 00 00 00", systime()))
+    } else {
+        threshold = mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
+    }
+}
+/ t:[0-9]{4}-[0-9]{2}-[0-9]{2}( |$)/ {
+    date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2})( .*)?$/, "\\1 \\2 \\3 00 00 00", ""))
+    if (date > threshold) {
+        next
+    }
+}
+{ print }
+'
+fi
