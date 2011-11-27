@@ -13,6 +13,14 @@ function getThreshold(date) {
 BEGIN {
     threshold = getThreshold(date)
 }
+/[0-9]+ x / {
+    netTask = substr($0, length(ENVIRON["COLOR_DONE"]) + 1)
+    if (match(netTask, /^[0-9]+ x /)) {
+        # Do not process done tasks. 
+        print
+        next
+    }
+}
 / t:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2}).*$/, "\\1 \\2 \\3 00 00 00", ""))
     if (date > threshold) {
