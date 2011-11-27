@@ -1,11 +1,10 @@
 #!/bin/bash
-export COLOR_CONTEXT=$PURPLE
-export COLOR_TASKNUM='\\033[47m'
-export COLOR_PROJECT=$LIGHT_BLUE
-# export COLOR_PROJECT='<b>'
-# export COLOR_PROJECT_END='<b>'
-export COLOR_DATE=$CYAN
-if [ "$TODOTXT_PLAIN" -eq "0" ]; then
+export COLOR_CONTEXT=${COLOR_CONTEXT:-$PURPLE}
+export COLOR_TASKNUM=${COLOR_TASKNUM:-$DEFAULT'\\033[47m'}
+export COLOR_PROJECT=${COLOR_PROJECT:-$LIGHT_BLUE}
+export COLOR_DATE=${COLOR_DATE:-$CYAN}
+
+if [ $TODOTXT_PLAIN -eq 0 ]; then
 awk --re-interval '
 function highlight(colorVar,      color) {
     color = ENVIRON[colorVar]
@@ -20,7 +19,7 @@ function highlightend(colorVar, defaultColor,      color) {
         return color
     }
 }
-function linehl(      hl) {
+function getLineColor(      hl) {
     if (match($0, /[0-9]+ /) > 1) {
         return substr($0, 1, RSTART - 1)
     } else {
@@ -28,13 +27,13 @@ function linehl(      hl) {
     }
 }
 {
-    color = linehl()
-    if (! match($0, /[0-9]+ x /)) {
-        $0 = gensub(/([0-9]+) /, highlight("COLOR_TASKNUM") "\\1" highlightend("COLOR_TASKNUM", color) " ", " ")
+    lineColor = getLineColor()
+    if (! match(substr($0, length(lineColor) + 1), /^[0-9]+ x /)) {
+        $0 = gensub(/([0-9]+) /, highlight("COLOR_TASKNUM") "\\1" highlightend("COLOR_TASKNUM", lineColor) " ", " ")
     }
-    $0 = gensub(/ (@[^ ]*)/, " " highlight("COLOR_CONTEXT") "\\1" highlightend("COLOR_CONTEXT", color), "g")
-    $0 = gensub(/ (\+[^ ]*)/, " " highlight("COLOR_PROJECT") "\\1" highlightend("COLOR_PROJECT", color), "g")
-    $0 = gensub(/ ([0-9]{4}-[0-9]{2}-[0-9]{2}) /, " " highlight("COLOR_DATE") "\\1" color " ", "")
+    $0 = gensub(/ (@[^ ]*)/, " " highlight("COLOR_CONTEXT") "\\1" highlightend("COLOR_CONTEXT", lineColor), "g")
+    $0 = gensub(/ (\+[^ ]*)/, " " highlight("COLOR_PROJECT") "\\1" highlightend("COLOR_PROJECT", lineColor), "g")
+    $0 = gensub(/ ([0-9]{4}-[0-9]{2}-[0-9]{2}) /, " " highlight("COLOR_DATE") "\\1" lineColor " ", "")
     print
 }
 '
