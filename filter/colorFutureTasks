@@ -1,28 +1,37 @@
 #!/bin/bash
+export TODOTXT_FILTER_FUTURE_TASKS=${TODOTXT_FILTER_FUTURE_TASKS:-1}
+
 if [ $TODOTXT_PLAIN -eq 0 ]; then
-export COLOR_DUE_FUTURE='(FUTURE)'
-export COLOR_DUE_TODAY='(TODAY)'
-export COLOR_DUE_1DAY='(1DAY)'
-export COLOR_DUE_2DAY='(2DAY)'
-export COLOR_DUE_3DAY='(3DAY)'
-export COLOR_DUE_1WEEK='(1WEEK)'
-export COLOR_DUE_2WEEK='(2WEEK)'
-export COLOR_DUE_3WEEK='(3WEEK)'
-export COLOR_DUE_1MONTH='(1MONTH)'
-export COLOR_DUE_2MONTH='(2MONTH)'
-export COLOR_DUE_3MONTH='(3MONTH)'
-export COLOR_DUE_1YEAR='(1YEAR)'
-export COLOR_DUE_2YEAR='(2YEAR)'
-export COLOR_DUE_3YEAR='(3YEAR)'
-export COLOR_DUE_OLDEST='(OLDEST)'
+    export COLOR_DUE_FUTURE='(FUTURE)'
+    export COLOR_DUE_TODAY='(TODAY)'
+    export COLOR_DUE_1DAY='(1DAY)'
+    export COLOR_DUE_2DAY='(2DAY)'
+    export COLOR_DUE_3DAY='(3DAY)'
+    export COLOR_DUE_1WEEK='(1WEEK)'
+    export COLOR_DUE_2WEEK='(2WEEK)'
+    export COLOR_DUE_3WEEK='(3WEEK)'
+    export COLOR_DUE_1MONTH='(1MONTH)'
+    export COLOR_DUE_2MONTH='(2MONTH)'
+    export COLOR_DUE_3MONTH='(3MONTH)'
+    export COLOR_DUE_1YEAR='(1YEAR)'
+    export COLOR_DUE_2YEAR='(2YEAR)'
+    export COLOR_DUE_3YEAR='(3YEAR)'
+    export COLOR_DUE_OLDEST='(OLDEST)'
 
-export COLOR_LATEST_FUTURE='!OVERDUE!'
-export COLOR_LATEST_TODAY='!TODAY!'
-export COLOR_LATEST_1WEEK='!1WEEK!'
-export COLOR_LATEST_1MONTH='!1MONTH!'
-export COLOR_LATEST_OLDEST='!OLDEST!'
+    export COLOR_LATEST_FUTURE='!OVERDUE!'
+    export COLOR_LATEST_TODAY='!TODAY!'
+    export COLOR_LATEST_1WEEK='!1WEEK!'
+    export COLOR_LATEST_1MONTH='!1MONTH!'
+    export COLOR_LATEST_OLDEST='!OLDEST!'
 
-awk --re-interval -v date=$1 '
+    awk --re-interval -v date=$1 '
+function getThreshold(date) {
+    if (date == "") {
+        return mktime(strftime("%Y %m %d 00 00 00", systime()))
+    } else {
+        return mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
+    }
+}
 function highlight(colorVar,      color) {
     color = ENVIRON[colorVar]
     gsub(/\\+033/, "\033", color)
@@ -71,11 +80,7 @@ BEGIN {
     spanNum =   split("         1    2    3     7    14    21     30     60     91   365   730  1095   1461", spanNumbers)
                 split("TODAY 1DAY 2DAY 3DAY 1WEEK 2WEEK 3WEEK 1MONTH 2MONTH 3MONTH 1YEAR 2YEAR 3YEAR OLDEST", spanNames)
 
-    if (date == "") {
-        threshold = mktime(strftime("%Y %m %d 00 00 00", systime()))
-    } else {
-        threshold = mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
-    }
+    threshold = getThreshold(date)
 }
 # Existing line highlightings (i.e. prioritized or done tasks) have precedence
 # over any time-based rules. 
@@ -102,7 +107,7 @@ BEGIN {
 # due. 
 / t:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2}).*$/, "\\1 \\2 \\3 00 00 00", ""))
-    if (date > threshold) {
+    if (date > threshold && ENVIRON["TODOTXT_FILTER_FUTURE_TASKS"] != 0 ) {
         # Suppress tasks that are scheduled in the future. 
         next
     }
@@ -121,21 +126,27 @@ BEGIN {
 }
 { print }
 '
-else
-awk --re-interval -v date=$1 '
-BEGIN {
+elif [ $TODOTXT_FILTER_FUTURE_TASKS -ne 0 ]; then
+    awk --re-interval -v date=$1 '
+function getThreshold(date) {
     if (date == "") {
-        threshold = mktime(strftime("%Y %m %d 00 00 00", systime()))
+        return mktime(strftime("%Y %m %d 00 00 00", systime()))
     } else {
-        threshold = mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
+        return mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
     }
 }
-/ t:[0-9]{4}-[0-9]{2}-[0-9]{2}( |$)/ {
-    date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2})( .*)?$/, "\\1 \\2 \\3 00 00 00", ""))
+BEGIN {
+    threshold = getThreshold(date)
+}
+/ t:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
+    date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2}).*$/, "\\1 \\2 \\3 00 00 00", ""))
     if (date > threshold) {
+        # Suppress tasks that are scheduled in the future. 
         next
     }
 }
 { print }
 '
+else
+    cat
 fi
