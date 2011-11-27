@@ -13,6 +13,9 @@ if [ "$action" = "usage" ]; then
     exit
 fi
 
+# Configuration to only summarize many unassociated tasks. 
+: TODOTXT_PROJECTVIEW_UNASSOCIATED_THRESHOLD=${TODOTXT_PROJECTVIEW_UNASSOCIATED_THRESHOLD:=10}
+
 original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 TODOTXT_VERBOSE=0
 
@@ -42,10 +45,14 @@ for project in $projects; do
 done
 
 # Show tasks not associated to a project. 
+unassociatedCnt=0
 projectList=$(_list "$TODO_FILE" "-[[:space:]][+][[:graph:]]" "$@")
 if [ "${projectList}" ]; then
-    echo "--- Not in projects ---"
-    echo "${projectList}"
+    unassociatedCnt=$(echo "$projectList" | sed -n '$ =')
+    if [ $unassociatedCnt -le $TODOTXT_PROJECTVIEW_UNASSOCIATED_THRESHOLD ]; then
+        echo "--- Not in projects ---"
+        echo "${projectList}"
+    fi
 fi
 
 if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
@@ -56,5 +63,9 @@ if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
         echo "TODO: $taskCnt task(s) in $projectCnt projects."
     else
         echo "TODO: No projects found."
+    fi
+
+    if [ $unassociatedCnt -gt $TODOTXT_PROJECTVIEW_UNASSOCIATED_THRESHOLD ]; then
+        echo "TODO: $unassociatedCnt task(s) not in projects."
     fi
 fi
