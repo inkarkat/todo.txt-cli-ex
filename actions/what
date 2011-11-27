@@ -18,9 +18,6 @@ shift
 # due tasks. 
 export TODOTXT_DISABLE_FILTER=0
 
-# Also ensure that the correct filter is set. 
-export TODOTXT_FINAL_FILTER="$HOME/.todo/futureTasks"
-
 # Consider only tasks that are not yet done, contain a priority or the "t:"
 # schedule marker. The tasks are already numbered when the filter is applied, so
 # there definitely is a space in front of the marker. 
