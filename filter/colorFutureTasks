@@ -15,6 +15,13 @@ export COLOR_DUE_1YEAR='(1YEAR)'
 export COLOR_DUE_2YEAR='(2YEAR)'
 export COLOR_DUE_3YEAR='(3YEAR)'
 export COLOR_DUE_OLDEST='(OLDEST)'
+
+export COLOR_LATEST_FUTURE='!OVERDUE!'
+export COLOR_LATEST_TODAY='!TODAY!'
+export COLOR_LATEST_1WEEK='!1WEEK!'
+export COLOR_LATEST_1MONTH='!1MONTH!'
+export COLOR_LATEST_OLDEST='!OLDEST!'
+
 awk --re-interval -v date=$1 '
 function highlight(colorVar,      color) {
     color = ENVIRON[colorVar]
@@ -70,9 +77,29 @@ BEGIN {
         threshold = mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
     }
 }
+# Existing line highlightings (i.e. prioritized or done tasks) have precedence
+# over any time-based rules. 
 {
     lineColor = getLineColor()
 }
+# Highlight tasks with a latest date. This has precedence over a due date. 
+/ T:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
+    date = mktime(gensub(/^.* T:([0-9]{4})-([0-9]{2})-([0-9]{2}).*$/, "\\1 \\2 \\3 00 00 00", ""))
+
+    # Highlight tasks with a latest date, depending on how long until the date. 
+    daySpan = int((date - threshold) / 86400)
+    latestClass = getSpanClass(daySpan, "LATEST")
+    if (lineColor == highlight("DEFAULT")) {
+        # No existing line color, apply to entire line. 
+        lineColor = highlight(latestClass)
+        $0 = highlight(latestClass) $0 highlightend(latestClass, highlight("DEFAULT"))
+    } else {
+        # The line is already colored, only highlight the latest date itself. 
+        $0 = gensub(/ (T:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(latestClass) "\\1" highlightend(latestClass, lineColor), "")
+    }
+}
+# Filter out tasks due in the future, highlight the time since tasks have become
+# due. 
 / t:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2}).*$/, "\\1 \\2 \\3 00 00 00", ""))
     if (date > threshold) {
