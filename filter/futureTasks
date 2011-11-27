@@ -1,17 +1,26 @@
 #!/bin/bash
-awk --re-interval -v date=$1 '
-BEGIN {
+export TODOTXT_FILTER_FUTURE_TASKS=${TODOTXT_FILTER_FUTURE_TASKS:-1}
+
+if [ $TODOTXT_FILTER_FUTURE_TASKS -ne 0 ]; then
+    awk --re-interval -v date=$1 '
+function getThreshold(date) {
     if (date == "") {
-        threshold = mktime(strftime("%Y %m %d 00 00 00", systime()))
+        return mktime(strftime("%Y %m %d 00 00 00", systime()))
     } else {
-        threshold = mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
+        return mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
     }
 }
-/ t:[0-9]{4}-[0-9]{2}-[0-9]{2}( |$)/ {
-    date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2})( .*)?$/, "\\1 \\2 \\3 00 00 00", ""))
+BEGIN {
+    threshold = getThreshold(date)
+}
+/ t:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
+    date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2}).*$/, "\\1 \\2 \\3 00 00 00", ""))
     if (date > threshold) {
         next
     }
 }
 { print }
 '
+else
+    cat
+fi
