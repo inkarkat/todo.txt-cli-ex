@@ -2,20 +2,31 @@
 export TODOTXT_FILTER_FUTURE_TASKS=${TODOTXT_FILTER_FUTURE_TASKS:-1}
 
 if [ $TODOTXT_PLAIN -eq 0 ]; then
-    export COLOR_DUE_FUTURE=${COLOR_DUE_FUTURE:-$DEFAULT'\\033[48;5;195m'}
-    export COLOR_DUE_TODAY=${COLOR_DUE_TODAY:-$DEFAULT'\\033[48;5;190m'}
-    export COLOR_DUE_1DAY=${COLOR_DUE_1DAY:-$DEFAULT'\\033[48;5;193m'}
-    export COLOR_DUE_2DAY=${COLOR_DUE_2DAY:-$DEFAULT'\\033[48;5;230m'}
-    export COLOR_DUE_3DAY=${COLOR_DUE_3DAY:-$DEFAULT'\\033[48;5;229m'}
-    export COLOR_DUE_1WEEK=${COLOR_DUE_1WEEK:-$DEFAULT'\\033[48;5;186m'}
-    export COLOR_DUE_2WEEK=${COLOR_DUE_2WEEK:-$DEFAULT'\\033[48;5;178m'}
-    export COLOR_DUE_OLDEST=${COLOR_DUE_OLDEST:-$DEFAULT'\\033[48;5;138m'}
+    if [ ${TERM_COLORS:-0} -ge 256 ]; then
+        export COLOR_DUE_FUTURE=${COLOR_DUE_FUTURE-$DEFAULT'\\033[48;5;195m'}
+        export COLOR_DUE_TODAY=${COLOR_DUE_TODAY-$DEFAULT'\\033[48;5;190m'}
+        export COLOR_DUE_1DAY=${COLOR_DUE_1DAY-$DEFAULT'\\033[48;5;193m'}
+        export COLOR_DUE_2DAY=${COLOR_DUE_2DAY-$DEFAULT'\\033[48;5;230m'}
+        export COLOR_DUE_3DAY=${COLOR_DUE_3DAY-$DEFAULT'\\033[48;5;229m'}
+        export COLOR_DUE_1WEEK=${COLOR_DUE_1WEEK-$DEFAULT'\\033[48;5;186m'}
+        export COLOR_DUE_2WEEK=${COLOR_DUE_2WEEK-$DEFAULT'\\033[48;5;178m'}
+        export COLOR_DUE_OLDEST=${COLOR_DUE_OLDEST-$DEFAULT'\\033[48;5;138m'}
 
-    export COLOR_LATEST_FUTURE=${COLOR_LATEST_FUTURE:-$DEFAULT'\\033[48;5;196m'}
-    export COLOR_LATEST_TODAY=${COLOR_LATEST_TODAY:-$DEFAULT'\\033[48;5;202m'}
-    export COLOR_LATEST_1DAY=${COLOR_LATEST_1DAY:-$DEFAULT'\\033[48;5;208m'}
-    export COLOR_LATEST_2DAY=${COLOR_LATEST_2DAY:-$DEFAULT'\\033[48;5;214m'}
-    export COLOR_LATEST_3DAY=${COLOR_LATEST_3DAY:-$DEFAULT'\\033[48;5;220m'}
+        export COLOR_LATEST_FUTURE=${COLOR_LATEST_FUTURE-$DEFAULT'\\033[48;5;196m'}
+        export COLOR_LATEST_TODAY=${COLOR_LATEST_TODAY-$DEFAULT'\\033[48;5;202m'}
+        export COLOR_LATEST_1DAY=${COLOR_LATEST_1DAY-$DEFAULT'\\033[48;5;208m'}
+        export COLOR_LATEST_2DAY=${COLOR_LATEST_2DAY-$DEFAULT'\\033[48;5;214m'}
+        export COLOR_LATEST_3DAY=${COLOR_LATEST_3DAY-$DEFAULT'\\033[48;5;220m'}
+    else
+        export COLOR_DUE_TODAY=${COLOR_DUE_TODAY-$DEFAULT'\\033[42m'}
+        export COLOR_DUE_3DAY=${COLOR_DUE_3DAY-$DEFAULT'\\033[43m'}
+        export COLOR_DUE_2WEEK=${COLOR_DUE_2WEEK-$DEFAULT'\\033[47m'}
+        export COLOR_DUE_OLDEST=${COLOR_DUE_OLDEST-$DEFAULT'\\033[40m'}
+
+        export COLOR_LATEST_FUTURE=${COLOR_LATEST_FUTURE-$DEFAULT'\\033[01;37;41m'}
+        export COLOR_LATEST_TODAY=${COLOR_LATEST_TODAY-$DEFAULT'\\033[37;41m'}
+        export COLOR_LATEST_3DAY=${COLOR_LATEST_3DAY-$DEFAULT'\\033[43m'}
+    fi
 
     awk --re-interval -v date=$1 '
 function getThreshold(date) {
@@ -79,6 +90,12 @@ BEGIN {
 # over any time-based rules. 
 {
     lineColor = getLineColor()
+    netTask = substr($0, length(lineColor) + 1)
+    if (match(netTask, /^[0-9]+ x /)) {
+        # Do not process done tasks. 
+        print
+        next
+    }
 }
 # Highlight tasks with a latest date. This has precedence over a due date. 
 / T:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
@@ -130,6 +147,11 @@ function getThreshold(date) {
 }
 BEGIN {
     threshold = getThreshold(date)
+}
+/^[0-9]+ x / {
+    # Do not process done tasks. 
+    print
+    next
 }
 / t:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2}).*$/, "\\1 \\2 \\3 00 00 00", ""))
