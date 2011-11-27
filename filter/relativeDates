@@ -22,11 +22,13 @@ BEGIN {
 }
 {
     for (i = 1; i <= NF; i++) {
-        dateString = gensub(/^([[:alpha:]]:)?([0-9]{4})-([0-9]{2})-([0-9]{2}).*$/, "\\2 \\3 \\4 00 00 00", "", $i)
+        # Note: The date may already have been highlighted, so we can only make
+        # very few assumptions about the delimiters. 
+        dateString = gensub(/^(.*[^[:alpha:]])?([[:alpha:]]:)?([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\3 \\4 \\5 00 00 00", "", $i)
         if (dateString == $i) continue
         newDate = relativeDate(mktime(dateString))
         if (newDate != "")
-            $i = gensub(/^([[:alpha:]]:)?([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1" newDate, "", $i)
+            $i = gensub(/([[:alpha:]]:)?([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1" newDate, "", $i)
     }
     print
 }
