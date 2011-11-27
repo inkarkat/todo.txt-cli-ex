@@ -4,13 +4,13 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "    $(basename $0) [TERM...]"
-  echo "      Displays the last few tasks sorted by priority with line numbers."
-  echo ""
-  exit
+    echo "    $(basename $0) [TERM...]"
+    echo "      Displays the last few tasks sorted by priority with line numbers."
+    echo ""
+    exit
 }
 
 TODOTXT_SORT_COMMAND="tail -n 10 | $TODOTXT_SORT_COMMAND"
-TODOTXT_FINAL_FILTER='cat'
+TODOTXT_DISABLE_FILTER=1
 
 _list "$TODO_FILE" "$@"
