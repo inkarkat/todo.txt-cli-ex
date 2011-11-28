@@ -78,24 +78,11 @@ if [ $newLinesNum -ge 1 ]; then
         ANSWER="y"
     fi
     if [ "$ANSWER" = "y" ]; then
-        TMPCONF=$TODOTXT_CFG_FILE
-        if [[ $TODOTXT_DATE_ON_ADD = 1 ]]; then
-            # The additional lines should be added as-is. 
-            # We have to amend the config in order to override a "date on add"
-            # setting located there. 
-            TMPCONF=$(mktemp --tmpdir "todo-$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "/tmp/todo-$(basename -- "$0")-$$")
-            cat > "$TMPCONF" <<-EOF
-                source "$TODOTXT_CFG_FILE"
-                export TODOTXT_DATE_ON_ADD=0
-EOF
-        fi
-
         IFS=$'\n'
         sed -e '1d' -e '/^[ \t]*$/d' "$TMPEDIT" | while IFS=$'\n' read newtask
         do
-            "$TODO_FULL_SH" -d "$TMPCONF" command add "$newtask"
+            # -T: The additional lines should be added as-is, without TODOTXT_DATE_ON_ADD. 
+            "$TODO_FULL_SH" -T command add "$newtask"
         done
-
-        rm "$TMPCONF"
     fi
 fi
