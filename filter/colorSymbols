@@ -1,8 +1,8 @@
 #!/bin/bash
-export COLOR_CONTEXT=${COLOR_CONTEXT:-$PURPLE}
-export COLOR_TASKNUM=${COLOR_TASKNUM:-$DEFAULT'\\033[47m'}
-export COLOR_PROJECT=${COLOR_PROJECT:-$LIGHT_BLUE}
-export COLOR_DATE=${COLOR_DATE:-$CYAN}
+export COLOR_CONTEXT=${COLOR_CONTEXT-$'\\033[35m'}
+export COLOR_TASKNUM=${COLOR_TASKNUM-$DEFAULT'\\033[47m'}
+export COLOR_PROJECT=${COLOR_PROJECT-$'\\033[1;34m'}
+export COLOR_DATE=${COLOR_DATE-$CYAN}
 
 if [ $TODOTXT_PLAIN -eq 0 ]; then
 awk --re-interval '
@@ -28,8 +28,25 @@ function getLineColor(      hl) {
 }
 {
     lineColor = getLineColor()
-    if (! match(substr($0, length(lineColor) + 1), /^[0-9]+ x /)) {
+    netTask = substr($0, length(lineColor) + 1)
+    if (! match(netTask, /^[0-9]+ x /)) {
+        # Lazy-initialize task number width. 
+        if (taskNumWidth <= 0) {
+            match(netTask, /[0-9]+ /)
+            taskNumWidth = RLENGTH - 1
+        }
+
+        # Highlight current task number. 
         $0 = gensub(/([0-9]+) /, highlight("COLOR_TASKNUM") "\\1" highlightend("COLOR_TASKNUM", lineColor) " ", " ")
+
+        # Highlight any w:42 references to other tasks, and normalize number
+        # width to e.g. w:042. 
+        for (i = 1; i <= NF; i++) {
+            taskNum = gensub(/^w:([0-9]+)/, "\\1", "", $i)
+            if (taskNum == $i) continue
+            newTaskNum = sprintf("%0" taskNumWidth "d", taskNum)
+            $i = gensub(/^(w:)([0-9]+)/, highlight("COLOR_TASKNUM") "\\1" newTaskNum highlightend("COLOR_TASKNUM", lineColor), " ", $i)
+        }
     }
     $0 = gensub(/ (@[^ ]*)/, " " highlight("COLOR_CONTEXT") "\\1" highlightend("COLOR_CONTEXT", lineColor), "g")
     $0 = gensub(/ (\+[^ ]*)/, " " highlight("COLOR_PROJECT") "\\1" highlightend("COLOR_PROJECT", lineColor), "g")
