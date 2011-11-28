@@ -43,11 +43,7 @@ function highlight(colorVar,      color) {
 }
 function highlightend(colorVar, defaultColor,      color) {
     color = highlight(colorVar "_END")
-    if (color == "") {
-        return defaultColor
-    } else {
-        return color
-    }
+    return (color == "" ? defaultColor : color)
 }
 function getLineColor(      hl) {
     if (match($0, /[0-9]+ /) > 1) {
