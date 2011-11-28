@@ -1,8 +1,9 @@
 #!/bin/bash
-export COLOR_CONTEXT=${COLOR_CONTEXT-$'\\033[35m'}
+export COLOR_CONTEXT=${COLOR_CONTEXT-'\\033[35m'}
 export COLOR_TASKNUM=${COLOR_TASKNUM-$DEFAULT'\\033[47m'}
-export COLOR_PROJECT=${COLOR_PROJECT-$'\\033[1;34m'}
+export COLOR_PROJECT=${COLOR_PROJECT-'\\033[1;34m'}
 export COLOR_DATE=${COLOR_DATE-$CYAN}
+export COLOR_ALTERNATING=${COLOR_ALTERNATING-$DEFAULT'\\033[47m'}
 
 if [ $TODOTXT_PLAIN -eq 0 ]; then
 awk --re-interval '
@@ -28,6 +29,13 @@ function getLineColor(      hl) {
 }
 {
     lineColor = getLineColor()
+
+    # Highlight alternating lines. 
+    if (NR % 2 == 0 && lineColor == highlight("DEFAULT")) {
+        lineColor = highlight("COLOR_ALTERNATING")
+        $0 = highlight("COLOR_ALTERNATING") $0 highlightend("COLOR_ALTERNATING", lineColor)
+    }
+
     netTask = substr($0, length(lineColor) + 1)
     if (! match(netTask, /^[0-9]+ x /)) {
         # Lazy-initialize task number width. 
@@ -51,6 +59,7 @@ function getLineColor(      hl) {
     $0 = gensub(/ (@[^ ]*)/, " " highlight("COLOR_CONTEXT") "\\1" highlightend("COLOR_CONTEXT", lineColor), "g")
     $0 = gensub(/ (\+[^ ]*)/, " " highlight("COLOR_PROJECT") "\\1" highlightend("COLOR_PROJECT", lineColor), "g")
     $0 = gensub(/ ([0-9]{4}-[0-9]{2}-[0-9]{2}) /, " " highlight("COLOR_DATE") "\\1" lineColor " ", "")
+
     print
 }
 '
