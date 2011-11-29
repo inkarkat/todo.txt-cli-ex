@@ -97,8 +97,8 @@ BEGIN {
     }
 }
 # Highlight tasks with a latest date. This has precedence over a due date. 
-/ T:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
-    date = mktime(gensub(/^.* T:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", ""))
+/ u:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
+    date = mktime(gensub(/^.* u:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", ""))
 
     # Highlight tasks with a latest date, depending on how long until the date. 
     daySpan = int((date - threshold) / 86400)
@@ -110,7 +110,7 @@ BEGIN {
             $0 = highlight(latestClass) $0 highlightend(latestClass, highlight("DEFAULT"))
         } else {
             # The line is already colored, only highlight the latest date itself. 
-            $0 = gensub(/ (T:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(latestClass) "\\1" highlightend(latestClass, lineColor), "")
+            $0 = gensub(/ (u:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(latestClass) "\\1" highlightend(latestClass, lineColor), "")
         }
     }
 }
