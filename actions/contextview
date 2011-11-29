@@ -32,9 +32,9 @@ for context in $contexts; do
     # Use core _list function, does numbering and coloring for us. 
     contextList=$(_list "$TODO_FILE" "$context\( \|$\)" "$@")
     if [ "$contextList" ]; then # Even though we're operating only on context tasks containing TERM, a task filter may still filter away all tasks for a context. 
+        [ $contextCnt -gt 0 ] && echo ""
         echo "--- ${context} ---"
         echo "${contextList}"
-        echo ""
 
         if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
             let contextCnt+=1
@@ -50,6 +50,7 @@ contextList=$(_list "$TODO_FILE" "-[[:space:]]@[[:graph:]]" "$@")
 if [ "$contextList" ]; then
     unassociatedCnt=$(echo "$contextList" | sed -n '$ =')
     if [ $unassociatedCnt -le $TODOTXT_CONTEXTVIEW_UNASSOCIATED_THRESHOLD ]; then
+        [ $contextCnt -gt 0 ] && echo ""
         echo "--- Without context ---"
         echo "${contextList}"
     fi
