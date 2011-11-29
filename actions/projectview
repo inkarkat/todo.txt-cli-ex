@@ -32,9 +32,9 @@ for project in $projects; do
     # Use core _list function, does numbering and coloring for us. 
     projectList=$(_list "$TODO_FILE" "$project\( \|$\)" "$@")
     if [ "$projectList" ]; then # Even though we're operating only on project tasks containing TERM, a task filter may still filter away all tasks for a project. 
+        [ $projectCnt -gt 0 ] && echo ""
         echo "--- ${project#+} ---"
         echo "${projectList}"
-        echo ""
 
         if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
             let projectCnt+=1
@@ -50,6 +50,7 @@ projectList=$(_list "$TODO_FILE" "-[[:space:]][+][[:graph:]]" "$@")
 if [ "${projectList}" ]; then
     unassociatedCnt=$(echo "$projectList" | sed -n '$ =')
     if [ $unassociatedCnt -le $TODOTXT_PROJECTVIEW_UNASSOCIATED_THRESHOLD ]; then
+        [ $projectCnt -gt 0 ] && echo ""
         echo "--- Not in projects ---"
         echo "${projectList}"
     fi
