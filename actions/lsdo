@@ -5,7 +5,7 @@ shift
 
 [ "$action" = "usage" ] && {
   echo "    $(basename $0) [TERM...]"
-  echo "      Displays all done tasks."
+  echo "      Displays all done, but not yet archived tasks from todo.txt."
   echo "      If TERM specified, lists only tasks that contain TERM."
   echo ""
   exit
