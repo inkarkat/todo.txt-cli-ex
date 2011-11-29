@@ -33,7 +33,13 @@ if [ $# -eq 0 ]; then
     # This is a complete, regular archive. 
     # Use this occasion to make a backup. 
     if type -P writebackup.sh >/dev/null; then
-        writebackup.sh "$TODO_FILE"
+        readonly TODO_BACKUPDIR="${TODO_DIR}.backup/"
+        if [ -d "$TODO_BACKUPDIR" ]; then
+            cp -f "$TODO_FILE" "${TODO_BACKUPDIR}/todo.txt"
+            writebackup.sh "${TODO_BACKUPDIR}/todo.txt"
+        else
+            writebackup.sh "$TODO_FILE"
+        fi
     fi
 fi
 
