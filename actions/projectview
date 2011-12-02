@@ -30,7 +30,8 @@ readonly projects=$("$TODO_FULL_SH" command listproj "$@")
 export HIDE_PROJECTS_SUBSTITUTION='[[:space:]][+][[:graph:]]\{1,\}' # Omitting all projects from the list. 
 for project in $projects; do 
     # Use core _list function, does numbering and coloring for us. 
-    projectList=$(_list "$TODO_FILE" "$project\( \|$\)" "$@")
+    post_filter_command="grep '$project\\( \\|$\\)'"
+    projectList=$(_list "$TODO_FILE" "$@")
     if [ "$projectList" ]; then # Even though we're operating only on project tasks containing TERM, a task filter may still filter away all tasks for a project. 
         [ $projectCnt -gt 0 ] && echo ""
         echo "--- ${project#+} ---"
