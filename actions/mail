@@ -1,0 +1,102 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [-t] [-e | -m MESSAGE] TERM..."
+    echo "      Sends all tasks that aren't done yet and contain TERM(s),"
+    echo "      putting the tasks into the email body."
+    echo "    $(basename $0) [-t] [-e | -m MESSAGE] [-s] ITEM#"
+    echo "      Sends task ITEM#, using the task for the email subject."
+    echo "      -t just prints what would be sent."
+    echo "      -s puts task ITEM# directly into the subject."
+    echo "      -e edits the email body before sending."
+    echo "      -m uses MESSAGE as the email body."
+    echo "      Recipients are taken from @Person (first letter uppercase, must be found"
+    echo "      in email address book then), @name@host, or if none is found uses"
+    echo "      TODOTXT_MAIL_DEFAULT_RECIPIENTS"
+    echo ""
+    exit
+}
+
+errmsg="usage: $TODO_SH $(basename $0) [-t] [-e | -m MESSAGE] TERM...|ITEM#"
+
+shopt -s extglob
+
+# Consider only tasks that are not yet done. The tasks are already numbered when
+# the filter is applied, so there definitely is a space in front of the marker. 
+post_filter_command="grep -ve '^ *[0-9]\+ x '"
+
+# No highlighting and verbose summary. 
+TODOTXT_VERBOSE=0
+TODOTXT_PLAIN=1
+
+
+taskInSubject=
+isTest=
+isEdit=
+singleTask=
+message=
+noTasksError='No tasks found.'
+while getopts ":s:tem:" opt; do
+    case "$opt" in
+	's') taskInSubject=$OPTARG;;
+	't') isTest='true';;
+	'e') isEdit='true';;
+	'm') message=$OPTARG;;
+    esac
+done
+shift $(( $OPTIND - 1 ))
+
+if [[ "$taskInSubject" = +([0-9]) ]]; then
+    singleTask=$taskInSubject
+    noTasksError="No task $taskInSubject."
+    # Listing of task numbers is unintuitive, because the search pattern is
+    # applied in the middle of alignment, when the numbers have already been
+    # space- (but not zero-) aligned. 
+    set -- "^ *${taskInSubject##*(0)} "
+elif [[ $# -eq 1 && "$1" = +([0-9]) ]]; then
+    singleTask=$1
+    noTasksError="No task $1."
+    # Listing of task numbers is unintuitive, because the search pattern is
+    # applied in the middle of alignment, when the numbers have already been
+    # space- (but not zero-) aligned. 
+    set -- "^ *${1##*(0)} "
+fi
+
+tasks=$(_list "$TODO_FILE" "$@")
+[ "$tasks" ] || die "TODO: $noTasksError"
+
+recipients=$(echo "$tasks" | grep -o '[^ ]*@[^ ]\+' | sed -ne '/^@\([[:upper:]]\|.\+@.\+\)/s/^.//p' | sort -u)
+[ "$recipients" ] || recipients=$TODOTXT_MAIL_DEFAULT_RECIPIENTS
+if [ ! "$recipients" ]; then
+    echo "$tasks"
+    die 'TODO: No recipients found.'
+fi
+
+if [ "$taskInSubject" ]; then
+    subject=$tasks
+    body=
+else
+    if [ "$singleTask" ]; then
+	subject="Task $singleTask"
+    else
+	subject="Tasks $*"
+    fi
+    body=$tasks
+fi
+if [ "$message" ]; then
+    if [ "$body" ]; then
+	body="$message
+$body"
+    else
+	body=$message
+    fi
+fi
+
+if [ "$isTest" ]; then
+    echo "To:      $recipients"
+    echo "Subject: $subject"
+    echo "$body"
+fi
