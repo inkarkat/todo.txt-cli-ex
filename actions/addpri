@@ -18,6 +18,6 @@ fi
 # call back to the main script to add
 if "$TODO_FULL_SH" command add "$@"; then
     # figure out the line of what we just added, and prioritize it
-    line=`sed -n '$ =' "$TODO_FILE"`
+    line=$(sed -n '$ =' "$TODO_FILE")
     "$TODO_FULL_SH" command pri "$line" $pri
 fi
