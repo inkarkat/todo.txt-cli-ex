@@ -1,0 +1,30 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]|all"
+    echo "      Deprioritizes (removes the priority) from the task(s)"
+    echo "      on line ITEM# in todo.txt, or all prioritized tasks."
+    echo ""
+    exit
+}
+
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...]|all"
+[ $# -eq 0 ] && die "$errmsg"
+
+items=
+if [ "$1" = 'all' ]; then
+    items=$(sed -ne '/^(\(.\)) /=' "$TODO_FILE")
+    [ "$items" ] || die "TODO: No prioritized tasks."
+else
+    while [[ "$1" =~ ^[,0-9]+$ ]]
+    do
+	items="$items $1"
+	shift
+    done
+fi
+[ "$items" ] || die "$errmsg"
+
+"$TODO_FULL_SH" command depri $items
