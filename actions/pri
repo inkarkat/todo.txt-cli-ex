@@ -23,7 +23,7 @@ else
 fi
 [ $# -eq 0 ] && die "$errmsg"
 
-for item in `echo $* | tr ',' ' '`; do 
+for item in $(echo $* | tr ',' ' '); do 
     # Call back to the main script to prioritize each task. 
     "$TODO_FULL_SH" command pri $item $pri
 done
