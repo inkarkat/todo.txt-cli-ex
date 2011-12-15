@@ -43,9 +43,10 @@ datePri()
 
     todo=$(sed -e "$item!d" "$TODO_FILE")
     [ -z "$todo" ] && die "TODO: No task $item."
-    # Replace existing date-priorization in-place or append new
-    # date-priorization. 
-    newTodo=$(echo "$todo" | sed -e "s| $marker:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| ${marker}:${date}|" -e t -e "s| *\$| ${marker}:${date}|") || exit 1
+    # Replace existing date-priorization with the same priority in-place or
+    # append new date-priorization. Remove any other (de-)priorizations for the
+    # same date. 
+    newTodo=$(echo "$todo" | sed -e "s| [dA-Z]:$date||" | sed -e "s| $marker:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| ${marker}:${date}|" -e t -e "s| *\$| ${marker}:${date}|") || exit 1
     local -r escapedNewTodo=$(echo "$newTodo" | sed 's/\&/\\\&/g')
     sed -i.bak "$item s|^.*|${escapedNewTodo}|" "$TODO_FILE"
 }
@@ -65,6 +66,7 @@ else
     die "$errmsg"
 fi
 [ $# -eq 0 ] && die "$errmsg"
+newpri=$( printf "%s\n" "$pri" | tr 'a-z' 'A-Z' )
 
 for item in $(echo $items | tr ',' ' '); do 
     whenwhat=
@@ -72,22 +74,26 @@ for item in $(echo $items | tr ',' ' '); do
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
 
     if [ "$beginDate" ]; then
-	newpri=$( printf "%s\n" "$pri" | tr 'a-z' 'A-Z' )
-	whenwhat=" ($newpri) on $beginDate"
+	whenwhat="will be prioritized ($newpri) on $beginDate"
 	datePri "$newpri" "$beginDate"
-    fi
-    if [ "$endDate" ]; then
-	whenwhat="${whenwhat}${whenwhat:+,} until $endDate"
-	datePri "d" "$endDate"
+
+	if [ "$endDate" ]; then
+	    whenwhat="${whenwhat}, until $endDate"
+	    datePri "d" "$endDate"
+	fi
+    else
+	# Call back to the main script to prioritize each task. 
+	if [ "$endDate" ]; then
+	    TODOTXT_VERBOSE=0 "$TODO_FULL_SH" command pri $item $newpri
+	    whenwhat="prioritized ($newpri) until $endDate"
+	    datePri "d" "$endDate"
+	else
+	    "$TODO_FULL_SH" command pri $item $newpri
+	fi
     fi
     
-    if [ ! "$beginDate" -a ! "$endDate" ]; then
-	# Call back to the main script to prioritize each task. 
-	"$TODO_FULL_SH" command pri $item $pri
-    else
-	if [ $TODOTXT_VERBOSE -gt 0 ]; then
-	    echo "$item $newTodo"
-	    echo "TODO: $item prioritized$whenwhat."
-	fi
+    if [ "$whenwhat" -a $TODOTXT_VERBOSE -gt 0 ]; then
+	echo "$item $newTodo"
+	echo "TODO: $item $whenwhat."
     fi
 done
