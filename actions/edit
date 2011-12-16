@@ -31,7 +31,11 @@ fi
 
 
 # Edit single task. 
-
+cleanup()
+{
+    rm "$TMPEDIT" 2>/dev/null
+}
+trap 'cleanup' EXIT
 TMPEDIT=$(mktemp --tmpdir "todo-edit-XXXXXX.txt" 2>/dev/null || echo "${TEMP:-/tmp}/todo-edit-$$.txt")
 EDITME=$(sed -e "$item!d" "$FILE")
 [ -z "$EDITME" ] && die "TODO: No task $item." 
