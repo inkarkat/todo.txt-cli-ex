@@ -4,18 +4,26 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]|all"
+    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]|all [on DATE|-DATE]"
     echo "      Deprioritizes (removes the priority) from the task(s)"
     echo "      on line ITEM# in todo.txt, or all prioritized tasks."
+    echo "      With -DATE, the task will be deprioritized on DATE (via d:DATE)."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...]|all"
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...]|all [on DATE|-DATE]"
 [ $# -eq 0 ] && die "$errmsg"
 
+makeDate()
+{
+    date -d "$1" +%F
+}
+
 items=
+endDate=
 if [ "$1" = 'all' ]; then
+    shift
     items=$(sed -ne '/^(\(.\)) /=' "$TODO_FILE")
     [ "$items" ] || die "TODO: No prioritized tasks."
 else
@@ -25,6 +33,35 @@ else
 	shift
     done
 fi
+
+while [ $# -gt 0 ]
+do
+    case "$1" in
+	on)	endDate=$(makeDate "$2") || exit 1; shift; shift;;
+	-*[^-]) endDate=$(makeDate "${1#-}") || exit 1; shift;;
+	*)	break;;
+    esac
+done
+
 [ "$items" ] || die "$errmsg"
 
-"$TODO_FULL_SH" command depri $items
+if [ "$endDate" ]; then
+    for item in $(echo $items | tr ',' ' '); do 
+	todo=$(sed -e "$item!d" "$TODO_FILE")
+	[ -z "$todo" ] && die "TODO: No task $item."
+
+	# Replace existing date-depriorization with the same deprioritization
+	# in-place or append new date-depriorization. 
+	newTodo=$(echo "$todo" | sed -e "s| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| d:${endDate}|" -e t -e "s| *\$| d:${endDate}|") || exit 1
+
+	escapedNewTodo=$(echo "$newTodo" | sed 's/\&/\\\&/g')
+	sed -i.bak "$item s|^.*|${escapedNewTodo}|" "$TODO_FILE"
+
+	if [ $TODOTXT_VERBOSE -gt 0 ]; then
+	    echo "$item $newTodo"
+	    echo "TODO: $item will be deprioritized on $endDate."
+	fi
+    done
+else
+    "$TODO_FULL_SH" command depri $items
+fi
