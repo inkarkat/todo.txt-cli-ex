@@ -27,7 +27,7 @@ cleanup()
         sed -i.bak -e '/^!DELETED$/d' "$TODO_FILE"
     fi
 }
-trap 'cleanup' 0
+trap 'cleanup' EXIT
 
 items=
 while [[ "$1" =~ ^[,0-9]+$ ]]
