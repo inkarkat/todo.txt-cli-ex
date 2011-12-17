@@ -56,18 +56,18 @@ done
 
 if [ "$endDate" ]; then
     for item in $(echo $items | tr ',' ' '); do 
-	todo=$(sed -e "$item!d" "$TODO_FILE")
-	[ -z "$todo" ] && die "TODO: No task $item."
+	getTodo "$item"
 
 	# Replace existing date-depriorization with the same deprioritization
 	# in-place or append new date-depriorization. 
-	newTodo=$(echo "$todo" | sed -e "s| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| d:${endDate}|" -e t -e "s| *\$| d:${endDate}|") || exit 1
+	newtodo=$(echo "$todo" | sed -e "s| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| d:${endDate}|" -e t -e "s| *\$| d:${endDate}|") || exit 1
 
-	escapedNewTodo=$(echo "$newTodo" | sed 's/\&/\\\&/g')
-	sed -i.bak "$item s|^.*|${escapedNewTodo}|" "$TODO_FILE"
+	input=$newtodo
+	cleaninput "for sed"
+	sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE"
 
 	if [ $TODOTXT_VERBOSE -gt 0 ]; then
-	    echo "$item $newTodo"
+	    echo "$item $newtodo"
 	    echo "TODO: $item will be deprioritized on $endDate."
 	fi
     done
