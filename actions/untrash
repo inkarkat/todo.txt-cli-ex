@@ -24,7 +24,7 @@ cleanup()
     # Finally delete the marked lines. 
     sed -i.bak -e '/^!DELETED$/d' "$TRASH_FILE"
 }
-trap 'cleanup' 0
+trap 'cleanup' EXIT
 
 # Split multiple untrash's, if comma separated change to whitespace separated. 
 # Loop the 'untrash' function for each task. 
