@@ -4,8 +4,8 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [TERM...]"
-    echo "      Displays all prioritized and due tasks."
+    echo "    $(basename $0) [DATE] [TERM...]"
+    echo "      Displays all prioritized and due tasks (based on DATE)."
     echo "      If TERM specified, lists only tasks that contain TERM."
     echo ""
     exit
