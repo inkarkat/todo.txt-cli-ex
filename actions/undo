@@ -4,6 +4,9 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
+    echo "    $(basename $0)"
+    echo "      Un-marks the last done task(s) in todo.txt so that they become"
+    echo "      active again."
     echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
     echo "      Un-marks done task(s) on line ITEM# in todo.txt so that they become"
     echo "      active again."
@@ -12,12 +15,20 @@ shift
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) [ITEM#[, ITEM#, ITEM#, ...]]"
 
-[ $# -eq 0 ] && die "$errmsg"
+if [ $# -eq 0 ]; then
+    [ -r ~/.todo-lastdone ] || die "TODO: No undo information available!"
+    items=$(cat ~/.todo-lastdone)
+    rm ~/.todo-lastdone
+    [ "$items" ] || die "TODO: No undo information available!"
+else
+    items=$(echo $* | tr ',' ' ')
+fi
+
 # Split multiple undo's, if comma seperated change to whitespace separated. 
 # Loop the 'undo' function for each task. 
-for item in `echo $* | tr ',' ' '`; do 
+for item in $items; do 
     [ -z "$item" ] && die "$errmsg"
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
 
