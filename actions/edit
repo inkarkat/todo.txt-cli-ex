@@ -25,11 +25,15 @@ if [[ "$1" = +([0-9]) ]]; then
     item=$1
     shift
 fi
-FILE=$TODO_DIR/${1:-todo}.txt
+if [ "$1" ]; then
+    EDIT_FILE=$TODO_DIR/${1}.txt
+else
+    EDIT_FILE=$TODO_FILE
+fi
 
 if [ ! "$item" ]; then
     # Edit entire file. 
-    exec "$EDITOR" "$FILE"
+    exec "$EDITOR" "$EDIT_FILE"
 fi
 
 
