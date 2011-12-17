@@ -50,22 +50,25 @@ if [ $NEWMODTIME -eq $TMPMODTIME ]; then
     exit 0
 fi
 
-newContent=$(head -n 1 "$TMPEDIT")
-if [ -z "$newContent" ]; then
+input=$(head -n 1 "$TMPEDIT")
+if [ -z "$input" ]; then
     # We don't need to ask for confirmation here, the "del" command will take
     # care of that. 
     "$TODO_FULL_SH" command del $item
-elif [ "$newContent" = "$EDITME" ]; then
+elif [ "$input" = "$EDITME" ]; then
     echo "No changes done to original line."
 else
     # The 'replace' command doesn't handle done tasks, and may do
     # surprising things to existing priorities and dates. To avoid surprises,
     # do the complete replacement of the line here. 
-    newContent=$(echo "$newContent" | sed 's/\&/\\\&/g')
-    sed -i.bak "$item s|^.*|${newContent}|" "$TODO_FILE"
-    echo "$item $EDITME"
-    echo "TODO: Replaced task with:"
-    echo "$item $newContent"
+    cleaninput "for sed"
+    sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE"
+    if [ $TODOTXT_VERBOSE -gt 0 ]; then
+        echo "$item $EDITME"
+        echo "TODO: Replaced task with:"
+        getNewtodo "$item"
+        echo "$item $newtodo"
+    fi
 fi
 
 newLinesNum=$(sed '1d' "$TMPEDIT" | grep -cve '^\s*$')
