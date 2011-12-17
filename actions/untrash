@@ -11,11 +11,9 @@ shift
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) last|ITEM#[, ITEM#, ITEM#, ...]"
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
-BASE=$(basename "$TRASH_FILE")
-PREFIX=$(echo ${BASE%%.[^.]*} | tr [a-z] [A-Z])
 
 [ $# -eq 0 ] && die "$errmsg"
 
@@ -34,7 +32,7 @@ for item in $(echo $* | tr ',' ' '); do
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
 
     todo=$(sed "$item!d" "$TRASH_FILE")
-    [ -z "$todo" ] && die "$PREFIX: No task $item."
+    [ -z "$todo" ] && die "$(getPrefix "$TRASH_FILE"): No task $item."
 
     # Move task to todo.txt, without the "trashed on" timestamp that has been
     # prepended by the 'trash' command. 
@@ -45,10 +43,12 @@ for item in $(echo $* | tr ',' ' '); do
     # following task numbers invalid. 
     sed -i.bak -e $item"s/^.*/!DELETED/" "$TRASH_FILE"
 
+    TASKNUM=$(sed -n '$ =' "$TODO_FILE")
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
-        TASKNUM=$(sed -n '$ =' "$TODO_FILE")
         newtodo=$(sed "$TASKNUM!d" "$TODO_FILE")
-        echo "$PREFIX: $item untrashed to $TASKNUM."
+        echo "$(getPrefix "$TRASH_FILE"): $item untrashed to $TASKNUM."
         echo "$TASKNUM: $newtodo"
     fi
+
+    "$TODO_FULL_SH" uncomment -q "$TASKNUM"
 done
