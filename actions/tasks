@@ -11,18 +11,23 @@ shift
     echo "        todo.sh listpri c | todo.sh tasks"
     echo "    $(basename $0) ACTION [ACTION_ARGUMENTS]"
     echo "      Extracts the ITEM# task numbers from the output of a todo.sh command,"
-    echo "      and passes each to an individual invocation of"
-    echo "        todo.sh ACTION ITEM# [ACTION_ARGUMENTS]"
+    echo "      and passes each to todo.sh ACTION ITEM# [ACTION_ARGUMENTS]"
     echo "      Example: Re-prioritize all tasks with priority c to priority z:"
     echo "        todo.sh listpri c | todo.sh tasks pri z"
     echo ""
     exit
 }
 
+# Configuration of (built-in and add-on) actions that handle multiple ITEM#
+# after the action. 
+: TODOTXT_TASKS_MULTIACTIONS=${TODOTXT_TASKS_MULTIACTIONS:=depri dp do}
+
 typeset action=
+typeset actionPrefix=
 if [ $# -gt 0 ]; then
     if [ "$1" = 'command' ]; then
-	action="$1 $2"
+	actionPrefix='command '
+	action=$2
 	shift
 	shift
     else
@@ -53,13 +58,18 @@ q
 ')
 
 [ "$tasks" ] || exit 1
+TODO_FULL_SH=echo
 
 if [ "$action" ]; then
-    typeset task
-    for task in $tasks
-    do
-	"$TODO_FULL_SH" $action $task "$@" || exit $?
-    done
+    if [[ " $TODOTXT_TASKS_MULTIACTIONS " == *\ ${action}\ * ]]; then
+	"$TODO_FULL_SH" ${actionPrefix}${action} $tasks "$@" || exit $?
+    else
+	typeset task
+	for task in $tasks
+	do
+	    "$TODO_FULL_SH" ${actionPrefix}${action} $task "$@" || exit $?
+	done
+    fi
 else
     echo "$tasks"
 fi
