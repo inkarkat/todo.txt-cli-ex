@@ -15,8 +15,6 @@ shopt -s extglob
 errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
-BASE=$(basename "$TRASH_FILE")
-PREFIX=$(echo ${BASE%%.[^.]*} | tr [a-z] [A-Z])
 
 [ $# -eq 0 ] && die "$errmsg"
 
@@ -49,7 +47,9 @@ do
     [ -z "$todo" ] && die "TODO: No task $item."
 
     # Check if this task has already been done. 
-    if [ $(echo $todo | grep -c "^x ") -eq 0 ]; then
+    if [ "${todo:0:2}" = 'x ' ]; then
+        echo "$item is already marked done."
+    else
         now=$(date '+%Y-%m-%d')
         # Remove priority once task is trashed. 
         sed -i.bak $item"s/^(.) //" "$TODO_FILE"
@@ -68,7 +68,7 @@ do
         fi
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             echo "$item: $todo"
-            echo "TODO: $item put into $PREFIX."
+            echo "TODO: $item put into $(getPrefix "$TRASH_FILE")"
         fi
 
         if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
@@ -76,7 +76,5 @@ do
             "$TODO_FULL_SH" unwait 'for' $item | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
             : # Always exit with a successful exit code even when the command complained. 
         fi
-    else
-        echo "$item is already marked done."
     fi
 done
