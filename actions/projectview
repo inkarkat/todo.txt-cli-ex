@@ -6,18 +6,56 @@ action=$1
 shift
 
 if [ "$action" = "usage" ]; then
-    echo "    $(basename $0) [TERM...]"
-    echo "      Show tasks containing TERM, grouped by project, and displayed in"
-    echo "      priority order. If no TERM provided, displays entire todo.txt."
+    echo "    $(basename $0) [-a] [TERM...]"
+    echo "      Show open (and closed with -a) tasks containing TERM, grouped by project,"
+    echo "      and displayed in priority order."
+    echo "      If no TERM provided, displays entire todo.txt."
     echo ""
     exit
 fi
+
+makeTaskCounts()
+{
+    if [ "$additional_filter_command" ]; then
+        # Just count them; done tasks have already been filtered away. 
+        sed -n '$ ='
+    else
+        awk '
+function highlight(colorVar,      color) {
+    color = ENVIRON[colorVar]
+    gsub(/\\+033/, "\033", color)
+    return color
+}
+BEGIN {
+    openCnt = 0
+    doneCnt = 0
+}
+/[0-9]+ x / {
+    netTask = substr($0, length(highlight("COLOR_DONE")) + 1)
+    if (match(netTask, /^[0-9]+ x /)) {
+        doneCnt++
+        next
+    }
+}
+{ openCnt++ }
+END {
+    print openCnt (doneCnt > 0 ? "/" doneCnt : "")
+}
+'
+    fi
+}
 
 # Configuration to only summarize many unassociated tasks. 
 : TODOTXT_PROJECTVIEW_UNASSOCIATED_THRESHOLD=${TODOTXT_PROJECTVIEW_UNASSOCIATED_THRESHOLD:=10}
 
 original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 TODOTXT_VERBOSE=0
+
+additional_filter_command="grep -ve '^ *[0-9]\+ x ' | "
+if [ "$1" == '-a' ]; then
+    shift
+    additional_filter_command=
+fi
 
 # Show projects in alphabetical order and tasks in priority order. 
 let projectCnt=0
@@ -30,11 +68,12 @@ readonly projects=$("$TODO_FULL_SH" command listproj "$@")
 export HIDE_PROJECTS_SUBSTITUTION='[[:space:]][+][[:graph:]]\{1,\}' # Omitting all projects from the list. 
 for project in $projects; do 
     # Use core _list function, does numbering and coloring for us. 
-    post_filter_command="grep '$project\\( \\|$\\)'"
+    post_filter_command="${additional_filter_command}grep '$project\\( \\|$\\)'"
     projectList=$(_list "$TODO_FILE" "$@")
     if [ "$projectList" ]; then # Even though we're operating only on project tasks containing TERM, a task filter may still filter away all tasks for a project. 
+        taskCounts=$(echo "${projectList}" | makeTaskCounts)
         [ $projectCnt -gt 0 ] && echo ""
-        echo "--- ${project#+} ---"
+        echo "--- ${project#+} ($taskCounts) ---"
         echo "${projectList}"
 
         if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
@@ -47,12 +86,14 @@ done
 
 # Show tasks not associated to a project. 
 unassociatedCnt=0
-projectList=$(_list "$TODO_FILE" "-[[:space:]][+][[:graph:]]" "$@")
+post_filter_command="${additional_filter_command}grep -ve '[[:space:]]+[[:graph:]]'"
+projectList=$(_list "$TODO_FILE" "$@")
 if [ "${projectList}" ]; then
     unassociatedCnt=$(echo "$projectList" | sed -n '$ =')
+    unassociatedCounts=$(echo "${projectList}" | makeTaskCounts)
     if [ $unassociatedCnt -le $TODOTXT_PROJECTVIEW_UNASSOCIATED_THRESHOLD ]; then
         [ $projectCnt -gt 0 ] && echo ""
-        echo "--- Not in projects ---"
+        echo "--- Not in projects ($unassociatedCounts) ---"
         echo "${projectList}"
     fi
 fi
@@ -68,6 +109,6 @@ if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
     fi
 
     if [ $unassociatedCnt -gt $TODOTXT_PROJECTVIEW_UNASSOCIATED_THRESHOLD ]; then
-        echo "TODO: $unassociatedCnt task(s) not in projects."
+        echo "TODO: $unassociatedCounts task(s) not in projects."
     fi
 fi
