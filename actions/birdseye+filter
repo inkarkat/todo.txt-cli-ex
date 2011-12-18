@@ -25,8 +25,8 @@ fi
 
 # birdseye does not duplicate the todo.sh filtering functionality, therefore
 # need to process the task and done lists ourselves. 
-TMPTODO=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0").$$")
-TMPDONE=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0").$$")
+TMPTODO=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0")T.$$")
+TMPDONE=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0")D.$$")
 
 export TODOTXT_VERBOSE=0
 "$TODO_FULL_SH" -f -p command list "$@" | sed -e 's/^[0-9]\+ //' > "$TMPTODO" || die
@@ -38,5 +38,5 @@ export DONE_FILE=$TMPDONE
 # invocation would overwrite the custom TODO_FILE and DONE_FILE config settings. 
 "$TODO_ACTIONS_DIR/birdseye" birdseye "$which-$ITEM"
 rc=$?
-rm "$TMPTODO" "$TMPDONE"
+rm "$TMPTODO" "$TMPDONE" 2>/dev/null
 exit $rc
