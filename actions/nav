@@ -58,4 +58,6 @@ else
     echo "Sorry I'm giving up, cannot find your browser :-("
     echo "Under cygwin, consider creating a shortcut in the path, like"
     echo "ln -s \"/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe\" /usr/local/bin/firefox"
+
+    exit 1
 fi
