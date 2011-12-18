@@ -5,7 +5,7 @@ shift
 
 [ "$action" = "usage" ] && {
   echo "    $(basename $0) \"THING I NEEDED TO DO RIGHT NOW\""
-  echo "      add an item and mark it as done in one step"
+  echo "      Add a task and mark it as done in one step."
   echo ""
   exit
 }
@@ -13,6 +13,6 @@ shift
 # call back to the main script to add
 if "$TODO_FULL_SH" command add "$@"; then
     # figure out the line of what we just added, and "do" it
-    line=`sed -n '$ =' "$TODO_FILE"`
+    line=$(sed -n '$ =' "$TODO_FILE")
     "$TODO_FULL_SH" command do "$line"
 fi
