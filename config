@@ -55,9 +55,9 @@ export TMP_FILE="${TEMP:-/tmp}/todo.tmp"
 # Priorities can be any upper-case letter.
 # A,B,C are highlighted; you can add coloring for more.
 #
-export PRI_A=$RED
-export PRI_B=$GREEN
-export PRI_C=$BLUE
+export PRI_A='\\033[0;41m'
+export PRI_B='\\033[0;44m'
+export PRI_C='\\033[0;46m'
 # export PRI_D=...            # define your own
 export PRI_X=$PURPLE         # color unless explicitly defined
 
@@ -72,6 +72,10 @@ export COLOR_DATE=
 
 # Customize some colors in a high-color terminal. 
 if [ ${TERM_COLORS:-0} -ge 256 ]; then
+    export PRI_A=$DEFAULT'\\033[48;5;196m'
+    export PRI_B=$DEFAULT'\\033[48;5;39m'
+    export PRI_C=$DEFAULT'\\033[48;5;51m'
+
     export COLOR_PROJECT='\\033[01;38;5;19m'
     export COLOR_CONTEXT='\\033[01;38;5;90m'
     export COLOR_ALTERNATING=$DEFAULT'\\033[48;5;255m'
