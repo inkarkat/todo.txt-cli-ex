@@ -1,0 +1,39 @@
+#!/bin/bash
+export TODOTXT_FILTER_SCHEDULED_PRIO=${TODOTXT_FILTER_SCHEDULED_PRIO:-1}
+
+if [ $TODOTXT_FILTER_SCHEDULED_PRIO -ne 0 ]; then
+    awk --re-interval -v date=$1 '
+function getThreshold(date) {
+    if (date == "") {
+        return mktime(strftime("%Y %m %d 00 00 00", systime()))
+    } else {
+        return mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
+    }
+}
+BEGIN {
+    threshold = getThreshold(date)
+}
+/[0-9]+ x / {
+    # Do not process done tasks. 
+    print
+    next
+}
+/ [[:upper:]]:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
+    # TODO: Implement staggering of prios.
+    date = mktime(gensub(/^.* [[:upper:]]:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", ""))
+    if (date <= threshold) {
+        prio = gensub(/^.* ([[:upper:]]):([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1", "")
+        $0 = gensub(/^([0-9]+ )(\(.\) )?/, "\\1(" prio ") ", "")
+    }
+}
+/ d:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
+    date = mktime(gensub(/^.* d:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", ""))
+    if (date <= threshold) {
+        $0 = gensub(/^([0-9]+ )\(.\) /, "\\1", "")
+    }
+}
+{ print }
+'
+else
+    cat
+fi
