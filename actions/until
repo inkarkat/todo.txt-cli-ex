@@ -24,8 +24,8 @@ usage()
 
 list()
 {
-	export post_filter_command="sed -e '/^ *[0-9]\+ x /d' -e '/$pattern/!d'"
-	"$TODO_FULL_SH" command list
+	post_filter_command="sed -e '/^ *[0-9]\+ x /d' -e '/$pattern/!d'"
+	_list "$TODO_FILE"
 }
 
 getTask()
