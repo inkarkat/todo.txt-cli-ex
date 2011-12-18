@@ -4,10 +4,10 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "    $(basename $0) \"THING I NEEDED TO DO RIGHT NOW\""
-  echo "      Add a task and mark it as done in one step."
-  echo ""
-  exit
+    echo "    $(basename $0) \"THING I NEEDED TO DO RIGHT NOW\""
+    echo "      Add a task and mark it as done in one step."
+    echo ""
+    exit
 }
 
 # call back to the main script to add
