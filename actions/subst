@@ -4,14 +4,14 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM# PATTERN REPLACEMENT"
+    echo "    $(basename $0) ITEM# PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
     echo "      Replaces PATTERN with REPLACEMENT on line ITEM#."
     echo ""
     exit
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH $(basename $0) ITEM# PATTERN REPLACEMENT"
+errmsg="usage: $TODO_SH $(basename $0) ITEM# PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
 item=$1; shift
 
 [ -z "$item" ] && die "$errmsg"
@@ -20,19 +20,33 @@ item=$1; shift
 todo=$(sed -e "$item!d" -e "s/^(.) //" "$TODO_FILE")
 [ -z "$todo" ] && die "TODO: No task $item."
 
-if [[ $# -ne 2 && $TODOTXT_FORCE = 0 ]]; then
-    echo -n "Pattern: "
-    read pattern
-    echo -n "Replacement: "
-    read input
-else
+
+replace()
+{
+    cleaninput 'for sed'
+    # Above takes care of the replacement; for the pattern, we only have to escape
+    # the substitution delimiter, as it's supposed to be an sed regexp. 
+    newtodo=$(echo "$todo" | sed "s|${pattern//|/\\|}|${input}|g") || exit 1
+}
+
+pattern=
+input=
+if [[ $# -lt 2 && $TODOTXT_FORCE = 0 ]]; then
+    IFS=$'\n' read -p "Pattern: " pattern
+    [ "$pattern" ] || exit 1
+    IFS=$'\n' read -p "Replacement: " input
+    replace
+fi
+
+while [[ $# -ge 2 ]]
+do
     pattern=$1
     input=$2
-fi
-cleaninput 'for sed'
-# Above takes care of the replacement; for the pattern, we only have to escape
-# the substitution delimiter, as it's supposed to be an sed regexp. 
-newtodo=$(echo "$todo" | sed "s|${pattern//|/\\|}|${input}|g") || exit 1
+    shift; shift
+    replace
+done
+[ "$newtodo" ] || die "TODO: Replacement would create empty task."
+
 if [ "$newtodo" = "$todo" ]; then
     [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item: $todo"
     die "TODO: No replacement done for $pattern"
