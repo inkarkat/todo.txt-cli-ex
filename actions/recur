@@ -59,7 +59,7 @@ case $recur in
         ;;
     *)
         recurType='Next'
-        nextdate=$(date -d "$recur" +%F) || exit 1
+        nextdate=$(date -d "$recur" +%F) || die "TODO: Invalid recurrence date format."
         recurrence="{${recur}} t:${nextdate}"
         newtodo=$(echo "$todo" | sed -e 's#[[:space:]]\+t:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}##g' | sed -e 's#\([[:space:]]\+\){[^}]\+}\([[:space:]]\|$\)#\1'"${recurrence}"'\2#;t' -e 's#$# '"${recurrence}"'#')
         ;;
