@@ -5,7 +5,8 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [on] DATE [COMMENT]"
-    echo "      Marks task(s) on line ITEM# as done at DATE in todo.txt, appending COMMENT."
+    echo "      Marks task(s) on line ITEM# as done at DATE in todo.txt,"
+    echo "      optionally appending COMMENT."
     echo "      Task(s) that were dependent on ITEM# have that blocker removed."
     echo ""
     exit
@@ -28,7 +29,7 @@ doneDate=$(date -d "$1" +%F) || exit 1
 shift
 
 printf '' > ~/.todo-lastdone
-for item in `echo $items | tr ',' ' '`
+for item in $(echo $items | tr ',' ' ')
 do 
     if [ $# -gt 0 ]; then
         "$TODO_FULL_SH" command append $item "$@" || exit $?
