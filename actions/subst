@@ -14,12 +14,10 @@ shopt -s extglob
 errmsg="usage: $TODO_SH $(basename $0) ITEM# PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
 item=$1; shift
 
-[ -z "$item" ] && die "$errmsg"
-[[ "$item" = +([0-9]) ]] || die "$errmsg"
-# Get task without potential priority. 
-todo=$(sed -e "$item!d" -e "s/^(.) //" "$TODO_FILE")
-[ -z "$todo" ] && die "TODO: No task $item."
-
+getTodo "$item"
+# Get task without potential priority, the "replace" command will maintain the
+# priority. 
+todo=${todo#(?) }
 
 replace()
 {
