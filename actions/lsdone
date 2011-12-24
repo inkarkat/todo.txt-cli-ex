@@ -1,0 +1,15 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+  echo "    $(basename $0) [TERM...]"
+  echo "      Displays all done (as well as archived) tasks."
+  echo "      If TERM specified, lists only tasks that contain TERM."
+  echo ""
+  exit
+}
+
+"$TODO_FULL_SH" lsdo "$@"
+"$TODO_FULL_SH" lsarchive "$@"
