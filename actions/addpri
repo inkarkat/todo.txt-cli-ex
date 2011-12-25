@@ -16,7 +16,7 @@ if [[ "$1" = [a-zA-Z] ]]; then
 fi
 
 # call back to the main script to add
-if "$TODO_FULL_SH" command add "$@"; then
+if "$TODO_FULL_SH" add "$@"; then
     # figure out the line of what we just added, and prioritize it
     line=$(sed -n '$ =' "$TODO_FILE")
     "$TODO_FULL_SH" command pri "$line" $pri
