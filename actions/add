@@ -1,0 +1,31 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) \"THING I NEED TO DO t:tomorrow u:(next week)\""
+    echo "      Adds THING I NEED TO DO to your todo.txt file on its own line."
+    echo "      Dates in m: markers can be specified in various formats and will be"
+    echo "      canonicalized to YYYY-MM-DD."
+    echo ""
+    exit
+}
+
+task=$*
+markers=$(echo "$task" | grep -o '[^ ]*[a-zA-Z]:\([^ ]\+\|([^)]\+)\)' | grep '^[a-zA-Z]:')
+IFS=$'\n'
+for marker in $markers
+do
+    dateString=${marker#[a-zA-Z]:}
+    dateString=${dateString#(}
+    dateString=${dateString%)}
+
+    canonicalDate=$(date -d "$dateString" +%F 2>/dev/null) || continue
+    [ "$canonicalDate" = "$dateString" ] && continue
+
+
+    task=${task/${marker}/${marker:0:2}${canonicalDate}}
+done
+
+"$TODO_FULL_SH" command add "$task"
