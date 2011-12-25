@@ -117,6 +117,12 @@ export TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k2,2'
 # Finally, color task numbers, projects and contexts. 
 export TODOTXT_FINAL_FILTER="$HOME/.todo/colorFutureTasks | $HOME/.todo/relativeDates | $HOME/.todo/colorSymbols"
 
+# Implement scheduled priorization and de-priorization via a custom filter that
+# executes before the main filtering, so that it does not interfere with a
+# post_filter_command used by various addons, and so that the projected priority
+# is considered by actions that do filtering on _list output. 
+export pre_filter_command="$HOME/.todo/scheduledPrio"
+
 # Set correct browser for Windows systems so that the nav addon doesn't fall
 # back to non-GUI stuff (like w3m, via git-web--browse) when run under Cygwin. 
 if [ ! "$TODOTXT_BROWSER" ]; then
