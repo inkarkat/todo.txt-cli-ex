@@ -4,29 +4,24 @@ action=$1
 shift
 
 function usage(){
-  echo "    nav ITEM#"
+  echo "    $(basename $0) ITEM#"
   echo "      Searches for a URL in the task text and launches a browser."
   echo ""
   exit
 }
 
 [ "$action" = "usage" ] && usage
+errmsg="usage: $TODO_SH $(basename $0) ITEM#"
 
 if ! [[ "$1" =~ ^[0-9]+$ ]]; then
-    echo "Error! Usage:"
-    usage
+    die "$errmsg"
 fi
 
-URL=$(sed "$1!d" "$TODO_FILE"|grep -E -o "([a-z]*)://[^ ]+")
+getTodo "$1"
+URL=$(echo "$todo"|grep -E -o "([a-z]*)://[^ ]+")
 if [ "$URL" = "" ]; then
-    LINE=$(sed "$1!d" "$TODO_FILE")
-    if [ "$LINE" = "" ]; then
-        echo "Error, task $1 not found!"
-    else
-        echo "Error, no URL seen in task $1!"
-        echo "$LINE"
-    fi
-    exit 1
+    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$1 $todo"
+    die "TODO: No URL found in task $1."
 fi
 
 # Trying to be smart...
