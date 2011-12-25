@@ -16,24 +16,17 @@ shift
   exit
 }
 
-# use getopt to validate and parse arguments
-args=$(getopt --name $TODO_SH --options b:e: -- "$@")
-
-if [ $? != 0 ]; then exit 1; fi
-
-# evaulate standardized arguments to set prefix and suffix
+# evaluate standardized arguments to set prefix and suffix
 prefix=''
 suffix=''
-eval set -- "$args"
 
-while true ; do
-  case "$1" in
-    -b) prefix="$2 "; shift 2 ;;
-    -e) suffix=" $2"; shift 2 ;;
-    --) shift ; break ;;
-    *) echo "Internal error!" ; exit 1 ;;
+while getopts ":b:e:" opt; do
+  case "$opt" in
+    'b') prefix="$OPTARG "; echo $OPTARG ;;
+    'e') suffix=" $OPTARG"; echo $OPTARG ;;
   esac
 done
+shift $(( $OPTIND - 1 ))
 
 # apply prefix and suffix, if either are set
 if [ -n "$prefix" ] || [ -n "$suffix" ]; then
