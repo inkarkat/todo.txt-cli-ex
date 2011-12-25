@@ -4,10 +4,10 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "    $(basename $0) PRIORITY \"THING I NEED TO DO +project @context\""
-  echo "      Add a task and prioritize it in one step."
-  echo ""
-  exit
+    echo "    $(basename $0) PRIORITY \"THING I NEED TO DO +project @context\""
+    echo "      Add a task and prioritize it in one step."
+    echo ""
+    exit
 }
 
 if [[ "$1" = [a-zA-Z] ]]; then
