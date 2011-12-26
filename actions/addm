@@ -35,5 +35,5 @@ else
   items="$@"
 fi
 
-# call back to the main script to addm
-"$TODO_FULL_SH" command addm "$items"
+export ADDACTION='addm'
+"$TODO_ACTIONS_DIR/add" addm "$items"
