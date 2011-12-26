@@ -35,5 +35,10 @@ else
   items="$@"
 fi
 
-export ADDACTION='addm'
-"$TODO_ACTIONS_DIR/add" addm "$items"
+if [ -x "$TODO_ACTIONS_DIR/add" ]; then
+  export ADDACTION='addm'
+  "$TODO_ACTIONS_DIR/add" addm "$items"
+else
+  # Call back to the main script to addm. 
+  "$TODO_FULL_SH" command addm "$items"
+fi
