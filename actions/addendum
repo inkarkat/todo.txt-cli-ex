@@ -15,4 +15,5 @@ shift
 errmsg="usage: $TODO_SH $(basename $0) \"THING I NEED TO DO +project @context\""
 [ $# -eq 0 ] && die "$errmsg"
 
-"$TODO_FULL_SH" addto add.txt "$@"
+export ADDACTION='addto add.txt'
+"$TODO_ACTIONS_DIR/add" addendum "$@"
