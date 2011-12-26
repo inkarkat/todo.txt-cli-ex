@@ -47,7 +47,8 @@ do
         isTaskDependency=
     fi
 
-    waitList=$(_list "$TODO_FILE" "$waitMarker" "$@")
+    post_filter_command="grep '$waitMarker'"
+    waitList=$(_list "$TODO_FILE" "$@")
     if [[ -n "$waitList" ]]; then
         echo "--- $blocker ---"
         echo "$waitList" | sed -e "s/ $waitMarker//g"
