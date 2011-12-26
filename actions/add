@@ -27,5 +27,6 @@ do
 
     task=${task/${marker}/${marker:0:2}${canonicalDate}}
 done
+unset IFS
 
-"$TODO_FULL_SH" command add "$task"
+eval '"$TODO_FULL_SH" command' ${ADDACTION:-add} '"$task"'
