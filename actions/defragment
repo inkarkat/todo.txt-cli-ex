@@ -14,7 +14,9 @@ shift
 referencePattern='^w:[0-9]+$'
 
 # Defragment blank lines. 
-for emptyLineNum in $(sed -n '/./!=' "$TODO_FILE")
+# Note: Deletion of blank lines must proceed from end to begin to avoid adapting
+# remaining line numbers. 
+for emptyLineNum in $(sed -n '/./!=' "$TODO_FILE" | tac)
 do
     awk -v referencePattern=$referencePattern -v lineNum=$emptyLineNum '
         function adapt(oldNum, oldLength,     newNum) {
@@ -28,7 +30,14 @@ do
             }
         }
         BEGIN { FS = "[ \t]" }
-        NR == lineNum { next }
+        NR == lineNum {
+            if ($0 == "") {
+                next
+            } else {
+                print "ASSERT: passed line number " lineNum " should be empty!" > "/dev/stderr"
+                exit 2
+            }
+        }
         {
             for (i = 1; i <= NF; ++i) {
                 if ($i ~ referencePattern) {
