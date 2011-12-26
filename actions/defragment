@@ -6,12 +6,12 @@ shift
 [ "$action" = "usage" ] && {
     echo "    $(basename $0)"
     echo "      Cleans empty lines from todo.txt while adapting cross-task references"
-    echo "      of the form w:### or \"task ###\". "
+    echo "      of the form m:### or \"task ###\". "
     echo ""
     exit
 }
 
-referencePattern='^w:[0-9]+$'
+referencePattern='^[[:graph:]]:[0-9]+$'
 
 # Defragment blank lines. 
 # Note: Deletion of blank lines must proceed from end to begin to avoid adapting
