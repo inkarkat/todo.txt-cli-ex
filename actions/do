@@ -8,6 +8,7 @@ shift
     echo "      Marks task(s) on line ITEM# as done in todo.txt,"
     echo "      optionally appending COMMENT."
     echo "      Task(s) that were dependent on ITEM# have that blocker removed."
+    echo "      Task(s) linked via l:### are marked done, too."
     echo ""
     exit
 }
@@ -23,7 +24,7 @@ do
 done
 [ "$items" ] || die "$errmsg"
 
-> ~/.todo-lastdone
+[ "$RECURSIVE_DO" ] || > ~/.todo-lastdone
 for item in $(echo $items | tr ',' ' ')
 do 
     if [ $# -gt 0 ]; then
@@ -32,6 +33,17 @@ do
 
     "$TODO_FULL_SH" command do $item || exit $?
     printf '%s ' $item >> ~/.todo-lastdone
+
+    getTodo "$item"
+    linkMarkers=$(echo "$todo" | grep -o '[^ ]*l:[[:digit:]]\+' | grep '^l:')
+    if [ "$linkMarkers" ]; then
+	links=$(echo "$linkMarkers" | sed -n -e 's/^l://' -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
+	echo "TODO: $item is linked to ${links}; cascading done marker."
+	for link in $linkMarkers
+	do
+	    RECURSIVE_DO='true' "$TODO_FULL_SH" do ${link#l:} "$@"
+	done
+    fi
 
     if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
         # Unblock tasks that depended on the now done task. 
