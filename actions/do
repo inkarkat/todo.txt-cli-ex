@@ -5,7 +5,8 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
-    echo "      Marks task(s) on line ITEM# as done in todo.txt, appending COMMENT."
+    echo "      Marks task(s) on line ITEM# as done in todo.txt,"
+    echo "      optionally appending COMMENT."
     echo "      Task(s) that were dependent on ITEM# have that blocker removed."
     echo ""
     exit
@@ -22,14 +23,14 @@ do
 done
 [ "$items" ] || die "$errmsg"
 
-printf '' > ~/.todo-lastdone
-for item in `echo $items | tr ',' ' '`
+> ~/.todo-lastdone
+for item in $(echo $items | tr ',' ' ')
 do 
     if [ $# -gt 0 ]; then
         "$TODO_FULL_SH" command append $item "$@" || exit $?
     fi
 
-    "$TODO_FULL_SH" command 'do' $item || exit $?
+    "$TODO_FULL_SH" command do $item || exit $?
     printf '%s ' $item >> ~/.todo-lastdone
 
     if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
