@@ -123,7 +123,7 @@ export TODOTXT_FINAL_FILTER="$HOME/.todo/colorFutureTasks | $HOME/.todo/relative
 # executes before the main filtering, so that it does not interfere with a
 # post_filter_command used by various addons, and so that the projected priority
 # is considered by actions that do filtering on _list output. 
-export pre_filter_command="$HOME/.todo/scheduledPrio"
+export pre_filter_command="$HOME/.todo/scheduledFilter"
 
 # Set correct browser for Windows systems so that the nav addon doesn't fall
 # back to non-GUI stuff (like w3m, via git-web--browse) when run under Cygwin. 
