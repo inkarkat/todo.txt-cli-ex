@@ -5,7 +5,8 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) ITEM# PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
-    echo "      Replaces PATTERN with REPLACEMENT on line ITEM#."
+    echo "      Replaces all instances of (sed-style) PATTERN with REPLACEMENT"
+    echo "      on line ITEM#."
     echo ""
     exit
 }
@@ -21,7 +22,8 @@ todo=${todo#(?) }
 
 replace()
 {
-    cleaninput 'for sed'
+    cleaninput
+    input=${input//|/\\|}
     # Above takes care of the replacement; for the pattern, we only have to escape
     # the substitution delimiter, as it's supposed to be an sed regexp. 
     newtodo=$(echo "$todo" | sed "s|${pattern//|/\\|}|${input}|g") || exit 1
