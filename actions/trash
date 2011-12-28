@@ -43,8 +43,7 @@ do
         "$TODO_FULL_SH" command append $item "$@" || exit $?
     fi
 
-    todo=$(sed "$item!d" "$TODO_FILE")
-    [ -z "$todo" ] && die "TODO: No task $item."
+    getTodo "$item"
 
     # Check if this task has already been done. 
     if [ "${todo:0:2}" = 'x ' ]; then
