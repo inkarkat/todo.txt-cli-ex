@@ -106,7 +106,7 @@ BEGIN {
 
     # Highlight tasks with a latest-until date, depending on how long until the date. 
     daySpan = int((date - threshold) / 86400)
-    untilClass = getSpanClass(daySpan, "LATEST")
+    untilClass = getSpanClass(daySpan, "UNTIL")
     if (hasHighlight(untilClass)) {
         if (lineColor == highlight("DEFAULT")) {
             # No existing line color, apply to entire line. 
