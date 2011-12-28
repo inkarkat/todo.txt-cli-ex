@@ -37,7 +37,7 @@ function getLineColor(      hl) {
 
     if (hasHighlight("COLOR_TASKNUM")) {
         netTask = substr($0, length(lineColor) + 1)
-        if (! match(netTask, /^[0-9]+ x /)) {
+        if (! match(netTask, /^[0-9]+ [xX] /)) {
             # Lazy-initialize task number width. 
             if (taskNumWidth <= 0) {
                 match(netTask, /[0-9]+ /)
