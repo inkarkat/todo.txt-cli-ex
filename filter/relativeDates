@@ -48,7 +48,7 @@ BEGIN {
         newDoneDate = gensub(/^\((.*)\)$/, "\\1", "", relativeDate(doneDate))
 
         newDate = (newDoneDate == "" ? gensub(/^.* x ([0-9]{4}-[0-9]{2}-[0-9]{2}).*$/, "\\1", "", $0) : newDoneDate) ", " afterSpan(daySpan)
-        $0 = gensub(/([0-9]+ x )([0-9]{4}-[0-9]{2}-[0-9]{2} ){2}/, "\\1 (" newDate ") ", "")
+        $0 = gensub(/([0-9]+ x )([0-9]{4}-[0-9]{2}-[0-9]{2} ){2}/, "\\1(" newDate ") ", "")
     }
 }
 {
