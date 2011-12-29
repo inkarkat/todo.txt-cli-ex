@@ -1,0 +1,13 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+  echo "    $(basename $0) [TERM...]"
+  echo "      Displays all archived tasks that contain TERM(s)."
+  echo ""
+  exit
+}
+
+"$TODO_FULL_SH" listfile "${DONE_FILE:?}" "$@"
