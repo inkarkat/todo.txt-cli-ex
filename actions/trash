@@ -52,8 +52,8 @@ do
         now=$(date '+%Y-%m-%d')
         # Remove priority once task is trashed. 
         sed -i.bak $item"s/^(.) //" "$TODO_FILE"
-        # Add timestamp like the 'do' command. 
-        sed -i.bak $item"s|^|$now |" "$TODO_FILE"
+        # Add "X" trashed marker and timestamp like the 'do' command. 
+        sed -i.bak $item's|^\(X \)\?|'"X $now |" "$TODO_FILE"
         # Move task to trash. 
         sed -e "$item!d" "$TODO_FILE" >> "$TRASH_FILE"
         if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
