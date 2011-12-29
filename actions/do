@@ -5,10 +5,10 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
-    echo "      Marks task(s) on line ITEM# as done in todo.txt,"
-    echo "      optionally appending COMMENT."
-    echo "      Task(s) that were dependent on ITEM# have that blocker removed."
-    echo "      Task(s) linked via l:### are marked done, too."
+    echo "	Marks task(s) on line ITEM# as done in todo.txt,"
+    echo "	optionally appending COMMENT."
+    echo "	Task(s) that were dependent on ITEM# have that blocker removed."
+    echo "	Task(s) linked via l:### are marked done, too."
     echo ""
     exit
 }
@@ -28,7 +28,7 @@ done
 for item in $(echo $items | tr ',' ' ')
 do 
     if [ $# -gt 0 ]; then
-        "$TODO_FULL_SH" command append $item "$@" || exit $?
+	"$TODO_FULL_SH" command append $item "$@" || exit $?
     fi
 
     "$TODO_FULL_SH" command do $item || exit $?
@@ -41,18 +41,27 @@ do
 	echo "TODO: $item is linked to ${links}; cascading done marker."
 	for link in $linkMarkers
 	do
-	    RECURSIVE_DO='true' "$TODO_FULL_SH" do ${link#l:} "$@"
+	    # Use a subshell to avoid that an error (e.g. non-existent task)
+	    # breaks out of the loop or even aborts the entire processing. 
+	    (
+		linkedItem=${link#l:}
+		getTodo "$linkedItem"
+
+		# Test for already done tasks to avoid endless loop when tasks
+		# are cross-linked or tasks form a closed graph. 
+		[ "${todo:0:2}" = 'x ' ] || RECURSIVE_DO='true' "$TODO_FULL_SH" do $linkedItem "$@"
+	    )
 	done
     fi
 
     if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
-        # Unblock tasks that depended on the now done task. 
-        "$TODO_FULL_SH" unwait 'for' $item | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
-        : # Always exit with a successful exit code even when the command complained. 
+	# Unblock tasks that depended on the now done task. 
+	"$TODO_FULL_SH" unwait 'for' $item | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
+	: # Always exit with a successful exit code even when the command complained. 
     fi
 
     if [ -x "$TODO_ACTIONS_DIR/recur" ]; then
-        "$TODO_FULL_SH" recur $item apply
-        : # Always exit with a successful exit code even when the command complained. 
+	"$TODO_FULL_SH" recur $item apply
+	: # Always exit with a successful exit code even when the command complained. 
     fi
 done
