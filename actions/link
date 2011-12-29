@@ -1,0 +1,46 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) ITEM# TARGET#[, TARGET#, ...]"
+    echo "      Link the task on line ITEM# to item(s) TARGET#."
+    echo "      (In addition to any existing links."
+    echo "    $(basename $0) ITEM# none"
+    echo "      Remove all links from the task on line ITEM#."
+    echo ""
+    exit
+}
+
+errmsg="usage: $TODO_SH $(basename $0) ITEM# none|TARGET#[, TARGET#, ...]"
+
+[ $# -lt 2 ] && die "$errmsg"
+
+item=$1
+shift
+
+if [ "$1" = 'none' ]; then
+    shift
+    "$TODO_FULL_SH" subst $item ' l:[0-9]\+' '' || if [ $# -eq 0 ]; then exit 1; fi
+fi
+
+links=
+linkMarkers=
+# Split multiple dep's, if comma separated change to whitespace separated. 
+for targetItem in $(echo $* | tr ',' ' '); do 
+    links="${links}${links:+, }${targetItem}"
+    linkMarkers="${linkMarkers}${linkMarkers:+ }l:${targetItem}"
+done
+
+if [ "$links" ]; then
+    "$TODO_FULL_SH" command append $item "$linkMarkers" || exit $?
+fi
+
+if [ $TODOTXT_VERBOSE -gt 0 ]; then
+    if [ "$links" ]; then
+	echo "TODO: $item is linked to $links"
+    else
+	echo "TODO: $item is not linked any more."
+    fi
+fi
