@@ -29,18 +29,15 @@ fi
 
 # Loop the 'undo' function for each task. 
 for item in $items; do 
-    [ -z "$item" ] && die "$errmsg"
-    [[ "$item" = +([0-9]) ]] || die "$errmsg"
-
-    todo=$(sed "$item!d" "$TODO_FILE")
-    [ -z "$todo" ] && die "TODO: No task $item. Has it been archived?"
+    getTodo "$item"
 
     # Check if this task has already been done. 
     if [ "${todo:0:2}" = 'x ' ]; then
         # Remove done "x" marker and timestamp. 
         sed -i.bak $item"s|^x [0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} ||" "$TODO_FILE"
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
-            sed "$item!d" "$TODO_FILE"
+            getNewtodo "$item"
+            echo "$item $newtodo"
             echo "TODO: $item re-activated."
         fi
 
