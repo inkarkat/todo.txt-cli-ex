@@ -13,11 +13,11 @@ shift
 }
 
 task=$*
-markers=$(echo "$task" | grep -o '[^ ]*[a-zA-Z]:\([^ ]\+\|([^)]\+)\)' | grep '^[a-zA-Z]:')
+markers=$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\([^ ]\+\|([^)]\+)\)' | grep '^[[:graph:]]:')
 IFS=$'\n'
 for marker in $markers
 do
-    dateString=${marker#[a-zA-Z]:}
+    dateString=${marker#[[:graph:]]:}
     dateString=${dateString#(}
     dateString=${dateString%)}
 
