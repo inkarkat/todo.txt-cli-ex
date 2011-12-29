@@ -66,7 +66,7 @@ do
             sed -i.bak -e $item"s/^.*//" "$TODO_FILE"
         fi
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
-            echo "$item: $todo"
+            echo "$item $todo"
             echo "TODO: $item put into $(getPrefix "$TRASH_FILE")"
         fi
 
