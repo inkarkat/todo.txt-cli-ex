@@ -48,7 +48,7 @@ done
 [ "$newtodo" ] || die "TODO: Replacement would create empty task."
 
 if [ "$newtodo" = "$todo" ]; then
-    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item: $todo"
+    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
     die "TODO: No replacement done for $pattern"
 fi
 "$TODO_FULL_SH" command replace $item "$newtodo"
