@@ -9,6 +9,7 @@ shift
     echo "	optionally appending COMMENT."
     echo "	Task(s) that were dependent on ITEM# have that blocker removed."
     echo "	Task(s) linked via l:### are marked done, too."
+    echo "	Contradependent task(s) that are marked !:ITEM# are trashed."
     echo ""
     exit
 }
@@ -34,6 +35,7 @@ do
     "$TODO_FULL_SH" command do $item || exit $?
     printf '%s ' $item >> ~/.todo-lastdone
 
+    # Linked tasks. 
     getTodo "$item"
     linkMarkers=$(echo "$todo" | grep -o '[^ ]*l:[[:digit:]]\+' | grep '^l:')
     if [ "$linkMarkers" ]; then
@@ -51,6 +53,15 @@ do
 		# are cross-linked or tasks form a closed graph. 
 		[ "${todo:0:2}" = 'x ' ] || RECURSIVE_DO='true' "$TODO_FULL_SH" do $linkedItem "$@"
 	    )
+	done
+    fi
+
+    # Contradependent tasks. 
+    contraItems=$(sed -n -e '/\(^\| \)!:'"${item}"'\( \|\$\)/=' "$TODO_FILE")
+    if [ "$contraItems" ]; then
+	for contraItem in $contraItems
+	do
+	    "$TODO_FULL_SH" trash "$contraItem"
 	done
     fi
 
