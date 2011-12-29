@@ -42,8 +42,8 @@ for item in $(echo $* | tr ',' ' '); do
 
     TASKNUM=$(sed -n '$ =' "$TODO_FILE")
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
-        newtodo=$(sed "$TASKNUM!d" "$TODO_FILE")
         echo "$(getPrefix "$TRASH_FILE"): $item untrashed to $TASKNUM."
+        getNewtodo "$TASKNUM"
         echo "$TASKNUM: $newtodo"
     fi
 
