@@ -19,20 +19,22 @@ function highlightend(colorVar, defaultColor,      color) {
     color = highlight(colorVar "_END")
     return (color == "" ? defaultColor : color)
 }
-function getDefaultedLineColor(      hl) {
+function getLineColor() {
     if (match($0, /[0-9]+ /) > 1) {
         return substr($0, 1, RSTART - 1)
     } else {
-        return highlight("DEFAULT")
+        return ""
     }
 }
 {
-    lineColor = getDefaultedLineColor()
+    lineColor = getLineColor()
+    defaultLineColor = (lineColor == "" ? highlight("DEFAULT") : lineColor)
 
     # Highlight alternating lines. 
-    if (hasHighlight("COLOR_ALTERNATING") && wasUncolored && lineColor == highlight("DEFAULT")) {
-        $0 = highlight("COLOR_ALTERNATING") $0 highlightend("COLOR_ALTERNATING", lineColor)
+    if (hasHighlight("COLOR_ALTERNATING") && wasUncolored && lineColor == "") {
+        $0 = highlight("COLOR_ALTERNATING") $0 highlightend("COLOR_ALTERNATING", defaultLineColor)
         lineColor = highlight("COLOR_ALTERNATING")
+        defaultLineColor = lineColor
     }
 
     if (hasHighlight("COLOR_TASKNUM")) {
@@ -45,7 +47,7 @@ function getDefaultedLineColor(      hl) {
             }
 
             # Highlight current task number. 
-            $0 = gensub(/([0-9]+) /, highlight("COLOR_TASKNUM") "\\1" highlightend("COLOR_TASKNUM", lineColor) " ", " ")
+            $0 = gensub(/([0-9]+) /, highlight("COLOR_TASKNUM") "\\1" highlightend("COLOR_TASKNUM", defaultLineColor) " ", " ")
 
             # Highlight any w:42 references to other tasks, and normalize number
             # width to e.g. w:042. 
@@ -53,18 +55,18 @@ function getDefaultedLineColor(      hl) {
                 taskNum = gensub(/^w:([0-9]+)/, "\\1", "", $i)
                 if (taskNum == $i) continue
                 newTaskNum = sprintf("%0" taskNumWidth "d", taskNum)
-                $i = gensub(/^(w:)([0-9]+)/, highlight("COLOR_TASKNUM") "\\1" newTaskNum highlightend("COLOR_TASKNUM", lineColor), " ", $i)
+                $i = gensub(/^(w:)([0-9]+)/, highlight("COLOR_TASKNUM") "\\1" newTaskNum highlightend("COLOR_TASKNUM", defaultLineColor), " ", $i)
             }
         }
     }
-    if (hasHighlight("COLOR_CONTEXT")) $0 = gensub(/ (@[^ ]*)/, " " highlight("COLOR_CONTEXT") "\\1" highlightend("COLOR_CONTEXT", lineColor), "g")
-    if (hasHighlight("COLOR_PROJECT")) $0 = gensub(/ (\+[^ ]*)/, " " highlight("COLOR_PROJECT") "\\1" highlightend("COLOR_PROJECT", lineColor), "g")
-    if (hasHighlight("COLOR_DATE"))   $0 = gensub(/ ([0-9]{4}-[0-9]{2}-[0-9]{2}) /, " " highlight("COLOR_DATE") "\\1" lineColor " ", "")
+    if (hasHighlight("COLOR_CONTEXT")) $0 = gensub(/ (@[^ ]*)/, " " highlight("COLOR_CONTEXT") "\\1" highlightend("COLOR_CONTEXT", defaultLineColor), "g")
+    if (hasHighlight("COLOR_PROJECT")) $0 = gensub(/ (\+[^ ]*)/, " " highlight("COLOR_PROJECT") "\\1" highlightend("COLOR_PROJECT", defaultLineColor), "g")
+    if (hasHighlight("COLOR_DATE"))   $0 = gensub(/ ([0-9]{4}-[0-9]{2}-[0-9]{2}) /, " " highlight("COLOR_DATE") "\\1" defaultLineColor " ", "")
 
     # Remember line highlighting for highlighting of alternate lines. 
     # This has the advantage over a simple "NR % 2" that the line following an
     # otherwise highlighted tasks is never highlighted, which is nicer visually. 
-    wasUncolored = (lineColor == highlight("DEFAULT"))
+    wasUncolored = (lineColor == "")
 
     print
 }
