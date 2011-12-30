@@ -11,5 +11,6 @@ shift
   exit
 }
 
-"$TODO_FULL_SH" lsdo "$@"
-"$TODO_FULL_SH" lsarchive "$@"
+# Note: Cannot use the usual post_filter_command; listall uses that itself. 
+# (And I use pre_filter_command myself.) 
+"$TODO_FULL_SH" command listall '^ *[0-9]\+ x ' "$@"
