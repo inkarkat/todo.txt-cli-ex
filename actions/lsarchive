@@ -4,10 +4,13 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "    $(basename $0) [TERM...]"
-  echo "      Displays all archived tasks that contain TERM(s)."
-  echo ""
-  exit
+    echo "    $(basename $0) [TERM...]"
+    echo "      Displays all archived tasks that contain TERM(s)."
+    echo ""
+    exit
 }
 
+# Omit the "done" highlighting in favor of the more readable alternating task
+# highlighting for readability; all tasks are done, anyway. 
+export HIDE_COLOR_DONE=1
 "$TODO_FULL_SH" listfile "${DONE_FILE:?}" "$@"
