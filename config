@@ -1,4 +1,4 @@
-# todo.txt configuration. 
+#!/bin/bash todo.txt configuration. 
 #
 # === EDIT FILE LOCATIONS BELOW ===
 
@@ -65,6 +65,7 @@ export PRI_X=$PURPLE         # color unless explicitly defined
 # but haven't been archived yet.
 #
 export COLOR_DONE=$PURPLE
+export COLOR_TRASH=$LIGHT_GREY
 
 # Do not highlight the add date, it's not that important, always at the same
 # place, and the coloring interferes with the relativeDates filter. 
@@ -84,7 +85,6 @@ if [ ${TERM_COLORS:-0} -ge 256 ]; then
 fi
 
 # === BEHAVIOR ===
-
 
 # Do not automatically archive tasks on completion; I want to do this manually
 # (e.g. at the beginning of a new day). 
