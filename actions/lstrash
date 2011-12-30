@@ -1,0 +1,16 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [TERM...]"
+    echo "      Displays all trashed tasks that contain TERM(s)."
+    echo ""
+    exit
+}
+
+errmsg="usage: $TODO_SH $(basename $0) [TERM...]"
+
+TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
+"$TODO_FULL_SH" listfile "$TRASH_FILE" "$@"
