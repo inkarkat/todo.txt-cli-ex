@@ -19,7 +19,7 @@ function highlightend(colorVar, defaultColor,      color) {
     color = highlight(colorVar "_END")
     return (color == "" ? defaultColor : color)
 }
-function getLineColor(      hl) {
+function getDefaultedLineColor(      hl) {
     if (match($0, /[0-9]+ /) > 1) {
         return substr($0, 1, RSTART - 1)
     } else {
@@ -27,7 +27,7 @@ function getLineColor(      hl) {
     }
 }
 {
-    lineColor = getLineColor()
+    lineColor = getDefaultedLineColor()
 
     # Highlight alternating lines. 
     if (hasHighlight("COLOR_ALTERNATING") && wasUncolored && lineColor == highlight("DEFAULT")) {
