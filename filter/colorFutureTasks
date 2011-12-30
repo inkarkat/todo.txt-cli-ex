@@ -56,7 +56,7 @@ function getLineColor(      hl) {
     if (match($0, /[0-9]+ /) > 1) {
         return substr($0, 1, RSTART - 1)
     } else {
-        return highlight("DEFAULT")
+        return ""
     }
 }
 function getSpanClass(daySpan, what,      class) {
@@ -97,6 +97,10 @@ BEGIN {
     if (match(netTask, /^[0-9]+ x /)) {
         # Do not process done tasks. 
         print
+        next
+    } else if (match(netTask, /^[0-9]+ X /)) {
+        # Highlight trashed tasks, and do not process them further. 
+        print highlight("COLOR_TRASH") $0 highlight("DEFAULT")
         next
     }
 }
@@ -155,7 +159,7 @@ function getThreshold(date) {
 BEGIN {
     threshold = getThreshold(date)
 }
-/^[0-9]+ x / {
+/^[0-9]+ [xX] / {
     # Do not process done tasks. 
     print
     next
