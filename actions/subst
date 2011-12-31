@@ -23,10 +23,14 @@ todo=${todo#(?) }
 replace()
 {
     cleaninput
-    input=${input//|/\\|}
+    input=${input//%/\\%}
     # Above takes care of the replacement; for the pattern, we only have to escape
     # the substitution delimiter, as it's supposed to be an sed regexp. 
-    newtodo=$(echo "$todo" | sed "s|${pattern//|/\\|}|${input}|g") || exit 1
+    # Note: Use a substitution delimiter that has no special meaning as a regexp
+    # symbol. For example, "|" causes problems when it is contained in pattern
+    # (e.g. /\(^\| \)/), and then mistakenly double-escaped. 
+    echo sed "s%${pattern//%/\\%}|${input}%g"
+    newtodo=$(echo "$todo" | sed "s%${pattern//%/\\%}%${input}%g") || exit 1
 }
 
 pattern=
