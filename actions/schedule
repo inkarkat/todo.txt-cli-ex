@@ -2,73 +2,95 @@
 
 action=$1
 shift
-item=$1
-shift
-param="$*"
+
+if [ "$action" = "usage" ]; then
+    echo "    $(basename $0) DATE|none|never|off|del|rm ITEM#[, ITEM#, ...]"
+    echo "    $(basename $0) ITEM#[, ITEM#, ...] DATE|none|never|off|del|rm"
+    echo "      Set, change or remove scheduled date of task ITEM#."
+    echo "    $(basename $0)"
+    echo "      List all scheduled tasks."
+    echo "      Intended to be used with futureTasks."
+    echo "      Example:  $TODO_SH $(basename $0) tomorrow 42"
+    echo ""
+    exit
+fi
 
 shopt -s extglob
-pattern=' t:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}' # not enforcing any particular format
-syntax="$(basename $0) [ITEM# DATE|(none|never|off|del|rm) | del ITEM# | rm ITEM#]"
-errmsg="usage: $TODO_SH $syntax"
 
-usage()
-{
-	echo "    $syntax"
-	echo "      Set, change or remove date threshold of a task."
-	echo "      If arguments are omitted, all scheduled tasks are listed."
-	echo "      Intended to be used with futureTasks "
-	echo "      (http://github.com/FND/todo.txt-cli/blob/extensions/futureTasks)."
-	echo "      Example: $ $TODO_SH $(basename $0) 42 tomorrow"
-	echo ""
-	exit
-}
+readonly pattern=' t:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}' # not enforcing any particular format
+readonly errmsg="usage: $TODO_SH $(basename $0) [DATE|none|never|off|del|rm ITEM#[, ITEM#, ...]]"
 
 list()
 {
-	# Ensure that a futureTasks filter is not set. 
-	if [[ "$TODOTXT_FINAL_FILTER" == *utureTasks* ]]; then
-		TODOTXT_FINAL_FILTER="|${TODOTXT_FINAL_FILTER}|"
-		TODOTXT_FINAL_FILTER="${TODOTXT_FINAL_FILTER/|+([^|])utureTasks+([^|])|/}"
-		TODOTXT_FINAL_FILTER="${TODOTXT_FINAL_FILTER#|}"
-		TODOTXT_FINAL_FILTER="${TODOTXT_FINAL_FILTER%|}"
-	fi
-	post_filter_command="sed -e '/^ *[0-9]\+ x /d' -e '/$pattern/!d'"
-	_list "$TODO_FILE"
+    # Ensure that a futureTasks filter is not set. 
+    if [[ "$TODOTXT_FINAL_FILTER" == *utureTasks* ]]; then
+        TODOTXT_FINAL_FILTER="|${TODOTXT_FINAL_FILTER}|"
+        TODOTXT_FINAL_FILTER="${TODOTXT_FINAL_FILTER/|+([^|])utureTasks+([^|])|/}"
+        TODOTXT_FINAL_FILTER="${TODOTXT_FINAL_FILTER#|}"
+        TODOTXT_FINAL_FILTER="${TODOTXT_FINAL_FILTER%|}"
+    fi
+    post_filter_command="sed -e '/^ *[0-9]\+ x /d' -e '/${pattern}/!d'"
+    _list "$TODO_FILE"
 }
 
 getUnscheduledTask()
 {
-	getTodo "$1"
-	# Remove threshold and priority. 
-	todo=$(echo "$todo" | sed -e "s/${pattern}//g" -e "s/^([A-Z])* //") 
+    getTodo "$1"
+    # Remove threshold and priority. 
+    unscheduledTodo=$(echo "$todo" | sed -e "s/${pattern}//g" -e "s/^([A-Z])* //") 
 }
 
 remove()
 {
-	getUnscheduledTask "$1"
-	"$TODO_FULL_SH" command replace $1 "$todo" # N.B.: retains priority
+    getUnscheduledTask "$1"
+    if [ "$unscheduledTodo" = "$todo" ]; then
+        echo "TODO: $1 is not scheduled."
+        return
+    fi
+    "$TODO_FULL_SH" command replace $1 "$unscheduledTodo" # N.B.: retains priority
 }
 
 replace()
 {
-	local item=$1
-	local threshold=$2
-	[ -z "$threshold" ] && die "$errmsg"
-	date=$(date -d "$threshold" +%F) || return 1
+    local item=$1
+    local threshold=$2
+    [ -z "$threshold" ] && die "$errmsg"
+    date=$(date -d "$threshold" +%F) || return 1
 
-	getUnscheduledTask "$item"
-	"$TODO_FULL_SH" command replace $item "$todo t:$date"
+    getUnscheduledTask "$item"
+    scheduledTodo="$unscheduledTodo t:$date"
+    if [ "$scheduledTodo" = "$todo" ]; then
+        echo "TODO: $1 is already scheduled on ${date}."
+        return
+    fi
+    "$TODO_FULL_SH" command replace $item "$scheduledTodo"
 }
 
-[ "$action" = 'usage' ] && usage
 
-if [ -z $item ]; then
-	list
-elif [ "$param" = 'del' -o "$param" = 'rm' -o "$param" = 'none' -o "$param" = 'never' -o "$param" = 'off' ]; then
-	remove $item
-elif [ "$item" = 'del' -o "$item" = 'rm' ]; then
-	# Allow reverse syntax: todo.sh schedule ITEM# del, too.  
-	remove $param
-else
-	replace $item "$param"
+if [ $# -eq 0 ]; then
+    list
+    exit $?
 fi
+
+items=
+while [[ "$1" =~ ^[,0-9]+$ ]]
+do
+    items="$items $1"
+    shift
+done
+if [ "$items" ]; then
+    date=$*
+else
+    date=$1
+    shift
+    items=$*
+fi
+[ "$items" ] || die "$errmsg"
+
+for item in $(echo $items | tr ',' ' '); do 
+    case $date in
+        '')                     die "$errmsg";;
+        none|never|off|del|rm)  remove "$item";;
+        *)                      replace "$item" "$date";;
+    esac
+done
