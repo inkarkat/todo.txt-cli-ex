@@ -13,18 +13,22 @@ BEGIN {
 }
 /^x / {
     # Do not process done tasks. 
+    print ""
     next
 }
 /^X / {
     # Explicitly trashed task. 
-    print FNR
+    print
     next
 }
 /(^| )x:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^(.* )?x:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", ""))
     if (date <= threshold) {
-        print FNR
+        print
         next
     }
+}
+{
+    print ""
 }
 '
