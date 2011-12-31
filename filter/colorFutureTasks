@@ -50,7 +50,7 @@ function highlight(colorVar,      color) {
 }
 function highlightend(colorVar, defaultColor,      color) {
     color = highlight(colorVar "_END")
-    return (color == "" ? defaultColor : color)
+    return (color == "" ? (defaultColor == "" ? highlight("DEFAULT") : defaultColor) : color)
 }
 function getLineColor(      hl) {
     if (match($0, /[0-9]+ /) > 1) {
@@ -112,10 +112,10 @@ BEGIN {
     daySpan = int((date - threshold) / 86400)
     untilClass = getSpanClass(daySpan, "UNTIL")
     if (hasHighlight(untilClass)) {
-        if (lineColor == highlight("DEFAULT")) {
+        if (lineColor == "") {
             # No existing line color, apply to entire line. 
             lineColor = highlight(untilClass)
-            $0 = highlight(untilClass) $0 highlightend(untilClass, highlight("DEFAULT"))
+            $0 = highlight(untilClass) $0 highlightend(untilClass, "")
         } else {
             # The line is already colored, only highlight the latest-until date itself. 
             $0 = gensub(/ (u:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(untilClass) "\\1" highlightend(untilClass, lineColor), "")
@@ -135,10 +135,10 @@ BEGIN {
     daySpan = int((threshold - date) / 86400)
     dueClass = getSpanClass(daySpan, "DUE")
     if (hasHighlight(dueClass)) {
-        if (lineColor == highlight("DEFAULT")) {
+        if (lineColor == "") {
             # No existing line color, apply to entire line. 
             lineColor = highlight(dueClass)
-            $0 = highlight(dueClass) $0 highlightend(dueClass, highlight("DEFAULT"))
+            $0 = highlight(dueClass) $0 highlightend(dueClass, "")
         } else {
             # The line is already colored, only highlight the due date itself. 
             $0 = gensub(/ (t:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(dueClass) "\\1" highlightend(dueClass, lineColor), "")
