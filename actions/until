@@ -28,38 +28,28 @@ list()
 	_list "$TODO_FILE"
 }
 
-getTask()
+getUnscheduledTask()
 {
-	item=$1
-	# Remove threshold, item number and priority. 
-	sed	-e "$item!d" \
-		-e "s/$pattern//" \
-		-e "s/^[0-9]* //" \
-		-e "s/^([A-Z])* //" \
-		"$TODO_FILE"
+	getTodo "$1"
+	# Remove threshold and priority. 
+	todo=$(echo "$todo" | sed -e "s/$pattern//" -e "s/^([A-Z])* //") 
 }
 
 remove()
 {
-	item=$1
-	[ -z "$item" ] && die "$errmsg"
-	[[ "$item" = +([0-9]) ]] || die "$errmsg"
-
-	task=$(getTask "$item")
-	"$TODO_FULL_SH" command replace $item "$task" # N.B.: retains priority
+	getUnscheduledTask "$1"
+	"$TODO_FULL_SH" command replace $1 "$todo" # N.B.: retains priority
 }
 
 replace()
 {
-	item=$1
-	threshold=$2
-	[ -z "$item" ] && die "$errmsg"
-	[[ "$item" = +([0-9]) ]] || die "$errmsg"
+	local item=$1
+	local threshold=$2
 	[ -z "$threshold" ] && die "$errmsg"
-
-	task=$(getTask "$item")
 	date=$(date -d "$threshold" +%F) || return 1
-	"$TODO_FULL_SH" command replace $item "$task u:$date"
+
+	getUnscheduledTask "$item"
+	"$TODO_FULL_SH" command replace $item "$todo u:$date"
 }
 
 [ "$action" = 'usage' ] && usage
