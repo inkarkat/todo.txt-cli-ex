@@ -4,15 +4,17 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
-    echo "      Puts the task(s) on line ITEM# into trash.txt, appending COMMENT."
+    echo "    $(basename $0) [--hard] ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
+    echo "	Marks task(s) on line ITEM# as trashed in todo.txt,"
+    echo "	optionally appending COMMENT."
+    echo "      With --hard, immediately moves the task(s) into trash.txt."
     echo "      Task(s) that were dependent on ITEM# have that blocker removed."
     echo ""
     exit
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
+errmsg="usage: $TODO_SH $(basename $0) [--hard] ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 
@@ -27,6 +29,12 @@ cleanup()
 }
 trap 'cleanup' EXIT
 
+isHard=
+if [ "$1" = '--hard' ]; then
+    isHard='true'
+    shift
+fi
+
 items=
 while [[ "$1" =~ ^[,0-9]+$ ]]
 do
@@ -35,6 +43,7 @@ do
 done
 [ "$items" ] || die "$errmsg"
 
+[ "$RECURSIVE_DO" ] || > ~/.todo-lastdone
 # Split multiple trash's, if comma separated change to whitespace separated. 
 # Loop the 'trash' function for each task. 
 for item in $(echo $items | tr ',' ' ')
@@ -54,20 +63,33 @@ do
         sed -i.bak $item"s/^(.) //" "$TODO_FILE"
         # Add "X" trashed marker and timestamp like the 'do' command. 
         sed -i.bak $item's|^\(X \)\?|'"X $now |" "$TODO_FILE"
-        # Move task to trash. 
-        sed -e "$item!d" "$TODO_FILE" >> "$TRASH_FILE"
-        if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
-            # Delete line (changes line numbers). 
-            # Note: Cannot actually remove lines inside the loop, as this may
-            # make following task numbers invalid. 
-            sed -i.bak -e $item"s/^.*/!DELETED/" "$TODO_FILE"
+
+        if [ "$isHard" ]; then
+            # Immediately move task to trash. 
+            sed -e "$item!d" "$TODO_FILE" >> "$TRASH_FILE"
+            if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
+                # Delete line (changes line numbers). 
+                # Note: Cannot actually remove lines inside the loop, as this may
+                # make following task numbers invalid. 
+                sed -i.bak -e $item"s/^.*/!DELETED/" "$TODO_FILE"
+            else
+                # leave blank line behind (preserves line numbers)
+                sed -i.bak -e $item"s/^.*//" "$TODO_FILE"
+            fi
+
+            # Untrash from trash.txt via 'untrash'. 
         else
-            # leave blank line behind (preserves line numbers)
-            sed -i.bak -e $item"s/^.*//" "$TODO_FILE"
+            # Allow untrashing via 'undo'. 
+            printf '%s ' $item >> ~/.todo-lastdone
         fi
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
-            echo "$item $todo"
-            echo "TODO: $item put into $(getPrefix "$TRASH_FILE")"
+            getNewtodo "$item"
+            echo "$item $newtodo"
+            if [ "$isHard" ]; then
+                echo "TODO: $item put into $(getPrefix "$TRASH_FILE")"
+            else
+                echo "TODO: $item trashed."
+            fi
         fi
 
         if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
