@@ -3,6 +3,11 @@ export TODOTXT_FILTER_FUTURE_TASKS=${TODOTXT_FILTER_FUTURE_TASKS:-1}
 
 if [ $TODOTXT_FILTER_FUTURE_TASKS -ne 0 ]; then
     awk --re-interval -v date=$1 '
+function highlight(colorVar,      color) {
+    color = ENVIRON[colorVar]
+    gsub(/\\+033/, "\033", color)
+    return color
+}
 function getThreshold(date) {
     if (date == "") {
         return mktime(strftime("%Y %m %d 00 00 00", systime()))
@@ -14,7 +19,7 @@ BEGIN {
     threshold = getThreshold(date)
 }
 /[0-9]+ x / {
-    netTask = substr($0, length(ENVIRON["COLOR_DONE"]) + 1)
+    netTask = substr($0, length(highlight("COLOR_DONE")) + 1)
     if (match(netTask, /^[0-9]+ x /)) {
         # Do not process done tasks. 
         print
