@@ -20,7 +20,7 @@ shift
 
 # Configuration of (built-in and add-on) actions that handle multiple ITEM#
 # after the action. 
-: TODOTXT_TASKS_MULTIACTIONS=${TODOTXT_TASKS_MULTIACTIONS:=depri dp do}
+: ${TODOTXT_TASKS_MULTIACTIONS:=depri dp do}
 
 typeset action=
 typeset actionPrefix=
