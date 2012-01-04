@@ -64,7 +64,7 @@ case $recur in
 esac
 
 if [ "$command" != "add" -a "$newtodo" = "$todo" ]; then
-    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item: $todo"
+    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
     die "TODO: Recurrence didn't change"
 fi
 "$TODO_FULL_SH" -T command $command "$newtodo"
