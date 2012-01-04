@@ -5,7 +5,8 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename "$1") [-a] [TERM...]"
+    wrappedAction=$1
+    echo "    $(basename "$wrappedAction") [-a] [TERM...]"
     echo "      Show a textual report of open (and closed with -a) tasks"
     echo "      for all $ITEM. "
     echo "      If TERM specified, considers only tasks that contain TERM."
@@ -36,7 +37,7 @@ export DONE_FILE=$TMPDONE
 
 # Note: Cannot launch birdseye via "$TODO_FULL_SH" birdseye, because the todo.sh
 # invocation would overwrite the custom TODO_FILE and DONE_FILE config settings. 
-"$TODO_ACTIONS_DIR/birdseye" birdseye "$which-$ITEM"
+"$TODO_ACTIONS_DIR/birdseye" birdseye "${which}-${ITEM}"
 rc=$?
 rm "$TMPTODO" "$TMPDONE" 2>/dev/null
 exit $rc
