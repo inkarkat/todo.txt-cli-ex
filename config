@@ -128,18 +128,6 @@ export TODOTXT_FINAL_FILTER="$HOME/.todo/colorFutureTasks | $HOME/.todo/relative
 # is considered by actions that do filtering on _list output. 
 export pre_filter_command="$HOME/.todo/scheduledFilter"
 
-# Set correct browser for Windows systems so that the nav addon doesn't fall
-# back to non-GUI stuff (like w3m, via git-web--browse) when run under Cygwin. 
-if [ ! "$TODOTXT_BROWSER" ]; then
-    export TODOTXT_BROWSER="/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe"
-    if [ ! -x "$TODOTXT_BROWSER" ]; then
-	export TODOTXT_BROWSER="/cygdrive/c/Program Files (x86)/Mozilla Firefox/firefox.exe"
-	if [ ! -x "$TODOTXT_BROWSER" ]; then
-	    unset TODOTXT_BROWSER
-	fi
-    fi
-fi
-
 # Make 'what' addon show only priorities A-F. 
 export TODOTXT_WHAT_PRIORITIES=A-F
 
