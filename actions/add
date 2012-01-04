@@ -21,6 +21,11 @@ do
     dateString=${dateString#(}
     dateString=${dateString%)}
 
+    if [[ "$dateString" =~ ^[0-9]+$ ]]; then
+        # 'date' also accepts numbers (and always interprets them as the current
+        # day), but numbers should represent ITEM# for task references here. 
+        continue
+    fi
     canonicalDate=$(date -d "$dateString" +%F 2>/dev/null) || continue
     [ "$canonicalDate" = "$dateString" ] && continue
 
