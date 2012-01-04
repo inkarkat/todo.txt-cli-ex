@@ -15,6 +15,11 @@ shift
     exit
 }
 
+# Note: The recurrence is stored as {DATE}, not via a marker such as r:DATE to
+# avoid rendering (by the relativeDates filter) and canonicalization (by the add
+# actions) into a fixed date; which would confuse / break the recurrent
+# scheduling. 
+
 shopt -s extglob
 errmsg="usage: $TODO_SH $(basename $0) ITEM# RELATIVEDATE|none|never|off"
 item=$1; shift
@@ -28,7 +33,7 @@ recur=$*; shift
 recurType=
 command="replace $item"
 
-if [ "$recur" = "apply" ]; then
+if [ "$recur" = 'apply' ]; then
     # This hidden subcommand is invoked by the "do" command to trigger the
     # recurrence. A new recurrent task is created from the old done task. 
     
