@@ -85,6 +85,9 @@ if [ ${TERM_COLORS:-0} -ge 256 ]; then
 fi
 
 # === BEHAVIOR ===
+[ "$HIDE_COLOR_DONE"  ] && unset COLOR_DONE
+[ "$HIDE_COLOR_TRASH" ] && unset COLOR_TRASH
+
 
 # Do not automatically archive tasks on completion; I want to do this manually
 # (e.g. at the beginning of a new day). 
