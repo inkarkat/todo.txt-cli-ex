@@ -42,21 +42,21 @@ datePri()
     local marker=$1
     local date=$2
 
-    todo=$(sed -e "$item!d" "$TODO_FILE")
-    [ -z "$todo" ] && die "TODO: No task $item."
+    getTodo "$item"
 
     if [ "$marker" = 'NONE' ]; then
 	# Remove any (de-)priorizations for the same date. 
-	newTodo=$(echo "$todo" | sed -e "s| [dA-Z]:$date||") || exit 1
+	newtodo=$(echo "$todo" | sed -e "s| [dA-Z]:${date}||") || exit 1
     else
 	# Remove any (de-)priorizations for the same date. 
 	# Replace existing date-priorization with the same priority in-place or
 	# append new date-priorization. 
-	newTodo=$(echo "$todo" | sed -e "s| [dA-Z]:$date||" | sed -e "s| $marker:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| ${marker}:${date}|" -e t -e "s| *\$| ${marker}:${date}|") || exit 1
+	newtodo=$(echo "$todo" | sed -e "s| [dA-Z]:${date}||" | sed -e "s| ${marker}:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| ${marker}:${date}|" -e t -e "s| *\$| ${marker}:${date}|") || exit 1
     fi
 
-    local -r escapedNewTodo=$(echo "$newTodo" | sed 's/\&/\\\&/g')
-    sed -i.bak "$item s|^.*|${escapedNewTodo}|" "$TODO_FILE"
+    input=$newtodo
+    cleaninput "for sed"
+    sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE"
 }
 
 if [[ "$1" = [a-zA-Z] || "$1" = 'none' ]]; then
@@ -78,7 +78,6 @@ newpri=$( printf "%s\n" "$pri" | tr 'a-z' 'A-Z' )
 
 for item in $(echo $items | tr ',' ' '); do 
     whenwhat=
-    [ -z "$item" ] && die "$errmsg"
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
 
     if [ "$beginDate" ]; then
@@ -116,8 +115,13 @@ for item in $(echo $items | tr ',' ' '); do
 	fi
     fi
     
-    if [ "$whenwhat" -a $TODOTXT_VERBOSE -gt 0 ]; then
-	echo "$item $newTodo"
-	echo "TODO: $item $whenwhat."
+    if [ "$whenwhat" ]; then
+	if [ "$newtodo" = "$todo" ]; then
+	    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $newtodo"
+	    die "TODO: Priorization didn't change."
+	elif [ $TODOTXT_VERBOSE -gt 0 ]; then
+	    echo "$item $newtodo"
+	    echo "TODO: $item $whenwhat."
+	fi
     fi
 done
