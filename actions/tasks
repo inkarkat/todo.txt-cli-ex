@@ -7,13 +7,13 @@ shift
     echo "    $(basename $0)"
     echo "      Extracts the ITEM# task numbers from the output of a todo.sh command,"
     echo "      so that these can be processed or supplied to another command."
-    echo "      Example: Re-prioritize all tasks with priority c to priority z:"
-    echo "        todo.sh listpri c | todo.sh tasks"
+    echo "      Example: List all task numbers of tasks with priority c:"
+    echo "        todo.sh -p listpri c | todo.sh tasks"
     echo "    $(basename $0) ACTION [ACTION_ARGUMENTS]"
     echo "      Extracts the ITEM# task numbers from the output of a todo.sh command,"
     echo "      and passes each to todo.sh ACTION ITEM# [ACTION_ARGUMENTS]"
     echo "      Example: Re-prioritize all tasks with priority c to priority z:"
-    echo "        todo.sh listpri c | todo.sh tasks pri z"
+    echo "        todo.sh -p listpri c | todo.sh tasks pri z"
     echo ""
     exit
 }
@@ -58,7 +58,6 @@ q
 ')
 
 [ "$tasks" ] || exit 1
-TODO_FULL_SH=echo
 
 if [ "$action" ]; then
     if [[ " $TODOTXT_TASKS_MULTIACTIONS " == *\ ${action}\ * ]]; then
