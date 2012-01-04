@@ -16,13 +16,17 @@ shift
     echo "      Recipients are taken from @Person (first letter uppercase, must be found"
     echo "      in email address book then), @name@host, or if none is found uses"
     echo "      TODOTXT_MAIL_DEFAULT_RECIPIENTS"
+    echo "	The email can be copied to TODOTXT_MAIL_DEFAULT_CC and"
+    echo "	TODOTXT_MAIL_DEFAULT_BCC."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) [-t] [-e | -m MESSAGE] TERM...|ITEM#"
+errmsg="usage: $TODO_SH $(basename $0) [-t] [-e | -m MESSAGE] TERM... | [-s] ITEM#"
 
 shopt -s extglob
+
+type -P email >/dev/null || die "TODO: Cannot send email; command 'email' not found!"
 
 # Consider only tasks that are not yet done. The tasks are already numbered when
 # the filter is applied, so there definitely is a space in front of the marker. 
@@ -33,6 +37,8 @@ TODOTXT_VERBOSE=0
 TODOTXT_PLAIN=1
 
 
+cc=$TODOTXT_MAIL_DEFAULT_CC
+bcc=$TODOTXT_MAIL_DEFAULT_BCC
 taskInSubject=
 isTest=
 isEdit=
@@ -95,8 +101,39 @@ $body"
     fi
 fi
 
-if [ "$isTest" ]; then
-    echo "To:      $recipients"
-    echo "Subject: $subject"
-    echo "$body"
+printEmail()
+{
+    [ "$1" ] && local bodySeparator="-=-=-=-=-=-=-=-=-=# Don't remove this line #=-=-=-=-=-=-=-=-=-
+" || local bodySeparator=
+    cat <<EOF
+Subject:   $subject
+To:        $recipients
+Cc:        $cc
+Bcc:       $bcc
+${bodySeparator}${body}
+EOF
+}
+
+if [ "$isEdit" ]; then
+    cleanup()
+    {
+	rm "$TMPEDIT" 2>/dev/null
+    }
+    trap 'cleanup' EXIT
+    TMPEDIT=$(mktemp --tmpdir "todo-mail-XXXXXX.eml" 2>/dev/null || echo "${TEMP:-/tmp}/todo-mail-$$.eml")
+    printEmail true > "$TMPEDIT"
+    "$EDITOR" "$TMPEDIT" || { echo 2>&1 "Unclean exit of editor; aborting!"; exit $?; }
+    subject=$(sed -ne '/^Subject:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
+    recipients=$(sed -ne '/^To:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
+    cc=$(sed -ne '/^Cc:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
+    bcc=$(sed -ne '/^Bcc:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
+    body=$(sed -e "1,/^-=-=-=-=-=-=-=-=-=# Don't remove this line #=-=-=-=-=-=-=-=-=-$/d" "$TMPEDIT")
 fi
+
+if [ "$isTest" ]; then
+    printEmail
+    exit 0
+fi
+
+[ "$recipients" ] || die "TODO: No recipients specified!"
+echo "$body" | eval 'email --subject "$subject"' ${cc:+--cc '"$cc"'} ${bcc:+--bcc '"$bcc"'} '"$recipients"'
