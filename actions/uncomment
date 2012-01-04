@@ -27,9 +27,9 @@ if [ "$isSilentAndQuery" ]; then
     [ "$newtodo" = "$todo" ] && exit 0
     comment=${todo#*${TODOTXT_COMMENT_SYMBOL}}
     if [ "$comment" ]; then
-	read -p "Remove comment \"${comment}\"? (y/n) " answer
+        read -p "Remove comment \"${comment}\"? (y/n) " answer
     else
-	read -p "Remove empty comment? (y/n) " answer
+        read -p "Remove empty comment? (y/n) " answer
     fi
 
     [ "$answer" = 'y' ] || exit 0
@@ -38,7 +38,7 @@ fi
 [ "$newtodo" ] || die "TODO: Removal of comment would create empty task."
 
 if [ "$newtodo" = "$todo" ]; then
-    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item: $todo"
+    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
     die "TODO: Task $item does not contain a comment."
 fi
 "$TODO_FULL_SH" command replace $item "$newtodo"
