@@ -12,6 +12,10 @@ shift
     exit
 }
 
+# Note: We only offer the canonicalization of the date for add and actions based
+# on add, but not for all other actions that modify tasks (e.g. append, replace,
+# etc.) This is meant as a convenient shortcut when adding new tasks; existing
+# task markers should be modified through dedicated actions (e.g. schedule). 
 task=$*
 markers=$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\([^ ]\+\|([^)]\+)\)' | grep '^[[:graph:]]:')
 IFS=$'\n'
