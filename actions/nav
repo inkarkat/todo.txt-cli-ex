@@ -4,22 +4,25 @@ action=$1
 shift
 
 function usage(){
-  echo "    $(basename $0) ITEM#"
-  echo "      Searches for a URL in the task text and launches a browser."
-  echo ""
-  exit
+    echo "    $(basename $0) ITEM#"
+    echo "      Searches for a URL in the task text and launches a browser."
+    echo "    $(basename $0) [TERM...]"
+    echo "      Displays all tasks that contain an URL and TERM(s)."
+    echo ""
+    exit
 }
 
 [ "$action" = "usage" ] && usage
-errmsg="usage: $TODO_SH $(basename $0) ITEM#"
 
-if ! [[ "$1" =~ ^[0-9]+$ ]]; then
-    die "$errmsg"
+if [[ ! "$1" =~ ^[0-9]+$ ]]; then
+    post_filter_command="grep '[a-z]\\+://[^ ]\\+'"
+    _list "$TODO_FILE" "$@"
+    exit 0
 fi
 
 getTodo "$1"
-URL=$(echo "$todo"|grep -E -o "([a-z]*)://[^ ]+")
-if [ "$URL" = "" ]; then
+URL=$(echo "$todo" | grep -o '[a-z]\+://[^ ]\+')
+if [ -z "$URL" ]; then
     [ $TODOTXT_VERBOSE -gt 0 ] && echo "$1 $todo"
     die "TODO: No URL found in task $1."
 fi
