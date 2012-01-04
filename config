@@ -132,4 +132,4 @@ export pre_filter_command="$HOME/.todo/scheduledFilter"
 export TODOTXT_WHAT_PRIORITIES=A-F
 
 # Additional addons that handle multiple ITEM# arguments. 
-export TODOTXT_TASKS_MULTIACTIONS='depri dp do del did undo unwait wait'
+export TODOTXT_TASKS_MULTIACTIONS='del depri did do dp dup ls mail nav pri schedule trash undo until untrash unwait wait'
