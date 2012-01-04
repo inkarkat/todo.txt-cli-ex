@@ -3,16 +3,14 @@
 action=$1
 shift
 
-function usage(){
-    echo "    $(basename $0) ITEM#"
-    echo "      Searches for a URL in the task text and launches a browser."
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) ITEM#[, ITEM#, ...]"
+    echo "      Searches for URLs in the task text and launches a browser."
     echo "    $(basename $0) [TERM...]"
-    echo "      Displays all tasks that contain an URL and TERM(s)."
+    echo "      Displays all tasks that contain URLs and TERM(s)."
     echo ""
     exit
 }
-
-[ "$action" = "usage" ] && usage
 
 if [[ ! "$1" =~ ^[0-9]+$ ]]; then
     post_filter_command="grep '[a-z]\\+://[^ ]\\+'"
@@ -20,40 +18,56 @@ if [[ ! "$1" =~ ^[0-9]+$ ]]; then
     exit 0
 fi
 
-getTodo "$1"
-URL=$(echo "$todo" | grep -o '[a-z]\+://[^ ]\+')
-if [ -z "$URL" ]; then
-    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$1 $todo"
-    die "TODO: No URL found in task $1."
-fi
+typeset -a urls=()
+while [ $# -gt 0 ]
+do
+    item=$1
+    shift
+    getTodo "$item"
+
+    taskUrls=$(echo "$todo" | grep -o '[a-z]\+://[^ ]\+')
+    if [ -z "$taskUrls" ]; then
+        [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
+        echo "TODO: No URL found in task $item."
+    fi
+
+    for url in $taskUrls
+    do
+        urls+=("$url")
+        echo "adding $url"
+    done
+done
+[ ${#urls} -gt 0 ] || exit 1
+
+
 
 # Trying to be smart...
 # on Debian alike:
 if [ "$TODOTXT_BROWSER" ]; then
-    exec "$TODOTXT_BROWSER" "$URL"
+    exec "$TODOTXT_BROWSER" "${urls[@]}"
 elif $(which x-www-browser >/dev/null 2>&1); then
-    exec x-www-browser "$URL"
+    exec x-www-browser "${urls[@]}"
 # with freedesktop.org utils:
 elif $(which xdg-open >/dev/null 2>&1); then
-    exec xdg-open "$URL"
+    exec xdg-open "${urls[@]}"
 # if you have git:
 elif [ -x /usr/lib/git-core/git-web--browse ]; then
-    cd /usr/lib/git-core && ./git-web--browse "$URL"
+    cd /usr/lib/git-core && ./git-web--browse "${urls[@]}"
 # last resort, a la mano...
 elif $(which firefox >/dev/null 2>&1); then
-    exec firefox "$URL"
+    exec firefox "${urls[@]}"
 elif $(which konqueror >/dev/null 2>&1); then
-    exec konqueror "$URL"
+    exec konqueror "${urls[@]}"
 elif $(which nautilus >/dev/null 2>&1); then
-    exec nautilus "$URL"
-# Windowsien?
+    exec nautilus "${urls[@]}"
+# Windows?
 elif [ -x "/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe" ]; then
-    exec "/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe" "$URL"
+    exec "/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe" "${urls[@]}"
 elif [ -x "/cygdrive/c/Program Files (x86)/Mozilla Firefox/firefox.exe" ]; then
-    exec "/cygdrive/c/Program Files (x86)/Mozilla Firefox/firefox.exe" "$URL"
+    exec "/cygdrive/c/Program Files (x86)/Mozilla Firefox/firefox.exe" "${urls[@]}"
 # OS X?
 elif [ -x "/usr/bin/open" ]; then
-    exec "/usr/bin/open" "$URL"
+    exec "/usr/bin/open" "${urls[@]}"
 else
     echo "Sorry I'm giving up, cannot find your browser :-("
     echo "Under cygwin, consider creating a shortcut in the path, like"
