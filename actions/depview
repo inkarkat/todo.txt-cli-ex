@@ -7,7 +7,8 @@ if [ "$action" = "usage" ]; then
     echo "    $(basename $0) [TERM...]"
     echo "      Show task dependency tree where dependent tasks are indented."
     echo "      Dependency is defined via a w:### marker to the dependent tasknum."
-    echo "      Blocks of tasks where at least one of the tasks contains TERM are shown."
+    echo "      Blocks of tasks where at least one of the tasks contains TERM(s) are"
+    echo "      shown."
     echo "      If no TERM provided, displays all tasks with dependencies."
     echo ""
     exit
