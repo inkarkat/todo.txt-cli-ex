@@ -5,12 +5,12 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [TERM...]"
-    echo "      Displays the last few tasks sorted by priority with line numbers."
+    echo "      Displays the last few tasks, unfiltered and unsorted."
     echo ""
     exit
 }
 
-TODOTXT_SORT_COMMAND="tail -n 10 | $TODOTXT_SORT_COMMAND"
+TODOTXT_SORT_COMMAND='tail -n 10'
 export TODOTXT_FILTER_FUTURE_TASKS=0
 
 _list "$TODO_FILE" "$@"
