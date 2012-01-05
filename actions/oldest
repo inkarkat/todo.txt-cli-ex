@@ -4,11 +4,12 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [TERM...]"
-    echo "      Displays the earliest added tasks that contain TERM(s)."
+    echo "    $(basename $0) [-a] [TERM...]"
+    echo "      Displays the earliest added open (all with -a) tasks"
+    echo "      that contain TERM(s)."
     echo ""
     exit
 }
 
 export TODOTXT_LST_ADDITIONAL_SORT_COMMAND='head -n 10'
-"$TODO_FULL_SH" listbydate "$@"
+exec "$TODO_FULL_SH" listbydate "$@"
