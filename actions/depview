@@ -14,7 +14,7 @@ if [ "$action" = "usage" ]; then
     exit
 elif [ "$action" = "list" ]; then
     TODOTXT_VERBOSE=0
-    post_filter_command="grep -e '^ \\{0,\\}$1 '" # Note: '^ *$1' doesn't match for $1="1". 
+    post_filter_command="grep -e '^ \\{0,\\}$1 '" # Note: Must use '^ \{0,\}', because '^ *$1' doesn't match for $1="1". 
     _list "$TODO_FILE"
     exit
 elif [ "$action" = "filter" ]; then
