@@ -4,16 +4,23 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [TERM...]"
-    echo "      Displays all tasks that contain TERM(s) sorted by added date."
+    echo "    $(basename $0) [-a] [TERM...]"
+    echo "      Displays open (and closed with -a) tasks that contain TERM(s),"
+    echo "      sorted by added date."
     echo ""
     exit
 }
 
+additional_filter_command="grep -ve '^ *[0-9]\+ x ' | "
+if [ "$1" == '-a' ]; then
+    shift
+    additional_filter_command=
+fi
+
 # To sort based on the entered date, add a dummy second column for tasks that
 # are not prioritized or done, do the sort on field 3, and finally remove the
 # dummy column again. 
-post_filter_command="sed -e '/^ *[0-9]\\+ \(x\|(.)\) /!s/^ *[0-9]\\+ /&(.) /'"
+post_filter_command="${additional_filter_command}sed -e '/^ *[0-9]\\+ \(x\|(.)\) /!s/^ *[0-9]\\+ /&(.) /'"
 TODOTXT_SORT_COMMAND="env LC_COLLATE=C sort -f -k3,3 | sed -e 's/^\( *[0-9]\\+ \)(\.) /\\1/'${TODOTXT_LST_ADDITIONAL_SORT_COMMAND:+ | }${TODOTXT_LST_ADDITIONAL_SORT_COMMAND}"
 export TODOTXT_FILTER_FUTURE_TASKS=0
 
