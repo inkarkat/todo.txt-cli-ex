@@ -2,4 +2,4 @@
 
 export ITEM='contexts'
 [ "$1" = "usage" ] && set -- "usage" "$0"
-"$TODO_ACTIONS_DIR/birdseye+filter" "$@"
+exec "$TODO_ACTIONS_DIR/birdseye+filter" "$@"
