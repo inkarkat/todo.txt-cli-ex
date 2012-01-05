@@ -8,7 +8,7 @@ shift
 if [ "$action" = "usage" ]; then
     echo "    $(basename $0) [-a] [TERM...]"
     echo "    pv [-a] [TERM...]"
-    echo "      Show open (and closed with -a) tasks that contain TERM(s),"
+    echo "      Show open (all with -a) tasks that contain TERM(s),"
     echo "      grouped by project, and displayed in priority order."
     echo "      If no TERM provided, displays entire todo.txt."
     echo ""
@@ -30,6 +30,7 @@ function highlight(colorVar,      color) {
 BEGIN {
     openCnt = 0
     doneCnt = 0
+    trashCnt = 0
 }
 /[0-9]+ x / {
     netTask = substr($0, length(highlight("COLOR_DONE")) + 1)
@@ -38,9 +39,16 @@ BEGIN {
         next
     }
 }
+/[0-9]+ X / {
+    netTask = substr($0, length(highlight("COLOR_TRASH")) + 1)
+    if (match(netTask, /^[0-9]+ X /)) {
+        trashCnt++
+        next
+    }
+}
 { openCnt++ }
 END {
-    print openCnt (doneCnt > 0 ? "/" doneCnt : "")
+    print openCnt (doneCnt + trashCnt > 0 ? "/" doneCnt : "") (trashCnt > 0 ? "/" trashCnt : "")
 }
 '
     fi
@@ -52,7 +60,7 @@ END {
 original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 TODOTXT_VERBOSE=0
 
-additional_filter_command="grep -ve '^ *[0-9]\+ x ' | "
+additional_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | "
 if [ "$1" = '-a' ]; then
     shift
     additional_filter_command=
