@@ -7,6 +7,7 @@ shift
 
 if [ "$action" = "usage" ]; then
     echo "    $(basename $0) [-a] [TERM...]"
+    echo "    cv [-a] [TERM...]"
     echo "      Show open (and closed with -a) tasks containing TERM, grouped by context,"
     echo "      and displayed in priority order."
     echo "      If no TERM provided, displays entire todo.txt."
