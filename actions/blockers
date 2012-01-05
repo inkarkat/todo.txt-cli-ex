@@ -47,11 +47,13 @@ do
         isTaskDependency=
     fi
 
-    post_filter_command="grep '$waitMarker'"
+    # Extract all tasks that contain the waitMarker and remove the marker itself
+    # before any final filter performs highlighting. 
+    post_filter_command="sed -e '/ ${waitMarker}/!d' -e 's/ ${waitMarker}//g'"
     waitList=$(_list "$TODO_FILE" "$@")
     if [[ -n "$waitList" ]]; then
         echo "--- $blocker ---"
-        echo "$waitList" | sed -e "s/ $waitMarker//g"
+        echo "$waitList"
         echo ""
 
         if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
