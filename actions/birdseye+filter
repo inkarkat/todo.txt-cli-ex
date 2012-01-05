@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ "$ITEM" ] || die
+[ "$ITEM" ] || exit 1
 action=$1
 shift
 
