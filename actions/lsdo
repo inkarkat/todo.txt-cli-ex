@@ -11,4 +11,5 @@ shift
   exit
 }
 
-_list "$TODO_FILE" "^ *[0-9]\+ x " "$@"
+post_filter_command="grep -e '^ *[0-9]\+ x '"
+_list "$TODO_FILE" "$@"
