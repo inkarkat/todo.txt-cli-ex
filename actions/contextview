@@ -8,8 +8,8 @@ shift
 if [ "$action" = "usage" ]; then
     echo "    $(basename $0) [-a] [TERM...]"
     echo "    cv [-a] [TERM...]"
-    echo "      Show open (and closed with -a) tasks containing TERM, grouped by context,"
-    echo "      and displayed in priority order."
+    echo "      Show open (and closed with -a) tasks that contain TERM(s),"
+    echo "      grouped by context and displayed in priority order."
     echo "      If no TERM provided, displays entire todo.txt."
     echo ""
     exit
@@ -53,7 +53,7 @@ original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 TODOTXT_VERBOSE=0
 
 additional_filter_command="grep -ve '^ *[0-9]\+ x ' | "
-if [ "$1" == '-a' ]; then
+if [ "$1" = '-a' ]; then
     shift
     additional_filter_command=
 fi
