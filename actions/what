@@ -12,7 +12,7 @@ shift
 }
 
 # Configuration to limit the priorities that are considered. 
-: TODOTXT_WHAT_PRIORITIES=${TODOTXT_WHAT_PRIORITIES:=A-Z}
+: ${TODOTXT_WHAT_PRIORITIES:=A-Z}
 
 export TODOTXT_LSDUE_TASKINCLUSION="-e '^ *[0-9]\+ ([${TODOTXT_WHAT_PRIORITIES}])'"
 exec "$TODO_FULL_SH" lsdue "$@"
