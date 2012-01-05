@@ -7,22 +7,23 @@ shift
     echo "    $(basename $0) [-t] [-e | -m MESSAGE] TERM..."
     echo "      Sends all tasks that aren't done yet and contain TERM(s),"
     echo "      putting the tasks into the email body."
-    echo "    $(basename $0) [-t] [-e | -m MESSAGE] [-s] ITEM#"
-    echo "      Sends task ITEM#, using the task for the email subject."
+    echo "    $(basename $0) [-t] [-e | -m MESSAGE] ITEM#, ITEM#[, ITEM#, ...]"
+    echo "      Sends all tasks on lines ITEM#, putting the tasks into the email body."
+    echo "    $(basename $0) [-t] [-e | -m MESSAGE] -s ITEM#"
+    echo "      Sends task ITEM#, putting the task directly into the email subject."
     echo "      -t just prints what would be sent."
-    echo "      -s puts task ITEM# directly into the subject."
     echo "      -e edits the email body before sending."
     echo "      -m uses MESSAGE as the email body."
     echo "      Recipients are taken from @Person (first letter uppercase, must be found"
     echo "      in email address book then), @name@host, or if none is found uses"
     echo "      TODOTXT_MAIL_DEFAULT_RECIPIENTS"
-    echo "	The email can be copied to TODOTXT_MAIL_DEFAULT_CC and"
-    echo "	TODOTXT_MAIL_DEFAULT_BCC."
+    echo "      The email can be copied to TODOTXT_MAIL_DEFAULT_CC and"
+    echo "      TODOTXT_MAIL_DEFAULT_BCC."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) [-t] [-e | -m MESSAGE] TERM... | [-s] ITEM#"
+errmsg="usage: $TODO_SH $(basename $0) [-t] [-e | -m MESSAGE] TERM... | ITEM#[, ITEM#] | -s ITEM#"
 
 shopt -s extglob
 
@@ -45,6 +46,7 @@ isEdit=
 singleTask=
 message=
 noTasksError='No tasks found.'
+items=
 while getopts ":s:tem:" opt; do
     case "$opt" in
 	's') taskInSubject=$OPTARG;;
@@ -57,29 +59,35 @@ shift $(( $OPTIND - 1 ))
 
 if [[ "$taskInSubject" = +([0-9]) ]]; then
     singleTask=$taskInSubject
-    noTasksError="No task $taskInSubject."
-    # Listing of task numbers is unintuitive, because the search pattern is
-    # applied in the middle of alignment, when the numbers have already been
-    # space- (but not zero-) aligned. 
-    set -- "^ *${taskInSubject##*(0)} "
+    noTasksError="No task ${singleTask}."
+    items=$singleTask
 elif [[ $# -eq 1 && "$1" = +([0-9]) ]]; then
     singleTask=$1
-    noTasksError="No task $1."
+    noTasksError="No task ${singleTask}."
+    items=$singleTask
+else
+    while [[ "$1" =~ ^[,0-9]+$ ]]
+    do
+	item=${1%,}
+	item=${item#,}
+	items="${items}${items:+,}$item"
+	shift
+    done
+    noTasksError="No tasks ${items}."
+fi
+
+if [ "$items" ]; then
     # Listing of task numbers is unintuitive, because the search pattern is
     # applied in the middle of alignment, when the numbers have already been
     # space- (but not zero-) aligned. 
-    set -- "^ *${1##*(0)} "
+    tasks=$(_list "$TODO_FILE" "^ *\\(${items//,/\\|}\\) ")
+else
+    tasks=$(_list "$TODO_FILE" "$@")
 fi
-
-tasks=$(_list "$TODO_FILE" "$@")
 [ "$tasks" ] || die "TODO: $noTasksError"
 
 recipients=$(echo "$tasks" | grep -o '[^ ]*@[^ ]\+' | sed -ne '/^@\([[:upper:]]\|.\+@.\+\)/s/^.//p' | sort -u)
 [ "$recipients" ] || recipients=$TODOTXT_MAIL_DEFAULT_RECIPIENTS
-if [ ! "$recipients" ]; then
-    echo "$tasks"
-    die 'TODO: No recipients found.'
-fi
 
 if [ "$taskInSubject" ]; then
     subject=$tasks
@@ -87,6 +95,8 @@ if [ "$taskInSubject" ]; then
 else
     if [ "$singleTask" ]; then
 	subject="Task $singleTask"
+    elif [ "$items" ]; then
+	subject="Tasks ${items//,/, }"
     else
 	subject="Tasks $*"
     fi
@@ -132,8 +142,17 @@ fi
 
 if [ "$isTest" ]; then
     printEmail
-    exit 0
 fi
 
-[ "$recipients" ] || die "TODO: No recipients specified!"
+if [ ! "$recipients" ]; then
+    if [ "$isEdit" ]; then
+	die "TODO: No recipients specified!"
+    else
+	die "TODO: No recipients found!"
+    fi
+fi
+
+if [ "$isTest" ]; then
+    exit
+fi
 echo "$body" | eval 'email --subject "$subject"' ${cc:+--cc '"$cc"'} ${bcc:+--bcc '"$bcc"'} '"$recipients"'
