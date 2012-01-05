@@ -6,7 +6,7 @@ shift
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [TERM...]"
     echo "      Displays all waiting tasks grouped by blocker (wait reason, w:... marker)."
-    echo "      If TERM specified, lists only tasks that contain TERM."
+    echo "      If TERM specified, lists only tasks that contain TERM(s)."
     echo ""
     exit
 }
