@@ -1,0 +1,20 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [TERM...]"
+    echo "      Displays a dashboard overview of the current tasks."
+    echo "      Useful for embedding into the desktop background via Conky, Samurize, etc."
+    echo "      If TERM specified, considers only tasks that contain TERM."
+    echo ""
+    exit
+}
+
+echo "    Pending tasks:"
+"$TODO_FULL_SH" what "$@"
+"$TODO_FULL_SH" summary "$@"
+echo
+echo "    Recent tasks:"
+TODOTXT_VERBOSE=0 "$TODO_FULL_SH" last "$@"
