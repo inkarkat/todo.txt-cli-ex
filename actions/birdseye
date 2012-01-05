@@ -2,7 +2,8 @@
 
 """ TODO.TXT Bird's Eye View Reporter
 USAGE NOTES:
-	Expects two text files as parameters, each of which formatted as follows:
+	Works on the raw, unfiltered text files referenced by $TODO_FILE and
+	$DONE_FILE, each of which formatted as follows:
 	- One todo per line, ie, "call Mom"
 	- with an optional project association indicated as such: "+projectname"
 	- with the context in which the tasks should be completed, indicated as such: "@context"
@@ -49,11 +50,12 @@ __history__ = """
 
 def usage():
 	print "    %s [(open|completed|all)-(projects|contexts) [...]]"% (os.path.basename(sys.argv[0]), )
-	print "      Generates a textual report of open and completed tasks"
+	print "      Show a textual report of open and completed tasks"
 	print "      for all projects and contexts"
+	print "      Works on the unfiltered tasks of TODO_FILE and DONE_FILE."
 	print ""
 
-def printTaskGroups(title, taskDict, priorityList, percentages):
+def printTaskGroups(title, taskDict, priorityList, percentages, taskNum):
 	print ""	
 	print "%s"% (title,)
 	if not taskDict:
@@ -75,18 +77,19 @@ def printTaskGroups(title, taskDict, priorityList, percentages):
 		for item in items:	
 			if item[0] in priorityList:
 				if item[0] not in percentages:
-					printTaskGroup(item, itemMaxLength, -1, "*")
+					printTaskGroup(item, itemMaxLength, -1, "*", taskNum)
 				else:
-					printTaskGroup(item, itemMaxLength, percentages[item[0]], "*")
+					printTaskGroup(item, itemMaxLength, percentages[item[0]], "*", taskNum)
 
 		for item in items:
 			if item[0] not in priorityList:
 				if item[0] not in percentages:
-					printTaskGroup(item, itemMaxLength, -1, " ")
+					printTaskGroup(item, itemMaxLength, -1, " ", taskNum)
 				else:
-					printTaskGroup(item, itemMaxLength, percentages[item[0]], " ")
+					printTaskGroup(item, itemMaxLength, percentages[item[0]], " ", taskNum)
 			
-def printTaskGroup(p, pMaxLen, pctage, star):
+def printTaskGroup(p, pMaxLen, pctage, star, taskNum):
+	taskWidth = int(math.ceil(math.log(taskNum,10)))
 	if pctage > -1:
 		progressBar = ""
 		numStars = (pctage/10)
@@ -148,16 +151,14 @@ def process(filespec, prefix, tasks, completed, priority):
 
 def gather(prefix, tasks, completed, priority):
 	taskNum = process(os.environ['TODO_FILE'], prefix, tasks, completed, priority)
-	global taskWidth
-	taskWidth = int(math.ceil(math.log(taskNum,10)))
-
-	process(os.environ['DONE_FILE'], prefix, completed, completed, priority)
+	doneNum = process(os.environ['DONE_FILE'], prefix, completed, completed, priority)
+	return [taskNum, doneNum]
 
 def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
 	tasks = {}
 	completed = {}
 	priority = []
-	gather(prefix, tasks, completed, priority)
+	[taskNum, doneNum] = gather(prefix, tasks, completed, priority)
 
 	if isPrintOpen:
 		percentages = {}
@@ -170,7 +171,7 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
 			totalTasks = openTasks + closedTasks
 			percentages[task] = (closedTasks*100) / totalTasks
 
-		printTaskGroups("%s with open tasks (* = prioritized)"% (prefixDescription, ), tasks, priority, percentages)
+		printTaskGroups("%s with open tasks (* = prioritized)"% (prefixDescription, ), tasks, priority, percentages, taskNum)
 
 	if isPrintCompleted:
 		tasksWithNoIncompletes = {}
@@ -178,7 +179,7 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
 			if task not in tasks:
 				tasksWithNoIncompletes[task] = completed[task]
 		
-		printTaskGroups("completed %s (no open tasks)"% (prefixDescription, ), tasksWithNoIncompletes, [], {})
+		printTaskGroups("completed %s (no open tasks)"% (prefixDescription, ), tasksWithNoIncompletes, [], {}, doneNum)
 
 def main(argv):
 	if len(argv) == 0 or argv[0] == 'usage':
