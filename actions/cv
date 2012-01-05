@@ -1,8 +1,4 @@
 #!/bin/bash
 
 [ "$1" = "usage" ] && exit
-
-readonly scriptDir=$([ "${BASH_SOURCE[0]}" ] && dirname -- "${BASH_SOURCE[0]}" || exit 2)
-[ -d "$scriptDir" ] || { echo >&2 "ERROR: Cannot determine script directory!"; exit 2; }
-
-exec "$scriptDir/contextview" "$@"
+exec "$TODO_ACTIONS_DIR/contextview" "$@"
