@@ -49,10 +49,10 @@ noTasksError='No tasks found.'
 items=
 while getopts ":s:tem:" opt; do
     case "$opt" in
-	's') taskInSubject=$OPTARG;;
-	't') isTest='true';;
-	'e') isEdit='true';;
-	'm') message=$OPTARG;;
+        's') taskInSubject=$OPTARG;;
+        't') isTest='true';;
+        'e') isEdit='true';;
+        'm') message=$OPTARG;;
     esac
 done
 shift $(( $OPTIND - 1 ))
@@ -68,10 +68,10 @@ elif [[ $# -eq 1 && "$1" = +([0-9]) ]]; then
 else
     while [[ "$1" =~ ^[,0-9]+$ ]]
     do
-	item=${1%,}
-	item=${item#,}
-	items="${items}${items:+,}$item"
-	shift
+        item=${1%,}
+        item=${item#,}
+        items="${items}${items:+,}$item"
+        shift
     done
     noTasksError="No tasks ${items}."
 fi
@@ -94,20 +94,20 @@ if [ "$taskInSubject" ]; then
     body=
 else
     if [ "$singleTask" ]; then
-	subject="Task $singleTask"
+        subject="Task $singleTask"
     elif [ "$items" ]; then
-	subject="Tasks ${items//,/, }"
+        subject="Tasks ${items//,/, }"
     else
-	subject="Tasks $*"
+        subject="Tasks $*"
     fi
     body=$tasks
 fi
 if [ "$message" ]; then
     if [ "$body" ]; then
-	body="$message
+        body="$message
 $body"
     else
-	body=$message
+        body=$message
     fi
 fi
 
@@ -127,7 +127,7 @@ EOF
 if [ "$isEdit" ]; then
     cleanup()
     {
-	rm "$TMPEDIT" 2>/dev/null
+        rm "$TMPEDIT" 2>/dev/null
     }
     trap 'cleanup' EXIT
     TMPEDIT=$(mktemp --tmpdir "todo-mail-XXXXXX.eml" 2>/dev/null || echo "${TEMP:-/tmp}/todo-mail-$$.eml")
@@ -146,9 +146,9 @@ fi
 
 if [ ! "$recipients" ]; then
     if [ "$isEdit" ]; then
-	die "TODO: No recipients specified!"
+        die "TODO: No recipients specified!"
     else
-	die "TODO: No recipients found!"
+        die "TODO: No recipients found!"
     fi
 fi
 
