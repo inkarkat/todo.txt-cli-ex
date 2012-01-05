@@ -5,13 +5,15 @@ shift
 
 if [ "$action" = "usage" ]; then
     echo "    $(basename $0) [TERM...]"
-    echo "      Show dependency tree of tasks containing TERM."
+    echo "      Show task dependency tree where dependent tasks are indented."
+    echo "      Dependency is defined via a w:### marker to the dependent tasknum."
+    echo "      Blocks of tasks where at least one of the tasks contains TERM are shown."
     echo "      If no TERM provided, displays all tasks with dependencies."
     echo ""
     exit
 elif [ "$action" = "list" ]; then
-    export TODOTXT_VERBOSE=0
-    export post_filter_command="grep -e '^ \\{0,\\}$1 '" # Note: '^ *$1' doesn't match for $1="1". 
+    TODOTXT_VERBOSE=0
+    post_filter_command="grep -e '^ \\{0,\\}$1 '" # Note: '^ *$1' doesn't match for $1="1". 
     _list "$TODO_FILE"
     exit
 elif [ "$action" = "filter" ]; then
@@ -19,15 +21,16 @@ elif [ "$action" = "filter" ]; then
     exit
 fi
 
+original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 if [ $# -gt 0 ]; then
     isFilter=1
 
     # Only the blocks that contain at least one task that matches TERM should be
     # printed. We need to obtain the task numbers and pass them to the AWK
     # script. 
-    export TODOTXT_VERBOSE=0
-    export TODOTXT_PLAIN=1
-    export post_filter_command="sed -ne 's/^ *\([0-9]\+\) .*$/\1/p'"
+    TODOTXT_VERBOSE=0
+    TODOTXT_PLAIN=1
+    post_filter_command="sed -ne 's/^ *\([0-9]\+\) .*$/\1/p'"
     # It's difficult to store "$@" in a variable and keep the quoting. Thus, we
     # generate the list already here and store the result for the AWK to fetch
     # it later by re-invoking this script with the "filter" action argument. 
@@ -37,12 +40,14 @@ else
 fi
 referencePattern='^w:[0-9]+$'
 
-awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -v verbose=$TODOTXT_VERBOSE '
+awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -v verbose=$original_TODOTXT_VERBOSE '
     BEGIN {
         FS = "[ \t]"
+
         if (isFilter) {
+            # Read list of unfiltered task numbers. 
             filtercall = callback " filter"
-            while((filtercall | getline filterNum) > 0) {
+            while((filtercall | getline unfilteredNum) > 0) {
                 # print "filter task: " unfilteredNum
                 unfiltered[unfilteredNum] = 1
             }
@@ -50,6 +55,7 @@ awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -
         }
     }
     {
+        # Extract dependency information from the w:### markers. 
         for (i = 1; i <= NF; ++i) {
             if ($i ~ referencePattern) {
                 match($i, /[0-9]+/)
@@ -57,6 +63,7 @@ awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -
                 p = NR
                 # print p "->" s
 
+                # Generate data structures for the topological sort. 
                 if (!(p in pcnt))
                     pcnt[p] = 0
                 ++pcnt[s]
@@ -66,6 +73,9 @@ awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -
     }
     END {
         WIDTH = length(NR "")
+
+        # Do the (reverse) topological sort to generate the dependency
+        # structure. 
         for (node in pcnt) {
             ++nodecnt
             if (pcnt[node] == 0)
@@ -86,7 +96,14 @@ awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -
                 }
             }
         }
+
+        # Print all dependency blocks (that are not filtered) starting from the
+        # root task. 
         for (ri = 1; ri <= rcnt; ++ri) {
+            # print "**** iteration " ri
+            if (isFilter && ! intree(rilist[ri]))
+                continue
+
             if (hasPrinted) {
                 printf("\n")
             }
@@ -94,6 +111,7 @@ awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -
             hasPrinted = 1
         }
 
+        # Print additional information and cycle errors at the end. 
         if (verbose > 0) {
             printf("--\nTODO: %d block(s) of %d dependent tasks.\n", rcnt, nodecnt)
             for (o in omitted)
@@ -118,6 +136,8 @@ awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -
         return sprintf("%0" WIDTH "d", num)
     }
     function gettask(num,     taskcall, task) {
+        # Get a fully rendered, single task and cache it, because it may appear
+        # in multiple trees. 
         if (taskcache[num] != "")
             return taskcache[num]
         taskcall = callback " list " num
@@ -127,6 +147,9 @@ awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -
         return task
     }
     function filtermarkers(text) {
+        # Remove the w:### markers from the output, as this information is
+        # already included in the task indentation. 
+
         # Plain AWK does not support backreferences via gensub, but it is okay to
         # include a trailing space at the end. Due to the inclusion of the
         # trailing space, the regex is overlapping, and we need to iterate until
@@ -138,16 +161,24 @@ awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -
 
         return text
     }
-    function intree(i, level,     node, task, j, k) {
+    function intree(i,     node, j, k) {
+        # Find out whether the dependency block contains one of the unfiltered
+        # tasks. 
         node = sorted[i]
+        if (unfiltered[node])
+            return 1
+        
         if (scnt[node] > 0) {
             for (j = i - 1; j >= 0; --j)
                 for (k = 1; k <= scnt[node]; ++k)
                     if (sorted[j] == slist[node, k])
-                        intree(j, (level + 1))
+                        if (intree(j))
+                            return 1
         }
+        return 0
     }
     function printtree(i, level,     node, task, j, k) {
+        # Print one dependency block with indentation. 
         node = sorted[i]
         task = gettask(node)
         # printf("%s%s=%s(%s)\n", level, i, node, scnt[node])
