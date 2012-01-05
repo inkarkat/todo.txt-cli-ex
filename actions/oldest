@@ -6,7 +6,7 @@ shift
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [-a] [TERM...]"
     echo "      Displays the earliest added open (all with -a) tasks"
-    echo "      that contain TERM(s)."
+    echo "      that contain TERM(s). Tasks without a date are ignored."
     echo ""
     exit
 }
