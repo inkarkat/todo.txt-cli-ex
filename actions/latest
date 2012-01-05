@@ -1,0 +1,14 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [TERM...]"
+    echo "      Displays the last added tasks that contain TERM(s)."
+    echo ""
+    exit
+}
+
+export TODOTXT_LST_ADDITIONAL_SORT_COMMAND='tail -n 10'
+"$TODO_FULL_SH" listbydate "$@"
