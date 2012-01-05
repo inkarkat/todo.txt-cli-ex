@@ -11,13 +11,6 @@ shift
     exit
 }
 
-# Omit the "trashed" highlighting in favor of the more readable alternating task
-# highlighting for readability; all tasks are trashed, anyway. 
-# This only works for "todo.sh ls", but we invoke _list() directly.  
-#export HIDE_COLOR_TRASH=1
-unset COLOR_TRASH
-
-post_filter_command="grep -e '^ *[0-9]\+ X '"
-_list "$TODO_FILE" "$@"
+"$TODO_FULL_SH" lstrashable "$@"
 echo ""
-exec "$TODO_FULL_SH" lstrash "$@"
+"$TODO_FULL_SH" lstrash "$@"
