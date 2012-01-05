@@ -7,7 +7,7 @@ shift
 [ "$action" = "usage" ] && {
     wrappedAction=$1
     echo "    $(basename "$wrappedAction") [-a] [TERM...]"
-    echo "      Show a textual report of open (and closed with -a) tasks"
+    echo "      Show a textual report of open (and done with -a) tasks"
     echo "      for all $ITEM. "
     echo "      If TERM specified, considers only tasks that contain TERM(s)."
     echo "      Pass -x to todo.sh to suppress default filter(s)."
