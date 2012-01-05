@@ -86,6 +86,6 @@ fi
 
 if [ $invalidDependentTaskCnt -eq 1 ]; then
     echo "TODO: The list contains a dependency to an invalid task (marked ???)."
-elif [ $invalidDependentTaskCnt -eq 1 ]; then
+elif [ $invalidDependentTaskCnt -gt 1 ]; then
     echo "TODO: The list contains $invalidDependentTaskCnt dependencies to invalid tasks (marked ???)."
 fi
