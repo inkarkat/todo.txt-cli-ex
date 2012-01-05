@@ -1,41 +1,5 @@
 #!/bin/bash
 
-readonly item='projects'
-action=$1
-shift
-
-[ "$action" = "usage" ] && {
-    echo "    $(basename $0) [-a] [TERM...]"
-    echo "      Show a textual report of open (and closed with -a) tasks"
-    echo "      for all $item. "
-    echo "      If TERM specified, considers only tasks that contain TERM."
-    echo ""
-    exit
-}
-
-set -o pipefail
-
-if [ "$1" = '-a' ]; then
-    which='all'
-    shift
-else
-    which='open'
-fi
-
-# birdseye does not duplicate the todo.sh filtering functionality, therefore
-# need to process the task and done lists ourselves. 
-TMPTODO=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0").$$")
-TMPDONE=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0").$$")
-
-export TODOTXT_VERBOSE=0
-"$TODO_FULL_SH" -f -p command list "$@" | sed -e 's/^[0-9]\+ //' > "$TMPTODO" || die
-"$TODO_FULL_SH" -f -p command listfile "$DONE_FILE" "$@" | sed -e 's/^[0-9]\+ //' > "$TMPDONE" || die
-export TODO_FILE=$TMPTODO
-export DONE_FILE=$TMPDONE
-
-# Note: Cannot launch birdseye via "$TODO_FULL_SH" birdseye, because the todo.sh
-# invocation would overwrite the custom TODO_FILE and DONE_FILE config settings. 
-"$TODO_ACTIONS_DIR/birdseye" birdseye "$which-$item"
-rc=$?
-rm "$TMPTODO" "$TMPDONE"
-exit $rc
+export ITEM='projects'
+[ "$1" = "usage" ] && set -- "usage" "$0"
+"$TODO_ACTIONS_DIR/birdseye+filter" "$@"
