@@ -104,11 +104,11 @@ BEGIN {
         next
     }
 }
-# Highlight tasks with a latest-until date. This has precedence over a due date. 
+# Highlight tasks with a do-until date. This has precedence over a due date. 
 / [uz]:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* [uz]:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", ""))
 
-    # Highlight tasks with a latest-until date, depending on how long until the date. 
+    # Highlight tasks with a do-until date, depending on how long until the date. 
     daySpan = int((date - threshold) / 86400)
     untilClass = getSpanClass(daySpan, "UNTIL")
     if (hasHighlight(untilClass)) {
@@ -117,7 +117,7 @@ BEGIN {
             lineColor = highlight(untilClass)
             $0 = highlight(untilClass) $0 highlightend(untilClass, "")
         } else {
-            # The line is already colored, only highlight the latest-until date itself. 
+            # The line is already colored, only highlight the do-until date itself. 
             $0 = gensub(/ ([uz]:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(untilClass) "\\1" highlightend(untilClass, lineColor), "")
         }
     }
