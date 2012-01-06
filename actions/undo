@@ -24,7 +24,7 @@ if [ $# -eq 0 ]; then
     [ "$items" ] || die "TODO: No undo information available!"
 else
     # Split multiple undo's, if comma separated change to whitespace separated. 
-    items=$(echo $* | tr ',' ' ')
+    items=${*//,/ }
 fi
 
 # Loop the 'undo' function for each task. 
