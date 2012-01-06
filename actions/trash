@@ -5,8 +5,8 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [--hard] ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
-    echo "	Marks task(s) on line ITEM# as trashed in todo.txt,"
-    echo "	optionally appending COMMENT."
+    echo "      Marks task(s) on line ITEM# as trashed in todo.txt,"
+    echo "      optionally appending COMMENT."
     echo "      With --hard, immediately moves the task(s) into trash.txt."
     echo "      Task(s) that were dependent on ITEM# have that blocker removed."
     echo ""
@@ -83,11 +83,14 @@ do
             printf '%s ' $item >> ~/.todo-lastdone
         fi
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
-            getNewtodo "$item"
-            echo "$item $newtodo"
             if [ "$isHard" ]; then
-                echo "TODO: $item put into $(getPrefix "$TRASH_FILE")"
+                trashItem=$(sed -n '$ =' "$TRASH_FILE") 
+                getNewtodo "$trashItem" "$TRASH_FILE"
+                echo "$trashItem $newtodo"
+                echo "TODO: $item put into $(getPrefix "$TRASH_FILE") as ${trashItem}."
             else
+                getNewtodo "$item"
+                echo "$item $newtodo"
                 echo "TODO: $item trashed."
             fi
         fi
