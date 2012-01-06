@@ -130,7 +130,8 @@ else
 fi
 [ "$items" ] || die "$errmsg"
 
-for item in $(echo $items | tr ',' ' '); do 
+for item in ${items//,/ }
+do 
     case $date in
         '')
             if [ "$isZap" ]; then
