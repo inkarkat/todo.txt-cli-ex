@@ -26,13 +26,13 @@ typeset action=
 typeset actionPrefix=
 if [ $# -gt 0 ]; then
     if [ "$1" = 'command' ]; then
-	actionPrefix='command '
-	action=$2
-	shift
-	shift
+        actionPrefix='command '
+        action=$2
+        shift
+        shift
     else
-	action=$1
-	shift
+        action=$1
+        shift
     fi
 fi
 
@@ -65,13 +65,13 @@ q
 
 if [ "$action" ]; then
     if [[ " $TODOTXT_TASKS_MULTIACTIONS " == *\ ${action}\ * ]]; then
-	"$TODO_FULL_SH" ${actionPrefix}${action} $tasks "$@" || exit $?
+        "$TODO_FULL_SH" ${actionPrefix}${action} $tasks "$@" || exit $?
     else
-	typeset task
-	for task in $tasks
-	do
-	    "$TODO_FULL_SH" ${actionPrefix}${action} $task "$@" || exit $?
-	done
+        typeset task
+        for task in $tasks
+        do
+            "$TODO_FULL_SH" ${actionPrefix}${action} $task "$@" || exit $?
+        done
     fi
 else
     echo "$tasks"
