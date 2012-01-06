@@ -13,10 +13,6 @@ shift
 
 readonly taskNum=$( sed -n '$ =' "$TODO_FILE" )
 readonly taskNumWidth=${#taskNum}
-padTaskNumber()
-{
-    printf "%0${taskNumWidth}d" $1
-}
 
 original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 TODOTXT_VERBOSE=0
@@ -35,13 +31,15 @@ do
     blocker=$(echo "$waitMarker" | sed -e 's/w:(\([^)]*\))/\1/' -e 's/w:\([^ ]*\)/\1/') 
 
     if [[ "$blocker" =~ ^[0-9]+$ ]]; then
-        # Translate dependent task number into a shortened task description. 
-        deptodo=$(sed -e "$blocker!d" -e 's/ \([[:alpha:]]:\|[+@]\)[^[:space:]]\+//g' -e 's/^\(([A-Z]) \)\{0,1\}\([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\{0,1\}//g' "$TODO_FILE")
+        # Translate dependent task number into a fully rendered, but shortened task description. 
+        # Note: Go through todo.sh instead of the _list shortcut to easily hide
+        # the project and context names. 
+        deptodo=$(export TODOTXT_FILTER_SCHEDULED=0; export TODOTXT_FILTER_FUTURE_TASKS=0; unset post_filter_command; "$TODO_FULL_SH" -+ -@ command ls "^ *$blocker ")
         if [ ! "$deptodo" ]; then
             deptodo='???'
             let invalidDependentTaskCnt+=1
         fi
-        blocker="$(padTaskNumber $blocker) $deptodo"
+        blocker=$deptodo
         isTaskDependency='true'
     else
         isTaskDependency=
