@@ -95,10 +95,20 @@ do
             fi
         fi
 
-        if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
-            # Unblock tasks that depended on the trashed task. 
-            "$TODO_FULL_SH" unwait 'for' $item | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
-            : # Always exit with a successful exit code even when the command complained. 
+        if [ -x "$TODO_ACTIONS_DIR/lswait" ]; then
+            # Check for tasks that depended on the trashed task. 
+            depitems=$(TODOTXT_LSWAIT_SHOW_ITEMS=1 "$TODO_FULL_SH" lswait 'for' "$item")
+            if [ "$depitems" ]; then
+                [[ "$1" =~ \  ]] && depTaskPlural='s' || depTaskPlural=
+                echo "TODO: Task$depTaskPlural ${depitems// /,} depended on $item."
+                read -p "      Keep, Trash, or Unwait the dependent task$depTaskPlural (k/t/u) " answer
+
+                if [ "$answer" = 't' ]; then
+                    eval 'RECURSIVE_DO=true "$TODO_FULL_SH" trash' ${isHard:+--hard} '$depitems'
+                elif [ "$answer" = 'u' ]; then
+                    "$TODO_FULL_SH" unwait 'for' $depitems
+                fi
+            fi
         fi
     fi
 done
