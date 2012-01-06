@@ -11,9 +11,10 @@ shift
     exit
 }
 
-# Consider only tasks that are not yet done and contain the "w:" wait marker.
+# Consider only tasks that are not yet done or trashed and contain the "w:" wait
+# marker.
 # The tasks are already numbered when the filter is applied, so there definitely
 # is a space in front of the marker. 
-post_filter_command="grep -ve '^ *[0-9]\+ x ' | grep -e ' w:[^ ]'"
+post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e ' w:[^ ]'"
 
 _list "$TODO_FILE" "$@" | sed -e "/^TODO:/s/of [0-9]\+ tasks shown/blocked \0/"
