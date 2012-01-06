@@ -32,9 +32,7 @@ do
 
     if [[ "$blocker" =~ ^[0-9]+$ ]]; then
         # Translate dependent task number into a fully rendered, but shortened task description. 
-        # Note: Go through todo.sh instead of the _list shortcut to easily hide
-        # the project and context names. 
-        deptodo=$(export TODOTXT_FILTER_SCHEDULED=0; export TODOTXT_FILTER_FUTURE_TASKS=0; unset post_filter_command; "$TODO_FULL_SH" -+ -@ command ls "^ *$blocker ")
+        deptodo=$(export TODOTXT_FILTER_SCHEDULED=0; export TODOTXT_FILTER_FUTURE_TASKS=0; post_filter_command= _list "$TODO_FILE" "^ *$blocker ")
         if [ ! "$deptodo" ]; then
             deptodo='???'
             let invalidDependentTaskCnt+=1
