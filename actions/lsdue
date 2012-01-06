@@ -5,7 +5,7 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [DATE] [TERM...]"
-    echo "      Displays all tasks that have a t:date \"scheduled\", u:date \"do-until\","
+    echo "      Displays open tasks that have a t:date \"scheduled\", u:date \"do-until\","
     echo "      or z:date \"do-until-then-trash\" marker attached and are due on DATE"
     echo "      (or now). If TERM specified, lists only tasks that contain TERM(s)."
     echo ""
@@ -40,11 +40,11 @@ if [[ "$TODOTXT_FINAL_FILTER" == *relativeDates* ]]; then
     TODOTXT_FINAL_FILTER=${TODOTXT_FINAL_FILTER/relativeDates/relativeDates $threshold}
 fi
 
-# Consider only tasks that are not yet done and contain the "t:" scheduled,
-# "u:" do-until, or "z:" do-until-then-trash markers. The tasks are already
-# numbered when the filter is applied, so there definitely is a space in front
-# of the marker. 
-post_filter_command="grep -ve '^ *[0-9]\+ x ' | grep ${TODOTXT_LSDUE_TASKINCLUSION} -e ' [tuz]:[0-9]\{2,4\}[^A-Za-z0-9][0-9]\{2,4\}[^A-Za-z0-9][0-9]\{2,4\}' | $HOME/.todo/latestDueTasks $threshold" # not enforcing any particular format
+# Consider only tasks that are not yet done or trashed and contain the "t:"
+# scheduled, "u:" do-until, or "z:" do-until-then-trash markers. 
+# The tasks are already numbered when the filter is applied, so there definitely
+# is a space in front of the marker. 
+post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep ${TODOTXT_LSDUE_TASKINCLUSION} -e ' [tuz]:[0-9]\{2,4\}[^A-Za-z0-9][0-9]\{2,4\}[^A-Za-z0-9][0-9]\{2,4\}' | $HOME/.todo/latestDueTasks $threshold" # not enforcing any particular format
 
 if [ "$TODOTXT_LSDUE_TASKINCLUSION" ]; then
     _list "$TODO_FILE" "$@"
