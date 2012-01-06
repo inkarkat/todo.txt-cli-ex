@@ -5,7 +5,7 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) PRIORITY|none [on DATE|DATE-] [until DATE|-DATE] ITEM#[, ITEM#, ...]"
-    echo "    $(basename $0) ITEM# PRIORITY|none [on DATE|DATE-] [until DATE|-DATE]"
+    echo "    $(basename $0) ITEM#[, ITEM#, ...] PRIORITY|none [on DATE|DATE-] [until DATE|-DATE]"
     echo "      Adds PRIORITY to task(s) on line ITEM#, or deprioritizes with none."
     echo "      With DATE-, priorization will only happen on DATE (via A:DATE)."
     echo "      With -DATE, the task will stay prioritized until DATE (via d:DATE)."
@@ -16,26 +16,12 @@ shift
 
 shopt -s extglob
 
-errmsg="usage: $TODO_SH $(basename $0) PRIORITY|none [on DATE|DATE-] [until DATE|-DATE] ITEM#[, ITEM#, ITEM#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] PRIORITY|none [on DATE|DATE-] [until DATE|-DATE]"
 beginDate=
 endDate=
 makeDate()
 {
     date -d "$1" +%F
-}
-checkDates()
-{
-    while [ $# -gt 0 ]
-    do
-	case "$1" in
-	    on)	    beginDate=$(makeDate "$2") || exit 1; shift; shift;;
-	    [^-]*-) beginDate=$(makeDate "${1%-}") || exit 1; shift;;
-	    until)  endDate=$(makeDate "$2") || exit 1; shift; shift;;
-	    -*[^-]) endDate=$(makeDate "${1#-}") || exit 1; shift;;
-	    *)	    break;;
-	esac
-    done
-    items=$*
 }
 datePri()
 {
@@ -59,24 +45,33 @@ datePri()
     sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE"
 }
 
+typeset -a items=()
+while [[ "$1" =~ ^[,0-9]+$ ]]
+do
+    items+=("$1")
+    shift
+done
 if [[ "$1" = [a-zA-Z] || "$1" = 'none' ]]; then
     pri=$1
     shift
-    checkDates "$@"
-elif [[ $# -ge 2 && ( "$2" = [a-zA-Z] || "$2" = 'none' ) ]]; then
-    item=$1
-    shift
-    pri=$1
-    shift
-    checkDates "$@"
-    items=$item
 else
     die "$errmsg"
 fi
-[ "$items" ] || die "$errmsg"
+while [ $# -gt 0 ]
+do
+    case "$1" in
+	on)	beginDate=$(makeDate "$2") || exit 1; shift; shift;;
+	[^-]*-) beginDate=$(makeDate "${1%-}") || exit 1; shift;;
+	until)  endDate=$(makeDate "$2") || exit 1; shift; shift;;
+	-*[^-]) endDate=$(makeDate "${1#-}") || exit 1; shift;;
+	*)	break;;
+    esac
+done
+items+=($*)
+[ ${#items} -gt 0 ] || die "$errmsg"
 newpri=$( printf "%s\n" "$pri" | tr 'a-z' 'A-Z' )
 
-for item in $(echo $items | tr ',' ' '); do 
+for item in $(echo ${items[*]} | tr ',' ' '); do 
     whenwhat=
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
 
