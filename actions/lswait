@@ -7,14 +7,32 @@ shift
     echo "    $(basename $0) [TERM...]"
     echo "      Displays all blocked tasks that wait for a precondition."
     echo "      If TERM specified, lists only tasks that contain TERM(s)."
+    echo "    $(basename $0) for DEPITEM#[, DEPITEM#, ...]"
+    echo "      Displays all tasks that are blocked because of a dependency to"
+    echo "      DEPITEM#(s)."
     echo ""
     exit
 }
 
-# Consider only tasks that are not yet done or trashed and contain the "w:" wait
-# marker.
-# The tasks are already numbered when the filter is applied, so there definitely
-# is a space in front of the marker. 
-post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e ' w:[^ ]'"
+if [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
+    # We have dependent tasks: DEPITEM#. 
+    shift # Remove the "for" filler argument. 
 
-_list "$TODO_FILE" "$@" | sed -e "/^TODO:/s/of [0-9]\+ tasks shown/blocked \0/"
+    waitPattern=
+    for waitDependentTaskNum in $(echo $* | tr ',' ' ')
+    do
+        waitPattern=${waitPattern}${waitPattern:+\\|}${waitDependentTaskNum}
+    done
+    waitPattern=' w:\('${waitPattern}'\)\([ \t]\|$\)'
+
+    items=$(sed -n -e '/[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE")
+    _list "$TODO_FILE" "^ *\\(${items//$'\n'/\\|}\\) "
+else
+    # Consider only tasks that are not yet done or trashed and contain the "w:"
+    # wait marker.
+    # The tasks are already numbered when the filter is applied, so there
+    # definitely is a space in front of the marker. 
+    post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e ' w:[^ ]'"
+
+    _list "$TODO_FILE" "$@" | sed -e "/^TODO:/s/of [0-9]\+ tasks shown/blocked \0/"
+fi
