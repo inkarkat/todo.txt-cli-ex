@@ -126,8 +126,11 @@ BEGIN {
 # due. 
 / t:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", ""))
-    if (date > threshold && ENVIRON["TODOTXT_FILTER_FUTURE_TASKS"] != 0 ) {
+    if (ENVIRON["TODOTXT_FILTER_FUTURE_TASKS"] > 0 && date > threshold) {
         # Suppress tasks that are scheduled in the future. 
+        next
+    } else if (ENVIRON["TODOTXT_FILTER_FUTURE_TASKS"] < 0 && date <= threshold) {
+        # Suppress tasks that are have already been scheduled. 
         next
     }
 
