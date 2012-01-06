@@ -6,7 +6,7 @@ shift
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [TERM...]"
     echo "      Lists all the wait reasons (w:... markers) in active tasks."
-    echo "      If TERM specified, considers only tasks that contain TERM."
+    echo "      If TERM specified, considers only tasks that contain TERM(s)."
     echo ""
     exit
 }
