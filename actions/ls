@@ -7,24 +7,31 @@ shift
     echo "    $(basename $0) [TERM...]"
     echo "      Displays all tasks that aren't done yet and contain TERM(s)"
     echo "      sorted by priority with line numbers."
-    echo "    $(basename $0) ITEM#"
-    echo "      Displays task ITEM#."
+    echo "    $(basename $0) ITEM#[, ITEM#, ...]"
+    echo "      Displays task(s) ITEM#."
     echo ""
     exit
 }
 
 shopt -s extglob
 
-if [[ $# -eq 1 && "$1" = +([0-9]) ]]; then
+items=
+while [[ "$1" =~ ^[,0-9]+$ ]]
+do
+    item=${1%,}
+    item=${item#,}
+    items="${items}${items:+,}$item"
+    shift
+done
+if [ "$items" ]; then
     # Listing of task numbers is unintuitive, because the search pattern is
     # applied in the middle of alignment, when the numbers have already been
     # space- (but not zero-) aligned. 
-    _list "$TODO_FILE" "^ *${1##*(0)} "
-    exit
+    _list "$TODO_FILE" "^ *\\(${items//,/\\|}\\) "
+else
+    # Consider only tasks that are not yet done. 
+    # The tasks are already numbered when the filter is applied, so there
+    # definitely is a space in front of the marker. 
+    post_filter_command="grep -ve '^ *[0-9]\+ x '"
+    _list "$TODO_FILE" "$@"
 fi
-
-# Consider only tasks that are not yet done. The tasks are already numbered when
-# the filter is applied, so there definitely is a space in front of the marker. 
-post_filter_command="grep -ve '^ *[0-9]\+ x '"
-
-_list "$TODO_FILE" "$@"
