@@ -5,7 +5,7 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [TERM...]"
-    echo "      Displays all tasks that aren't done yet and contain TERM(s)"
+    echo "      Displays all open tasks that contain TERM(s)"
     echo "      sorted by priority with line numbers."
     echo "    $(basename $0) ITEM#[, ITEM#, ...]"
     echo "      Displays task(s) ITEM#."
@@ -32,6 +32,6 @@ else
     # Consider only tasks that are not yet done. 
     # The tasks are already numbered when the filter is applied, so there
     # definitely is a space in front of the marker. 
-    post_filter_command="grep -ve '^ *[0-9]\+ x '"
+    post_filter_command="grep -ve '^ *[0-9]\+ [xX] '"
     _list "$TODO_FILE" "$@"
 fi
