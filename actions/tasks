@@ -36,43 +36,33 @@ if [ $# -gt 0 ]; then
     fi
 fi
 
-typeset tasks=$(sed -n -e '
+typeset items=$(sed -n -e '
 # Filter ANSI escape sequences used for highlighting. 
 # (Technically, this is the SGR (Select Graphic Rendition) CSI.) 
 s/\[[0-9;]\+m//g
 
 # Stop parsing when the todo.txt verbose footer is encountered, or at the end of
 # the output. 
-/^--$/b END
-$b END
+/^--$/q
 
 # Extract the task number. 
 /^[0-9]\+ /!b
-s/^\([0-9]\+\) .*$/\1/
-H
-b
-
-# Flatten all collected task numbers into a space-delimited list. 
-:END
-g
-s/^\n\+//
-s/\n/ /g
-p
-q
+s/^\([0-9]\+\) .*$/\1/p
 ')
 
-[ "$tasks" ] || exit 1
+[ "$items" ] || exit 1
+items=${items//$'\n'/ } # Flatten all collected task numbers into a space-delimited list. 
 
 if [ "$action" ]; then
     if [[ " $TODOTXT_TASKS_MULTIACTIONS " == *\ ${action}\ * ]]; then
-        "$TODO_FULL_SH" ${actionPrefix}${action} $tasks "$@" || exit $?
+        "$TODO_FULL_SH" ${actionPrefix}${action} $items "$@" || exit $?
     else
-        typeset task
-        for task in $tasks
+        typeset item
+        for item in $items
         do
-            "$TODO_FULL_SH" ${actionPrefix}${action} $task "$@" || exit $?
+            "$TODO_FULL_SH" ${actionPrefix}${action} $item "$@" || exit $?
         done
     fi
 else
-    echo "$tasks"
+    echo "$items"
 fi
