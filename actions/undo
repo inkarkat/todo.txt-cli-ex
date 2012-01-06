@@ -46,10 +46,10 @@ for item in $items; do
         fi
 
         "$TODO_FULL_SH" uncomment -q "$item"
-    elif [[ "$todo" =~  \ x:[0-9]{4}-[0-9]{2}-[0-9]{2} ]]; then
+    elif [[ "$todo" =~  \ [xz]:[0-9]{4}-[0-9]{2}-[0-9]{2} ]]; then
         # The task may have been scheduled to expire; in this case, remove the
         # expire marker. 
-        "$TODO_FULL_SH" subst $item ' x:[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' ''
+        "$TODO_FULL_SH" subst $item ' [xz]:[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' ''
     else
         echo "TODO: $item is not marked done or trashed. Has it been archived?"
     fi
