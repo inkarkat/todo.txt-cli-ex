@@ -52,7 +52,7 @@ else
 fi
 
 # Split multiple wait's, if comma separated change to whitespace separated. 
-for item in `echo $items | tr ',' ' '`; do 
+for item in $(echo $items | tr ',' ' '); do 
     # Deprioritize in case it's currently prioritized. 
     if sed "$item!d" "$TODO_FILE" | grep -e '^(.) '; then
         "$TODO_FULL_SH" command depri $item || continue 
