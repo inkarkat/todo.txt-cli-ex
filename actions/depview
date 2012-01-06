@@ -15,6 +15,14 @@ if [ "$action" = "usage" ]; then
 elif [ "$action" = "list" ]; then
     TODOTXT_VERBOSE=0
     post_filter_command="grep -e '^ \\{0,\\}$1 '" # Note: Must use '^ \{0,\}', because '^ *$1' doesn't match for $1="1". 
+
+    # Remove projects, contexts and done / add date(s) to shorten the tasks. 
+    : ${TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION='[[:space:]][+@][[:graph:]]\{1,\}\| \([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\}\)\{1,2\}'}
+    if [ "$TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION" ]; then
+        # Use any of the existing todo.sh hooks to install our filter. 
+        export HIDE_PROJECTS_SUBSTITUTION=$TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION
+    fi
+
     _list "$TODO_FILE"
     exit
 elif [ "$action" = "filter" ]; then
