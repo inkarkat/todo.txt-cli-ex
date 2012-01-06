@@ -71,7 +71,8 @@ items+=($*)
 [ ${#items} -gt 0 ] || die "$errmsg"
 newpri=$( printf "%s\n" "$pri" | tr 'a-z' 'A-Z' )
 
-for item in $(echo ${items[*]} | tr ',' ' '); do 
+for item in ${items[*]//,/ }
+do 
     whenwhat=
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
 
