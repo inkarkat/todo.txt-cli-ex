@@ -29,7 +29,7 @@ doneDate=$(date -d "$1" +%F) || exit 1
 shift
 
 printf '' > ~/.todo-lastdone
-for item in $(echo $items | tr ',' ' ')
+for item in ${items//,/ }
 do 
     if [ $# -gt 0 ]; then
         "$TODO_FULL_SH" command append $item "$@" || exit $?
