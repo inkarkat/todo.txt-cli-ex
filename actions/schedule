@@ -8,7 +8,7 @@ if [ "$action" = "usage" ]; then
     echo "    $(basename $0) ITEM#[, ITEM#, ...] DATE|none|never|off|del|rm"
     echo "      Set, change or remove scheduled date of task ITEM#."
     echo "    $(basename $0)"
-    echo "      List all scheduled tasks."
+    echo "      List all scheduled open tasks."
     echo "      Intended to be used with futureTasks."
     echo "      Example:  $TODO_SH $(basename $0) tomorrow 42"
     echo ""
@@ -30,7 +30,7 @@ list()
         TODOTXT_FINAL_FILTER="${TODOTXT_FINAL_FILTER#|}"
         TODOTXT_FINAL_FILTER="${TODOTXT_FINAL_FILTER%|}"
     fi
-    post_filter_command="sed -e '/^ *[0-9]\+ x /d' -e '/${pattern}/!d'"
+    post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE"
 }
 
