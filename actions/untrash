@@ -27,7 +27,8 @@ trap 'cleanup' EXIT
 
 # Split multiple untrash's, if comma separated change to whitespace separated. 
 # Loop the 'untrash' function for each task. 
-for item in $(echo $* | tr ',' ' '); do 
+for item in ${*//,/ }
+do 
     [ "$item" = 'last' ] && item=$(sed -n '$ =' "$TRASH_FILE") 
 
     getTodo "$item" "$TRASH_FILE"
