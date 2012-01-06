@@ -7,7 +7,7 @@ shift
     echo "    $(basename $0) [DATE] [TERM...]"
     echo "      Displays all tasks that have a t:date \"scheduled\", u:date \"do-until\","
     echo "      or z:date \"do-until-then-trash\" marker attached and are due on DATE"
-    echo "      (or now). If TERM specified, lists only tasks that contain TERM."
+    echo "      (or now). If TERM specified, lists only tasks that contain TERM(s)."
     echo ""
     exit
 }
@@ -29,7 +29,7 @@ export TODOTXT_DISABLE_FILTER=0
 if [[ "$TODOTXT_FINAL_FILTER" == *utureTasks* ]]; then
     TODOTXT_FINAL_FILTER=${TODOTXT_FINAL_FILTER/utureTasks/utureTasks $threshold}
 else
-    if [ "$TODOTXT_FINAL_FILTER" == 'cat' ]; then
+    if [ "$TODOTXT_FINAL_FILTER" = 'cat' ]; then
         TODOTXT_FINAL_FILTER="$HOME/.todo/futureTasks $threshold"
     else
         TODOTXT_FINAL_FILTER="$HOME/.todo/futureTasks $threshold ${TODOTXT_FINAL_FILTER:+|} ${TODOTXT_FINAL_FILTER}"
