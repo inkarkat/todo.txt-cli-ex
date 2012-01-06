@@ -5,11 +5,11 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
-    echo "	Marks task(s) on line ITEM# as done in todo.txt,"
-    echo "	optionally appending COMMENT."
-    echo "	Task(s) that were dependent on ITEM# have that blocker removed."
-    echo "	Task(s) linked via l:### are marked done, too."
-    echo "	Contradependent task(s) that are marked !:ITEM# are trashed."
+    echo "      Marks task(s) on line ITEM# as done in todo.txt,"
+    echo "      optionally appending COMMENT."
+    echo "      Task(s) that were dependent on ITEM# have that blocker removed."
+    echo "      Task(s) linked via l:### are marked done, too."
+    echo "      Contradependent task(s) that are marked !:ITEM# are trashed."
     echo ""
     exit
 }
@@ -57,12 +57,9 @@ do
     fi
 
     # Contradependent tasks. 
-    contraItems=$(sed -n -e '/\(^\| \)!:'"${item}"'\( \|\$\)/=' "$TODO_FILE")
+    contraItems=$(sed -n -e '/\(^\| \)!:'"${item}"'\( \|$\)/=' "$TODO_FILE")
     if [ "$contraItems" ]; then
-	for contraItem in $contraItems
-	do
-	    "$TODO_FULL_SH" trash "$contraItem"
-	done
+	eval 'RECURSIVE_DO=true "$TODO_FULL_SH" trash' ${contraItems//$'\n'/ } '"$@"'
     fi
 
     if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
