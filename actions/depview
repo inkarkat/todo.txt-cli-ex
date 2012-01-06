@@ -149,17 +149,10 @@ awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -
     }
     function filtermarkers(text) {
         # Remove the w:### markers from the output, as this information is
-        # already included in the task indentation. 
-
-        # Plain AWK does not support backreferences via gensub, but it is okay to
-        # include a trailing space at the end. Due to the inclusion of the
-        # trailing space, the regex is overlapping, and we need to iterate until
-        # there are no more replacements. 
-        while (gsub(/ w:[0-9]+( |$)/, " ", text)) {}
-
-        # The final marker may be followed by an ANSI escape sequence for highlighting. 
-        gsub(/ w:[0-9]+\033/, "\033", text)
-
+        # already included in the task indentation. Because of potential
+        # highlighting around the marker, we cannot anchor them, but the pattern
+        # should be relatively unique. 
+        gsub(/w:[0-9]+/, "", text)
         return text
     }
     function intree(i,     node, j, k) {
