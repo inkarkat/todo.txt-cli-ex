@@ -23,7 +23,7 @@ do
 done
 [ "$items" ] || die "$errmsg"
 
-for item in `echo $items | tr ',' ' '`
+for item in $(echo $items | tr ',' ' ')
 do 
     "$TODO_FULL_SH" command del $item "$@" || exit $?
 
