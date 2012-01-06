@@ -25,7 +25,7 @@ done
 [ "$*" ] || die "$errmsg"
 
 
-for item in $(echo $items | tr ',' ' ')
+for item in ${items//,/ }
 do 
     getTodo "$item"
 
