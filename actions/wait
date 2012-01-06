@@ -30,7 +30,7 @@ if [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
     waitDescription="has become dependent on"
 
     waitReasons=
-    for waitDependentTaskNum in $(echo $* | tr ',' ' ')
+    for waitDependentTaskNum in ${*//,/ }
     do
         waitReasons=${waitReasons}${waitReasons:+ }w:${waitDependentTaskNum}
     done
@@ -52,7 +52,8 @@ else
 fi
 
 # Split multiple wait's, if comma separated change to whitespace separated. 
-for item in $(echo $items | tr ',' ' '); do 
+for item in ${items//,/ }
+do 
     # Deprioritize in case it's currently prioritized. 
     if sed "$item!d" "$TODO_FILE" | grep -e '^(.) '; then
         "$TODO_FULL_SH" command depri $item || continue 
