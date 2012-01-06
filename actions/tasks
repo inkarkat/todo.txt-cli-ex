@@ -8,12 +8,12 @@ shift
     echo "      Extracts the ITEM# task numbers from the output of a todo.sh command,"
     echo "      so that these can be processed or supplied to another command."
     echo "      Example: List all task numbers of tasks with priority c:"
-    echo "        todo.sh -p listpri c | todo.sh tasks"
+    echo "        todo.sh listpri c | todo.sh tasks"
     echo "    $(basename $0) ACTION [ACTION_ARGUMENTS]"
     echo "      Extracts the ITEM# task numbers from the output of a todo.sh command,"
     echo "      and passes each to todo.sh ACTION ITEM# [ACTION_ARGUMENTS]"
     echo "      Example: Re-prioritize all tasks with priority c to priority z:"
-    echo "        todo.sh -p listpri c | todo.sh tasks pri z"
+    echo "        todo.sh listpri c | todo.sh tasks pri z"
     echo ""
     exit
 }
@@ -37,14 +37,18 @@ if [ $# -gt 0 ]; then
 fi
 
 typeset tasks=$(sed -n -e '
+# Filter ANSI escape sequences used for highlighting. 
+# (Technically, this is the SGR (Select Graphic Rendition) CSI.) 
+s/\[[0-9;]\+m//g
+
 # Stop parsing when the todo.txt verbose footer is encountered, or at the end of
 # the output. 
 /^--$/b END
 $b END
 
 # Extract the task number. 
-/^ *[0-9]\+ /!b
-s/^ *\([0-9]\+\) .*$/\1/
+/^[0-9]\+ /!b
+s/^\([0-9]\+\) .*$/\1/
 H
 b
 
