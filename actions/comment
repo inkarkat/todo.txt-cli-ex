@@ -1,0 +1,42 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] COMMENT"
+    echo "      Adds / appends COMMENT (with comment marker) on task(s) on line ITEM#."
+    echo ""
+    exit
+}
+
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] COMMENT"
+[ $# -eq 0 ] && die "$errmsg"
+
+: ${TODOTXT_COMMENT_SYMBOL:= => }
+
+items=
+while [[ "$1" =~ ^[,0-9]+$ ]]
+do
+    items="$items $1"
+    shift
+done
+[ "$items" ] || die "$errmsg"
+[ "$*" ] || die "$errmsg"
+
+
+for item in $(echo $items | tr ',' ' ')
+do 
+    getTodo "$item"
+
+    if [[ "$todo" =~ $TODOTXT_COMMENT_SYMBOL ]]; then
+        case "$*" in
+            [$SENTENCE_DELIMITERS]*)  prefix=;;
+            *)                        prefix="; ";;
+        esac
+    else
+        # Do not pass leading space; the append action adds that itself. 
+        prefix="${TODOTXT_COMMENT_SYMBOL# }"
+    fi
+    "$TODO_FULL_SH" command append $item "${prefix}$*"
+done
