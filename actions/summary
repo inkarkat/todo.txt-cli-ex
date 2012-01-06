@@ -15,6 +15,7 @@ export TODOTXT_VERBOSE=0
 
 listNum=$("$TODO_FULL_SH" -p -x command ls "$@" | wc -l) # All tasks, including future and done. 
 doneNum=$("$TODO_FULL_SH" -p lsdo "$@" | wc -l)  # All tasks marked with "x". 
+trashedNum=$("$TODO_FULL_SH" -p lstrashable "$@" | wc -l)  # All tasks marked with "X". 
 prioNum=$("$TODO_FULL_SH" -p lsp "$@" | wc -l)   # All prioritized tasks; includes future tasks depending on active filter. 
 dueNum=$("$TODO_FULL_SH" -p lsdue "$@" | wc -l)  # All tasks that are due now. 
 waitNum=$("$TODO_FULL_SH" -p lswait "$@" | wc -l) # All tasks marked with "w:..." marker; includes future tasks depending on active filter. 
@@ -24,10 +25,10 @@ waitNum=$("$TODO_FULL_SH" -p lswait "$@" | wc -l) # All tasks marked with "w:...
 export TODOTXT_DISABLE_FILTER=0
 # Also ensure that the correct filter is set. 
 export TODOTXT_FINAL_FILTER="$HOME/.todo/futureTasks"
-export post_filter_command="grep -v -e '^ *[0-9]\+ x ' -e ' w:[^ ]'"
-activeNum=$("$TODO_FULL_SH" -p command ls "$@" | wc -l)    # All tasks not done, future, or waiting. 
+export post_filter_command="grep -v -e '^ *[0-9]\+ [xX] ' -e ' w:[^ ]'"
+activeNum=$("$TODO_FULL_SH" -p command ls "$@" | wc -l)    # All tasks not done, trashed, future, or waiting. 
 
-futureNum=$((listNum - activeNum - waitNum - doneNum))  # All tasks that will only come due in the future. 
+futureNum=$((listNum - activeNum - waitNum - doneNum - trashedNum))  # All tasks that will only come due in the future. 
 
 waitReasons=
 if [ $waitNum -gt 0 ]; then
@@ -35,7 +36,7 @@ if [ $waitNum -gt 0 ]; then
 fi
 
 echo "TODO: ${listNum} tasks, ${prioNum} prioritized, ${dueNum} due"
-echo "TODO: ${activeNum} available, ${waitNum} waiting, ${futureNum} future, ${doneNum} done"
+echo "TODO: ${activeNum} available, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${doneNum} done"
 if [ "$waitReasons" ]; then
     echo "TODO: waiting for $waitReasons"
 fi
