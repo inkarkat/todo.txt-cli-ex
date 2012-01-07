@@ -7,7 +7,7 @@ shift
     echo "    $(basename $0) [TERM...]"
     echo "      Displays a dashboard overview of the current tasks."
     echo "      Useful for embedding into the desktop background via Conky, Samurize, etc."
-    echo "      If TERM specified, considers only tasks that contain TERM."
+    echo "      If TERM specified, considers only tasks that contain TERM(s)."
     echo ""
     exit
 }
