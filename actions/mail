@@ -29,9 +29,10 @@ shopt -s extglob
 
 type -P email >/dev/null || die "TODO: Cannot send email; command 'email' not found!"
 
-# Consider only tasks that are not yet done. The tasks are already numbered when
-# the filter is applied, so there definitely is a space in front of the marker. 
-post_filter_command="grep -ve '^ *[0-9]\+ x '"
+# Consider only tasks that are not yet done or trashed. The tasks are already
+# numbered when the filter is applied, so there definitely is a space in front
+# of the marker. 
+post_filter_command="grep -ve '^ *[0-9]\+ [xX] '"
 
 # No highlighting and verbose summary. 
 TODOTXT_VERBOSE=0
