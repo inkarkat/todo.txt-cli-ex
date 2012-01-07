@@ -46,7 +46,7 @@ elif [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
     shift # Remove the "for" filler argument. 
 
     waitPattern=
-    for waitDependentTaskNum in $(echo $* | tr ',' ' ')
+    for waitDependentTaskNum in ${*//,/ }
     do
         waitPattern=${waitPattern}${waitPattern:+\\|}${waitDependentTaskNum}
     done
@@ -79,7 +79,8 @@ if [ ! "$items" ]; then
 fi
 
 # Split multiple unwait's, if comma separated change to whitespace separated. 
-for item in $(echo $items | tr ',' ' '); do 
+for item in ${items//,/ }
+do 
     getTodo "$item"
 
     # Unfortunately, sed doesn't understand the /\>/ "match end of word" regex
