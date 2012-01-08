@@ -15,12 +15,15 @@ shift
 }
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
+trashItems=
 
 if [[ "$1" =~ ^[0-9]+$ ]]; then
     item=$1 # we got a task to archive
-    what="$item"
-    [ $TODOTXT_VERBOSE -gt 0 ] && sed "$item!d" "$TODO_FILE"
-    sed "$item!d" "$TODO_FILE" >> "$DONE_FILE"
+    what=$item
+
+    getTodo "$item"
+    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
+    echo "$todo" >> "$DONE_FILE"
     sed -i.bak $item"s/^.*//" "$TODO_FILE"
 else
     keyword=$1 # we got a keyword, or nothing
@@ -32,15 +35,13 @@ else
     grep "^x .*$keyword" "$TODO_FILE" >> "$DONE_FILE"
     sed -i.bak "/^x .*$keyword/s/^.*//" "$TODO_FILE"
 
-
-    trashTasks=$(cat "$TODO_FILE" | "$HOME/.todo/trashedTasks" filter)
-    if [ "$trashTasks" ]; then
-        echo "$trashTasks" >> "$TRASH_FILE"
-        cat "$TODO_FILE" | "$HOME/.todo/trashedTasks" clear > "${TODO_FILE}.bak" && mv "${TODO_FILE}.bak" "$TODO_FILE"
-        [ $TODOTXT_VERBOSE -gt 0 ] && echo "TODO: $(echo "$trashTasks" | sed -n '$ =') task(s) trashed."
-    fi
+    trashItems=$(cat "$TODO_FILE" | "$HOME/.todo/trashedTasks" | sed -n -e '/^$/b' -e "/${keyword:-.}/=")
 fi
 [ $TODOTXT_VERBOSE -gt 0 ] && echo "TODO: $what archived."
+
+if [ "$trashItems" ]; then
+    eval '"$TODO_FULL_SH" trash' ${trashItems//$'\n'/ }
+fi
 
 if [ $# -eq 0 ]; then
     # This is a complete, regular archive. 
