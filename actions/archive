@@ -40,7 +40,7 @@ fi
 [ $TODOTXT_VERBOSE -gt 0 ] && echo "TODO: $what archived."
 
 if [ "$trashItems" ]; then
-    eval '"$TODO_FULL_SH" trash' ${trashItems//$'\n'/ }
+    eval '"$TODO_FULL_SH" trash --hard' ${trashItems//$'\n'/ }
 fi
 
 if [ $# -eq 0 ]; then
