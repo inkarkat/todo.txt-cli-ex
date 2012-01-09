@@ -6,7 +6,7 @@ shift
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) ITEM# TARGET#[, TARGET#, ...]"
     echo "      Link the task on line ITEM# to item(s) TARGET#."
-    echo "      (In addition to any existing links."
+    echo "      (In addition to any existing links.)"
     echo "    $(basename $0) ITEM# none"
     echo "      Remove all links from the task on line ITEM#."
     echo ""
@@ -28,7 +28,8 @@ fi
 links=
 linkMarkers=
 # Split multiple dep's, if comma separated change to whitespace separated. 
-for targetItem in $(echo $* | tr ',' ' '); do 
+for targetItem in ${*//,/ }
+do 
     links="${links}${links:+, }${targetItem}"
     linkMarkers="${linkMarkers}${linkMarkers:+ }l:${targetItem}"
 done
