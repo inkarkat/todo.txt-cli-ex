@@ -69,7 +69,8 @@ done
 [ "$items" ] || die "$errmsg"
 
 if [ "$endDate" ]; then
-    for item in $(echo $items | tr ',' ' '); do 
+    for item in ${items//,/ }
+    do 
 	getTodo "$item"
 
 	if [ "$endDate" = 'never' ]; then
