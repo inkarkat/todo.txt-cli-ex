@@ -123,10 +123,12 @@ def process(filespec, prefix, tasks, completed, priority):
 		for line in f:
 			prioritized = False
 			words = line.split()
+			if not words:
+				continue
 			if words[0] == ("X"):
 				continue	# Ignore trashed tasks.
 			taskNum += 1
-			if words[0][0:1] == ("("):
+			if words[0].startswith("("):
 				prioritized = True
 			if words[0] == ("x"):
 				for word in words:
