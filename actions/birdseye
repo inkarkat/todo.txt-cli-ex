@@ -121,9 +121,11 @@ def process(filespec, prefix, tasks, completed, priority):
 		f = open (filespec, "r")
 		taskNum = 0
 		for line in f:
-			taskNum += 1
 			prioritized = False
 			words = line.split()
+			if words[0] == ("X"):
+				continue	# Ignore trashed tasks.
+			taskNum += 1
 			if words[0][0:1] == ("("):
 				prioritized = True
 			if words[0] == ("x"):
