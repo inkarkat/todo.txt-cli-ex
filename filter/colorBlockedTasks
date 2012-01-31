@@ -1,0 +1,64 @@
+#!/bin/bash
+
+if [ $TODOTXT_PLAIN -eq 0 ]; then
+    # Note: Highlightings that set the background color (\\033[4...) must have
+    # $DEFAULT prepended to reset any foreground highlighting from a predecessor
+    # element when it is used to continue the line highlighting. 
+
+    if [ ${TERM_COLORS:-0} -ge 256 ]; then
+        export COLOR_BLOCKED=${COLOR_BLOCKED-'\\033[0;38;5;136m'}
+        export COLOR_BLOCKER=${COLOR_BLOCKER-'\\033[1m'}
+    else
+        export COLOR_BLOCKED=${COLOR_BLOCKED-'\\033[0;33m'}
+        export COLOR_BLOCKER=${COLOR_BLOCKER-'\\033[1m'}
+    fi
+
+    awk --re-interval -v date=$1 '
+function hasHighlight(colorVar) {
+    return (ENVIRON[colorVar] != "")
+}
+function highlight(colorVar,      color) {
+    color = ENVIRON[colorVar]
+    gsub(/\\+033/, "\033", color)
+    return color
+}
+function highlightend(colorVar, defaultColor,      color) {
+    color = highlight(colorVar "_END")
+    return (color == "" ? (defaultColor == "" ? highlight("DEFAULT") : defaultColor) : color)
+}
+function getLineColor(      hl) {
+    if (match($0, /[0-9]+ /) > 1) {
+        return substr($0, 1, RSTART - 1)
+    } else {
+        return ""
+    }
+}
+# Existing line highlightings (i.e. prioritized, done or due tasks) have
+# precedence. 
+{
+    lineColor = getLineColor()
+    netTask = substr($0, length(lineColor) + 1)
+    if (match(netTask, /^[0-9]+ [xX] /)) {
+        # Do not process done or trashed tasks. 
+        print
+        next
+    }
+}
+# Highlight blocked tasks with a w: wait marker. 
+/ w:[^ ]/ {
+    if (hasHighlight("COLOR_BLOCKED")) {
+        if (lineColor == "") {
+            # No existing line color, apply to entire line. 
+            lineColor = highlight("COLOR_BLOCKED")
+            $0 = highlight("COLOR_BLOCKED") $0 highlightend("COLOR_BLOCKED", "")
+        } else {
+            # The line is already colored, only highlight the wait marker itself. 
+            $0 = gensub(/ (w:[^ ]\+)/, " " highlight("COLOR_BLOCKED") "\\1" highlightend("COLOR_BLOCKED", lineColor), "")
+        }
+    }
+}
+{ print }
+'
+else
+    cat
+fi
