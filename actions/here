@@ -1,0 +1,17 @@
+#!/bin/bash
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [DATE] [TERM...]"
+    echo "      Displays all tasks with a context of the current host / location."
+    echo "      If TERM specified, lists only tasks that contain TERM(s)."
+    echo ""
+    exit
+}
+
+[ "$HOSTNAME" ] || die "Cannot determine hostname!"
+
+post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e '@$(echo "$HOSTNAME" | tr 'A-Z' 'a-z')'"
+_list "$TODO_FILE" "$@"
