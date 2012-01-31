@@ -47,13 +47,13 @@ function getLineColor() {
             # Highlight current task number. 
             $0 = gensub(/([0-9]+) /, highlight("COLOR_TASKNUM") "\\1" highlightend("COLOR_TASKNUM", lineColor) " ", " ")
 
-            # Highlight any w:42 references to other tasks, and normalize number
-            # width to e.g. w:042. 
+            # Highlight any m:42 references to other tasks, and normalize number
+            # width to e.g. m:042. 
             for (i = 1; i <= NF; i++) {
-                taskNum = gensub(/^w:([0-9]+)/, "\\1", "", $i)
+                taskNum = gensub(/^[lkjw]:([0-9]+)/, "\\1", "", $i)
                 if (taskNum == $i) continue
                 newTaskNum = sprintf("%0" taskNumWidth "d", taskNum)
-                $i = gensub(/^(w:)([0-9]+)/, highlight("COLOR_TASKNUM") "\\1" newTaskNum highlightend("COLOR_TASKNUM", lineColor), " ", $i)
+                $i = gensub(/^([lkjw]:)([0-9]+)/, "\\1" highlight("COLOR_TASKNUM") newTaskNum highlightend("COLOR_TASKNUM", lineColor), " ", $i)
             }
         }
     }
