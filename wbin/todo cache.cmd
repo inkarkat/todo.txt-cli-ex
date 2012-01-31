@@ -15,9 +15,11 @@
 ::	been changed. 
 ::* REMARKS: 
 ::       	
-::* FILE_SCCS = "@(#)tt cache.cmd	004	(25-May-2011)	tools";
+::* FILE_SCCS = "@(#)tt cache.cmd	005	(12-Nov-2011)	tools";
 ::
 ::* REVISION	DATE		REMARKS 
+::	005	12-Nov-2011	Replace invocation of "what" and "summary" with
+::				dedicated "dashboard" add-on. 
 ::	004	25-May-2011	XXX: Inexplicable caching of the former day's
 ::				todos yet correctly updated modification date in
 ::				conjunction with Dropbox sync, when run at the
@@ -68,7 +70,7 @@ if "%oldModificationDate%" == "%modificationDate%" (
 echo.%modificationDate%> "%dateStore%"
 
 :: Refresh cache contents. 
-(set DEBUG=&call tt.cmd -p what && call tt.cmd -p summary)>"%cacheFile%"
+set DEBUG=&call tt.cmd -p dashboard > "%cacheFile%"
 :: And print them. 
 type "%cacheFile%"
 
