@@ -17,9 +17,6 @@ if [ "$TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION" ]; then
     export HIDE_CUSTOM_SUBSTITUTION=$TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION
 fi
 
-readonly taskNum=$( sed -n '$ =' "$TODO_FILE" )
-readonly taskNumWidth=${#taskNum}
-
 original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 TODOTXT_VERBOSE=0
 
