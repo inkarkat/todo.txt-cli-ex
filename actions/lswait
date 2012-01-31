@@ -14,6 +14,12 @@ shift
     exit
 }
 
+# Omit the "blocked" highlighting in favor of the more readable alternating task
+# highlighting for readability; all tasks are blocked, anyway. Also, this way
+# the "blocker" highlighting stands out better and puts further emphasis on
+# them. 
+export COLOR_BLOCKED=
+
 if [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
     # We have dependent tasks: DEPITEM#. 
     shift # Remove the "for" filler argument. 
