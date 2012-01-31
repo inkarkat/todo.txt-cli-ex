@@ -17,7 +17,7 @@ function highlight(colorVar,      color) {
 }
 function highlightend(colorVar, defaultColor,      color) {
     color = highlight(colorVar "_END")
-    return (color == "" ? defaultColor : color)
+    return (color == "" ? (defaultColor == "" ? highlight("DEFAULT") : defaultColor) : color)
 }
 function getLineColor() {
     if (match($0, /[0-9]+ /) > 1) {
@@ -28,13 +28,11 @@ function getLineColor() {
 }
 {
     lineColor = getLineColor()
-    defaultLineColor = (lineColor == "" ? highlight("DEFAULT") : lineColor)
 
     # Highlight alternating lines. 
     if (hasHighlight("COLOR_ALTERNATING") && wasUncolored && lineColor == "") {
-        $0 = highlight("COLOR_ALTERNATING") $0 highlightend("COLOR_ALTERNATING", defaultLineColor)
+        $0 = highlight("COLOR_ALTERNATING") $0 highlightend("COLOR_ALTERNATING", lineColor)
         lineColor = highlight("COLOR_ALTERNATING")
-        defaultLineColor = lineColor
     }
 
     if (hasHighlight("COLOR_TASKNUM")) {
@@ -47,7 +45,7 @@ function getLineColor() {
             }
 
             # Highlight current task number. 
-            $0 = gensub(/([0-9]+) /, highlight("COLOR_TASKNUM") "\\1" highlightend("COLOR_TASKNUM", defaultLineColor) " ", " ")
+            $0 = gensub(/([0-9]+) /, highlight("COLOR_TASKNUM") "\\1" highlightend("COLOR_TASKNUM", lineColor) " ", " ")
 
             # Highlight any w:42 references to other tasks, and normalize number
             # width to e.g. w:042. 
@@ -55,13 +53,13 @@ function getLineColor() {
                 taskNum = gensub(/^w:([0-9]+)/, "\\1", "", $i)
                 if (taskNum == $i) continue
                 newTaskNum = sprintf("%0" taskNumWidth "d", taskNum)
-                $i = gensub(/^(w:)([0-9]+)/, highlight("COLOR_TASKNUM") "\\1" newTaskNum highlightend("COLOR_TASKNUM", defaultLineColor), " ", $i)
+                $i = gensub(/^(w:)([0-9]+)/, highlight("COLOR_TASKNUM") "\\1" newTaskNum highlightend("COLOR_TASKNUM", lineColor), " ", $i)
             }
         }
     }
-    if (hasHighlight("COLOR_CONTEXT")) $0 = gensub(/ (@[^ ]*)/, " " highlight("COLOR_CONTEXT") "\\1" highlightend("COLOR_CONTEXT", defaultLineColor), "g")
-    if (hasHighlight("COLOR_PROJECT")) $0 = gensub(/ (\+[^ ]*)/, " " highlight("COLOR_PROJECT") "\\1" highlightend("COLOR_PROJECT", defaultLineColor), "g")
-    if (hasHighlight("COLOR_DATE"))   $0 = gensub(/ ([0-9]{4}-[0-9]{2}-[0-9]{2}) /, " " highlight("COLOR_DATE") "\\1" defaultLineColor " ", "")
+    if (hasHighlight("COLOR_CONTEXT")) $0 = gensub(/ (@[^ ]*)/, " " highlight("COLOR_CONTEXT") "\\1" highlightend("COLOR_CONTEXT", lineColor), "g")
+    if (hasHighlight("COLOR_PROJECT")) $0 = gensub(/ (\+[^ ]*)/, " " highlight("COLOR_PROJECT") "\\1" highlightend("COLOR_PROJECT", lineColor), "g")
+    if (hasHighlight("COLOR_DATE"))   $0 = gensub(/ ([0-9]{4}-[0-9]{2}-[0-9]{2}) /, " " highlight("COLOR_DATE") "\\1" lineColor " ", "")
 
     # Remember line highlighting for highlighting of alternate lines. 
     # This has the advantage over a simple "NR % 2" that the line following an
