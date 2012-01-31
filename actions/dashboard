@@ -25,6 +25,12 @@ if [ "$HOSTNAME" ]; then
         echo
         echo "    ${filter}tasks @${HOSTNAME}:"
         echo "$hereTasks"
+    else
+        allHereTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here)
+        if [ "$allHereTasks" ]; then
+            echo
+            echo "    There are tasks @${HOSTNAME}."
+        fi
     fi
 fi
 
