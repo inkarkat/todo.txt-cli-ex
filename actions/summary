@@ -13,7 +13,14 @@ shift
 
 export TODOTXT_VERBOSE=0    # Turn off the list footer. 
 
-listNum=$("$TODO_FULL_SH" -p -x command ls "$@" | wc -l) # All tasks, including future and done. 
+totalNum=$(sed -ne '$ =' "$TODO_FILE")   # Total task number, not just the ones matching TERM. 
+if [ $# -eq 0 ]; then
+    listNum=$totalNum
+    totalMessage=
+else
+    listNum=$("$TODO_FULL_SH" -p -x command ls "$@" | wc -l) # All tasks, including future and done. 
+    totalMessage=" ($((listNum * 100 / totalNum))%), ${totalNum} total"
+fi
 dueNum=$("$TODO_FULL_SH" -p lsdue "$@" | wc -l)  # All tasks that are due now. 
 # The following usually do not include future tasks, but this is depending on the active filter. 
 doneNum=$("$TODO_FULL_SH" -p lsdo "$@" | wc -l)  # All tasks marked with "x". 
@@ -33,13 +40,14 @@ activeNum=$(
 )    # All tasks not done, trashed, future, or waiting. 
 
 futureNum=$((listNum - activeNum - waitNum - doneNum - trashedNum))  # All tasks that will only come due in the future. 
+# When the futureTasks filter isn't enabled, this will be 0. 
 
 waitReasons=
 if [ $waitNum -gt 0 ]; then
     waitReasons=$("$TODO_FULL_SH" listreasons "$@" | sed -n -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
 fi
 
-echo "TODO: ${listNum} tasks, ${prioNum} prioritized, ${dueNum} due"
+echo "TODO: ${listNum} tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
 echo "TODO: ${activeNum} open, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${doneNum} done"
 if [ "$waitReasons" ]; then
     echo "TODO: waiting for $waitReasons"
