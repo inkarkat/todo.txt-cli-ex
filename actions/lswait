@@ -19,14 +19,24 @@ if [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
     shift # Remove the "for" filler argument. 
 
     waitPattern=
-    for waitDependentTaskNum in $(echo $* | tr ',' ' ')
+    for waitDependentTaskNum in ${*//,/ }
     do
         waitPattern=${waitPattern}${waitPattern:+\\|}${waitDependentTaskNum}
     done
     waitPattern=' w:\('${waitPattern}'\)\([ \t]\|$\)'
 
     items=$(sed -n -e '/[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE")
-    _list "$TODO_FILE" "^ *\\(${items//$'\n'/\\|}\\) "
+    items=${items//$'\n'/ } # Flatten all collected task numbers into a space-delimited list. 
+    if [ "$TODOTXT_LSWAIT_SHOW_ITEMS" ]; then
+        # Hidden functionality for other addons. 
+        echo "$items"
+    else
+        if [ "$items" ]; then
+            _list "$TODO_FILE" "^ *\\(${items// /\\|}\\) "
+        else
+            die "TODO: No tasks have a dependency to ${*// /,}."
+        fi
+    fi
 else
     # Consider only tasks that are not yet done or trashed and contain the "w:"
     # wait marker.
