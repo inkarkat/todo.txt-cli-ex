@@ -44,7 +44,7 @@ futureNum=$((listNum - activeNum - waitNum - doneNum - trashedNum))  # All tasks
 
 waitReasons=
 if [ $waitNum -gt 0 ]; then
-    waitReasons=$("$TODO_FULL_SH" listreasons "$@" | sed -n -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
+    waitReasons=$("$TODO_FULL_SH" listblockers "$@" | sed -n -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
 fi
 
 echo "TODO: ${listNum} tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
