@@ -1,5 +1,9 @@
 #!/bin/bash
+
 export TODOTXT_FILTER_FUTURE_TASKS=${TODOTXT_FILTER_FUTURE_TASKS:-1}
+#   1: Suppress tasks that are scheduled in the future. 
+#  -1: Suppress tasks that are have already been scheduled. 
+#   0: Disable the futureTasks filter.
 
 if [ $TODOTXT_FILTER_FUTURE_TASKS -ne 0 ]; then
     awk --re-interval -v date=$1 '
@@ -28,7 +32,11 @@ BEGIN {
 }
 / t:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", ""))
-    if (date > threshold) {
+    if (ENVIRON["TODOTXT_FILTER_FUTURE_TASKS"] > 0 && date > threshold) {
+        # Suppress tasks that are scheduled in the future. 
+        next
+    } else if (ENVIRON["TODOTXT_FILTER_FUTURE_TASKS"] < 0 && date <= threshold) {
+        # Suppress tasks that are have already been scheduled. 
         next
     }
 }
