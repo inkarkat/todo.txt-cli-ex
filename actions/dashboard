@@ -12,7 +12,10 @@ shift
     exit
 }
 
-echo "    Pending tasks:"
+filter=
+[ $# -gt 0 ] && filter="$* "
+
+echo "    Pending ${filter}tasks:"
 "$TODO_FULL_SH" what "$@"
 "$TODO_FULL_SH" summary "$@"
 
@@ -20,11 +23,11 @@ if [ "$HOSTNAME" ]; then
     hereTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here "$@")
     if [ "$hereTasks" ]; then
         echo
-        echo "    Tasks @${HOSTNAME}:"
+        echo "    ${filter}tasks @${HOSTNAME}:"
         echo "$hereTasks"
     fi
 fi
 
 echo
-echo "    Last tasks:"
+echo "    Last ${filter}tasks:"
 TODOTXT_VERBOSE=0 "$TODO_FULL_SH" last "$@"
