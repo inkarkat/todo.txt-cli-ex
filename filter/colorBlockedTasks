@@ -6,11 +6,15 @@ if [ $TODOTXT_PLAIN -eq 0 ]; then
     # element when it is used to continue the line highlighting. 
 
     if [ ${TERM_COLORS:-0} -ge 256 ]; then
+        # Color for tasks that are blocked. 
         export COLOR_BLOCKED=${COLOR_BLOCKED-'\\033[0;38;5;136m'}
-        export COLOR_BLOCKER=${COLOR_BLOCKER-'\\033[1m'}
+        # Color for the wait reason itself (but not for dependent ITEM# task
+        # numbers). Usually used on top of COLOR_BLOCKED, but can appear
+        # independently when the task is already highlighted otherwise. 
+        export COLOR_BLOCKER=${COLOR_BLOCKER-'\\033[7;38;5;136m'}
     else
         export COLOR_BLOCKED=${COLOR_BLOCKED-'\\033[0;33m'}
-        export COLOR_BLOCKER=${COLOR_BLOCKER-'\\033[1m'}
+        export COLOR_BLOCKER=${COLOR_BLOCKER-'\\033[7;33m'}
     fi
 
     awk --re-interval -v date=$1 '
@@ -33,6 +37,24 @@ function getLineColor(      hl) {
         return ""
     }
 }
+function highlightBlocker(      i) {
+    if (hasHighlight("COLOR_BLOCKER")) {
+        for (i = 1; i <= NF; i++) {
+            # Do not highlight the (incomplete) w:(wait reason) marker yet; it
+            # is done afterwards in a global substitution over the entire line. 
+            # Do not highlight w:42 dependencies to another tasks, as we rather
+            # want the colorSymbols filter to perform number normalization and
+            # its highlighting of task numbers. (Assuming it comes after us in
+            # the filter pipeline.) 
+            if ($i !~ /^w:[0-9]+$/ && $i !~ /^w:\([^)]+/) {
+                $i = gensub(/(w:)([^( ][^ ]*)/, "\\1" highlight("COLOR_BLOCKER") "\\2" highlightend("COLOR_BLOCKER", lineColor), "", $i)
+            }
+        }
+        # Remove the brackets in the w:(wait reason) marker; the highlighting
+        # provides enough visual grouping. 
+        $0 = gensub(/ (w:)\(([^)]+)\)/, " \\1" highlight("COLOR_BLOCKER") "\\2" highlightend("COLOR_BLOCKER", lineColor), "g")
+    }
+}
 # Existing line highlightings (i.e. prioritized, done or due tasks) have
 # precedence. 
 {
@@ -50,11 +72,15 @@ function getLineColor(      hl) {
         if (lineColor == "") {
             # No existing line color, apply to entire line. 
             lineColor = highlight("COLOR_BLOCKED")
+
+            highlightBlocker()
             $0 = highlight("COLOR_BLOCKED") $0 highlightend("COLOR_BLOCKED", "")
         } else {
-            # The line is already colored, only highlight the wait marker itself. 
-            $0 = gensub(/ (w:[^ ]\+)/, " " highlight("COLOR_BLOCKED") "\\1" highlightend("COLOR_BLOCKED", lineColor), "")
+            # The line is already colored, only highlight the blocker itself. 
+            highlightBlocker()
         }
+    } else {
+        highlightBlocker()
     }
 }
 { print }
