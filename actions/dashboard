@@ -20,16 +20,25 @@ echo "    Pending ${filter}tasks:"
 "$TODO_FULL_SH" summary "$@"
 
 if [ "$HOSTNAME" ]; then
+    hereTaskNum=0
     hereTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here "$@")
     if [ "$hereTasks" ]; then
+        hereTaskNum=$(echo "$hereTasks" | sed -n '$ =')
         echo
-        echo "    ${filter}tasks @${HOSTNAME}:"
+        echo "    Local ${filter}tasks @${HOSTNAME}:"
         echo "$hereTasks"
-    else
-        allHereTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here)
-        if [ "$allHereTasks" ]; then
-            echo
-            echo "    There are tasks @${HOSTNAME}."
+    fi
+
+    if [ $# -gt 0 ]; then
+        # When filter TERM(s) are given, still include information about any
+        # other local tasks. 
+        allHereTaskNum=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here | sed -n '$ =')
+        if [ $allHereTaskNum -gt 0 ]; then
+            if [ $hereTaskNum -gt 0 ]; then
+                echo "TODO: $((allHereTaskNum - hereTaskNum)) more local task(s) @${HOSTNAME}"
+            else
+                echo "TODO: $allHereTaskNum local task(s) @${HOSTNAME}"
+            fi
         fi
     fi
 fi
