@@ -15,8 +15,7 @@ errmsg="usage: $TODO_SH $(basename $0) ITEM# ITEM#[, ITEM#, ...]"
 [ $# -lt 2 ] && die "$errmsg"
 
 # Split multiple duplicates, if comma separated change to whitespace separated. 
-items=$(echo $* | tr ',' ' ')
-
-for item in $items; do 
+for item in ${*//,/ }
+do
     "$TODO_FULL_SH" link $item "${items/$item/}"
 done
