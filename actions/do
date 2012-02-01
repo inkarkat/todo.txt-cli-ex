@@ -8,7 +8,7 @@ shift
     echo "      Marks task(s) on line ITEM# as done in todo.txt,"
     echo "      optionally appending COMMENT."
     echo "      Task(s) that were dependent on ITEM# have that blocker removed."
-    echo "      Task(s) linked via l:### are marked done, too."
+    echo "      Task(s) linked via l:### from ITEM# are marked done, too."
     echo "      Contradependent task(s) that are marked !:ITEM# are trashed."
     echo ""
     exit
