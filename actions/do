@@ -47,12 +47,20 @@ do
 	"$TODO_FULL_SH" command append $item "$@" || exit $?
     fi
 
+    getTodo "$item"
+
     if [ "$isTrashInstead" ]; then
-	RECURSIVE_DO='true' "$TODO_FULL_SH" trash $item || exit $?
+	if [ "${todo:0:2}" != 'X ' ]; then
+	    # The task may have already been done by another recursion level.
+	    # Prevent the trash error message in such a case. 
+	    RECURSIVE_DO='true' "$TODO_FULL_SH" trash $item || exit $?
+	fi
     else
 	"$TODO_FULL_SH" command do $item || exit $?
 	printf '%s ' $item >> ~/.todo-lastdone
     fi
+
+
 
     # Unblock tasks that depended on the now done task. 
     if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
@@ -65,7 +73,6 @@ do
     fi
 
 
-    getTodo "$item"
 
     # Cascade done to tasks linked from the now done task. 
     linkMarkers=$(echo "$todo" | grep -o '[^ ]*l:[[:digit:]]\+' | grep '^l:')
@@ -86,6 +93,7 @@ do
 	    )
 	done
     fi
+
 
     if [ -x "$TODO_ACTIONS_DIR/trash" ]; then
 	# Trash to-be-killed tasks referenced by the now done task. 
@@ -109,6 +117,7 @@ do
 	fi
 
 
+
 	# Trash contradependent tasks referenced by the now done task or which
 	# share the same GOAL and tasks that reference the now done task. 
 #set -x
@@ -125,8 +134,8 @@ do
 
 	# Add the tasks referenced from the current task. 
 	referencedFromHere=$(echo "$joinMarkers" | grep -e '^j:[0-9]\+$')
-	[ "$referencedFromHere" ] && referencedItems="${referencedItems}${referencedItems:+
-}${referencedFromHere#j:}"
+	[ "$referencedFromHere" ] && referencedItems=$(echo "${referencedItems}${referencedItems:+
+}${referencedFromHere#j:}" | sort)
 
 	# Recursively trash all those tasks, but process them as if they were
 	# done. To achieve both recursion and processing, we do not delegate to
@@ -135,9 +144,9 @@ do
 	if [ "$referencedItems" ]; then
 	    [ "${referencedItems//$'\n'/}" = "$referencedItems" ] && howManyReferences='it' || howManyReferences='others'
 	    echo "TODO: $item is contradependent on ${referencedItems//$'\n'/,}; trashing ${howManyReferences}."
-echo ">>>> recurse in  $item"
+#echo ">>>> recurse in  $item"
 	    eval 'RECURSIVE_DO=true "$TODO_FULL_SH" do trash' ${referencedItems//$'\n'/ } '"$@"'
-echo "<<<< recurse out $item"
+#echo "<<<< recurse out $item"
 	fi
 set +x
     fi
