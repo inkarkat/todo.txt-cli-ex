@@ -4,7 +4,7 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) del|trash [--hard] ITEM# DUPITEM#[, DUPITEM#, ...]"
+    echo "    $(basename $0) ITEM# del|trash [--hard] DUPITEM#[, DUPITEM#, ...]"
     echo "      Trash the tasks on line(s) DUPITEM# with a comment of"
     echo "      \"dup of ITEM#\". Use this when the tasks are identical and."
     echo "      were added without knowledge of the existing task."
@@ -20,22 +20,29 @@ shift
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) (del|trash [--hard])|(goal GOAL)|link ITEM# ITEM#[, ITEM#, ...]"
+shopt -s extglob
+
+errmsg="usage: $TODO_SH $(basename $0) (ITEM# (del|trash) [--hard])|(goal GOAL)|link ITEM#[, ITEM#, ...]"
 
 isHard=
-case $1 in
-    del|trash)
-        subaction='trash'
-        shift
-        if [ "$1" = '--hard' ]; then
-            isHard='true'
-            shift
-        fi
+case "$1" in
+    +([0-9]))
+        case "$2" in
+            del|trash)
+                item=$1
+                shift
+                subaction='trash'
+                shift
+                if [ "$1" = '--hard' ]; then
+                    isHard='true'
+                    shift
+                fi
 
-        [ $# -ge 2 ] || die "$errmsg"
-        item=$1
-        shift
-        dupItems=$*
+                [ $# -ge 1 ] || die "$errmsg"
+                dupItems=$*
+                ;;
+            *)  die "$errmsg";;
+        esac
         ;;
     goal)
         subaction='append'
@@ -56,9 +63,7 @@ case $1 in
         [ $# -ge 2 ] || die "$errmsg"
         dupItems=$*
         ;;
-    *)
-        die "$errmsg"
-        ;;
+    *)  die "$errmsg";;
 esac
 
 # Split multiple duplicates, if comma separated change to whitespace separated. 
@@ -66,7 +71,7 @@ for dupItem in ${dupItems//,/ }
 do
     case $subaction in
         trash)
-            "$TODO_FULL_SH" comment $dupItem "dup of $item"
+            "$TODO_FULL_SH" comment $dupItem "dup of $item" || exit $?
             eval 'RECURSIVE_DO=true "$TODO_FULL_SH" trash' ${isHard:+--hard} '$dupItem' || exit $?
             ;;
         append)
