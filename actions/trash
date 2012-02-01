@@ -48,21 +48,25 @@ done
 # Loop the 'trash' function for each task. 
 for item in ${items//,/ }
 do 
+    # Always append more even when the task is already trashed. 
     if [ $# -gt 0 ]; then
         "$TODO_FULL_SH" command append $item "$@" || exit $?
     fi
 
     getTodo "$item"
 
-    # Check if this task has already been done. 
+    # Check if this task has already been done or trashed, but allow a --hard
+    # re-trash of an already trashed task. 
     if [ "${todo:0:2}" = 'x ' ]; then
         echo "$item is already marked done."
+    elif [ ! "$isHard" -a "${todo:0:2}" = 'X ' ]; then
+        echo "$item is already marked as trashed."
     else
         now=$(date '+%Y-%m-%d')
         # Remove priority once task is trashed. 
         sed -i.bak $item"s/^(.) //" "$TODO_FILE"
         # Add "X" trashed marker and timestamp like the 'do' command. 
-        sed -i.bak $item's|^\(X \)\?|'"X $now |" "$TODO_FILE"
+        sed -i.bak $item's|^\(X \([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\?\)\?|'"X $now |" "$TODO_FILE"
 
         if [ "$isHard" ]; then
             # Immediately move task to trash. 
