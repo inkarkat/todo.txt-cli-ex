@@ -127,7 +127,7 @@ export TODOTXT_FINAL_FILTER="$HOME/.todo/colorFutureTasks | $HOME/.todo/colorBlo
 # executes before the main filtering, so that it does not interfere with a
 # post_filter_command used by various addons, and so that the projected priority
 # is considered by actions that do filtering on _list output. 
-export pre_filter_command="$HOME/.todo/scheduledFilter"
+export pre_filter_command="$HOME/.todo/markerTrashedFilter | $HOME/.todo/scheduledFilter"
 
 # Make 'what' addon show only priorities A-F. 
 export TODOTXT_WHAT_PRIORITIES=A-F
