@@ -74,7 +74,7 @@ generalWaitPattern=' w:\('$generalReasonPattern'\)\([ \t]\|$\)'
 if [ ! "$items" ]; then
     # No tasks have been specified; we must generate the list of (not yet done
     # or trashed) tasks that contain the waitPattern ourselves. 
-    items=$(sed -n -e '/[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE")
+    items=$(sed -n -e '/^[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE")
 
     [ "$items" ] || die "TODO: No tasks that contain the ${waitDescription:?} found."
 fi
