@@ -60,8 +60,9 @@ else
     IFS=,
     for waitReason in $(echo "$@" | sed -e 's/, \+/,/g')
     do
-        # Enclose REASONs in parentheses if they consist of multiple words. 
-        waitPattern=${waitPattern}${waitPattern:+\\|}$(echo "$waitReason" | sed -e '/[ \t]/s/.*/(&)/')
+        # Escape "/" within REASON because it is used in /-delimited regexps. 
+        # Enclose REASON in parentheses if it consists of multiple words. 
+        waitPattern=${waitPattern}${waitPattern:+\\|}$(echo "$waitReason" | sed -e 's|/|\\&|g' -e '/[ \t]/s/.*/(&)/')
     done
     unset IFS
 fi
