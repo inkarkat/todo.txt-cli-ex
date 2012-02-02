@@ -15,9 +15,10 @@
 ::	been changed. 
 ::* REMARKS: 
 ::       	
-::* FILE_SCCS = "@(#)tt cache.cmd	005	(12-Nov-2011)	tools";
+::* FILE_SCCS = "@(#)tt cache.cmd	006	(01-Feb-2012)	tools";
 ::
 ::* REVISION	DATE		REMARKS 
+::	006	01-Feb-2012	Pass command-line arguments along. 
 ::	005	12-Nov-2011	Replace invocation of "what" and "summary" with
 ::				dedicated "dashboard" add-on. 
 ::	004	25-May-2011	XXX: Inexplicable caching of the former day's
@@ -70,7 +71,7 @@ if "%oldModificationDate%" == "%modificationDate%" (
 echo.%modificationDate%> "%dateStore%"
 
 :: Refresh cache contents. 
-set DEBUG=&call tt.cmd -p dashboard > "%cacheFile%"
+set DEBUG=&call tt.cmd -p dashboard %* > "%cacheFile%"
 :: And print them. 
 type "%cacheFile%"
 
