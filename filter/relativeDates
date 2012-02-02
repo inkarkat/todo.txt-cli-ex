@@ -1,4 +1,5 @@
 #!/bin/bash
+if [ ${TODOTXT_RELDATE:-1} -ne 0 ]; then
 awk --re-interval -v date=$1 '
 function highlight(colorVar,      color) {
     color = ENVIRON[colorVar]
@@ -66,3 +67,6 @@ BEGIN {
     print
 }
 '
+else
+    cat
+fi
