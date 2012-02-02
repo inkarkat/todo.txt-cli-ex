@@ -19,6 +19,9 @@ echo "    Pending ${filter}tasks:"
 "$TODO_FULL_SH" what "$@"
 "$TODO_FULL_SH" summary "$@"
 
+modDate=$(reldate "$TODO_FILE" 2>/dev/null || stat -c %y "$TODO_FILE")
+echo "TODO: last modified ${modDate}"
+
 if [ "$HOSTNAME" ]; then
     hereTaskNum=0
     hereTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here "$@")
