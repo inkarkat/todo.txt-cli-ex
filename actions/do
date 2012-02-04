@@ -95,8 +95,8 @@ do
     fi
 
 
+    # Trash to-be-killed tasks referenced by the now done task. 
     if [ -x "$TODO_ACTIONS_DIR/trash" ]; then
-	# Trash to-be-killed tasks referenced by the now done task. 
 	killMarkers=$(echo "$todo" | grep -o '[^ ]*k:[[:digit:]]\+' | grep '^k:')
 	if [ "$killMarkers" ]; then
 	    killedItems=$(echo "$killMarkers" | sed -n -e 's/^k://' -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
@@ -115,41 +115,41 @@ do
 		)
 	    done
 	fi
+    fi
 
 
 
-	# Trash contradependent tasks referenced by the now done task or which
-	# share the same GOAL and tasks that reference the now done task. 
-	referencedItems=
-	joinMarkers=$(echo "$todo" | grep -o '[^ ]*j:[^(][^[:space:]]*' | grep '^j:'; echo "$todo" | grep -o '[^ ]*j:([^)]\+)' | grep '^j:')
+    # Trash contradependent tasks referenced by the now done task or which share
+    # the same GOAL and tasks that reference the now done task. 
+    referencedItems=
+    joinMarkers=$(echo "$todo" | grep -o '[^ ]*j:[^(][^[:space:]]*' | grep '^j:'; echo "$todo" | grep -o '[^ ]*j:([^)]\+)' | grep '^j:')
 
-	# Find other tasks referencing either the current ITEM# or any of the
-	# GOALs found in the current task. 
-	referencingPattern=$(echo "$joinMarkers" | grep -v -e '^j:[0-9]\+$')
-	referencingPattern="${referencingPattern}${referencingPattern:+
+    # Find other tasks referencing either the current ITEM# or any of the GOALs
+    # found in the current task. 
+    referencingPattern=$(echo "$joinMarkers" | grep -v -e '^j:[0-9]\+$')
+    referencingPattern="${referencingPattern}${referencingPattern:+
 }j:${item}"
-	referencingPattern="\\(^\\| \\)\\(${referencingPattern//$'\n'/\\|}\\)"
-	referencedItems=$(sed -n -e '/^[xX] /b' -e "/${referencingPattern}/=" "$TODO_FILE")
+    referencingPattern="\\(^\\| \\)\\(${referencingPattern//$'\n'/\\|}\\)"
+    referencedItems=$(sed -n -e '/^[xX] /b' -e "/${referencingPattern}/=" "$TODO_FILE")
 
-	# Add the tasks referenced from the current task, unless they're already
-	# done or trashed. 
-	referencedFromHere=$(echo "$joinMarkers" | grep -e '^j:[0-9]\+$')
-	if [ "$referencedFromHere" ]; then
-	    referencedFromHere=${referencedFromHere//j:/}
-	    referencedFromHereItems=$(sed -n -e "${referencedFromHere/$'\n'/b check}b check" -e 'b' -e ':check' -e '/^[xX] /!=' "$TODO_FILE")
-	    [ "$referencedFromHereItems" ] && referencedItems=$(echo "${referencedItems}${referencedItems:+
+    # Add the tasks referenced from the current task, unless they're already
+    # done or trashed. 
+    referencedFromHere=$(echo "$joinMarkers" | grep -e '^j:[0-9]\+$')
+    if [ "$referencedFromHere" ]; then
+	referencedFromHere=${referencedFromHere//j:/}
+	referencedFromHereItems=$(sed -n -e "${referencedFromHere/$'\n'/b check}b check" -e 'b' -e ':check' -e '/^[xX] /!=' "$TODO_FILE")
+	[ "$referencedFromHereItems" ] && referencedItems=$(echo "${referencedItems}${referencedItems:+
 }${referencedFromHereItems}" | sort)
-	fi
+    fi
 
-	# Recursively trash all those tasks, but process them as if they were
-	# done. To achieve both recursion and processing, we do not delegate to
-	# the trash action, but recursively invoke ourself with the hidden "do
-	# trash" subaction. 
-	if [ "$referencedItems" ]; then
-	    [ "${referencedItems//$'\n'/}" = "$referencedItems" ] && howManyReferences='it' || howManyReferences='others'
-	    echo "TODO: $item is contradependent on ${referencedItems//$'\n'/,}; trashing ${howManyReferences}."
-	    eval 'RECURSIVE_DO=true "$TODO_FULL_SH" do trash' ${referencedItems//$'\n'/ } '"$@"'
-	fi
+    # Recursively trash all those tasks, but process them as if they were done.
+    # To achieve both recursion and processing, we do not delegate to the trash
+    # action, but recursively invoke ourself with the hidden "do trash"
+    # subaction. 
+    if [ "$referencedItems" ]; then
+	[ "${referencedItems//$'\n'/}" = "$referencedItems" ] && howManyReferences='it' || howManyReferences='others'
+	echo "TODO: $item is contradependent on ${referencedItems//$'\n'/,}; trashing ${howManyReferences}."
+	eval 'RECURSIVE_DO=true "$TODO_FULL_SH" do trash' ${referencedItems//$'\n'/ } '"$@"'
     fi
 
 
