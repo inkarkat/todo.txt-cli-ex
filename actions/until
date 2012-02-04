@@ -38,9 +38,9 @@ ensureFilter()
     # Ensure that the latestDueTasks filter is set. 
     if [[ "$TODOTXT_FINAL_FILTER" != *latestDueTasks* ]]; then
         if [ "$TODOTXT_FINAL_FILTER" = 'cat' ]; then
-            TODOTXT_FINAL_FILTER="$HOME/.todo/latestDueTasks"
+            TODOTXT_FINAL_FILTER="${TODO_FILTER_DIR:?}/latestDueTasks"
         else
-            TODOTXT_FINAL_FILTER="$HOME/.todo/latestDueTasks ${TODOTXT_FINAL_FILTER:+|} ${TODOTXT_FINAL_FILTER}"
+            TODOTXT_FINAL_FILTER="${TODO_FILTER_DIR:?}/latestDueTasks ${TODOTXT_FINAL_FILTER:+|} ${TODOTXT_FINAL_FILTER}"
         fi
     fi
 }

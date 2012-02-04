@@ -35,7 +35,7 @@ activeNum=$(
     # Also ensure that the correct final filter is set. 
     post_filter_command="grep -v -e '^ *[0-9]\+ [xX] ' -e ' w:[^ ]'" \
     TODOTXT_DISABLE_FILTER=0 \
-    TODOTXT_FINAL_FILTER="$HOME/.todo/futureTasks" \
+    TODOTXT_FINAL_FILTER="${TODO_FILTER_DIR:?}/futureTasks" \
         "$TODO_FULL_SH" -p command ls "$@" | wc -l
 )    # All tasks not done, trashed, future, or waiting. 
 

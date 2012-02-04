@@ -15,6 +15,7 @@ export TMP_FILE="${TEMP:-/tmp}/todo.tmp"
 
 # You can customize your actions directory location
 #export TODO_ACTIONS_DIR="$HOME/.todo.actions.d"
+export TODO_FILTER_DIR="$HOME/.todo/filter"
 
 # == EDIT FILE LOCATIONS ABOVE ===
 
@@ -121,13 +122,13 @@ export TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k2,2'
 # Then, highlight blocked tasks and the blocker. 
 # Then, convert near dates to relative ones, e.g. "yesterday". 
 # Finally, color task numbers, projects and contexts. 
-export TODOTXT_FINAL_FILTER="$HOME/.todo/colorFutureTasks | $HOME/.todo/colorBlockedTasks | $HOME/.todo/relativeDates | $HOME/.todo/colorSymbols"
+export TODOTXT_FINAL_FILTER="${TODO_FILTER_DIR:?}/colorFutureTasks | ${TODO_FILTER_DIR}/colorBlockedTasks | ${TODO_FILTER_DIR}/relativeDates | ${TODO_FILTER_DIR}/colorSymbols"
 
 # Implement scheduled priorization and de-priorization via a custom filter that
 # executes before the main filtering, so that it does not interfere with a
 # post_filter_command used by various addons, and so that the projected priority
 # is considered by actions that do filtering on _list output. 
-export pre_filter_command="$HOME/.todo/markerTrashedFilter | $HOME/.todo/scheduledFilter"
+export pre_filter_command="${TODO_FILTER_DIR:?}/markerTrashedFilter | ${TODO_FILTER_DIR}/scheduledFilter"
 
 # Make 'what' addon show only priorities A-F. 
 export TODOTXT_WHAT_PRIORITIES=A-F
