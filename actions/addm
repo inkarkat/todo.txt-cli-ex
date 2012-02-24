@@ -1,4 +1,23 @@
 #!/bin/bash
+###############################################################################
+##
+# FILE:         addm
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ed Blackman
+# MAINTAINER:   Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 17-Aug-2010
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# SOURCE:
+#   Posted on the todo.txt mailing list: 
+#   http://tech.groups.yahoo.com/group/todotxt/message/2723
+#
+# @(#)addm	001	(24-Feb-2012)	todo.txt-cli-ex
+###############################################################################
 
 action=$1
 shift

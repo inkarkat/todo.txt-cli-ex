@@ -1,4 +1,22 @@
 #!/bin/bash
+###############################################################################
+##
+# FILE:         nav
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Philippe Teuwen
+# MAINTAINER:   Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 01-Jun-2010
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# SOURCE:
+#   https://github.com/doegox/todo.txt-cli/blob/extras/todo.actions.d/nav
+#
+# @(#)nav	001	(24-Feb-2012)	todo.txt-cli-ex
+###############################################################################
 
 action=$1
 shift
