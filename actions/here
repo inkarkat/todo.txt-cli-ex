@@ -1,4 +1,23 @@
 #!/bin/bash
+###############################################################################
+##
+# FILE:         here
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 01-Feb-2012
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)here	001	(24-Feb-2012)	todo.txt-cli-ex
+###############################################################################
 
 action=$1
 shift
