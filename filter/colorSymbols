@@ -1,4 +1,24 @@
 #!/bin/bash
+###############################################################################
+##
+# FILE:         colorSymbols
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 26-Nov-2011
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)colorSymbols	001	(24-Feb-2012)	todo.txt-cli-ex
+###############################################################################
+
 export COLOR_CONTEXT=${COLOR_CONTEXT-'\\033[35m'}
 export COLOR_TASKNUM=${COLOR_TASKNUM-'\\033[7m'}
 export COLOR_PROJECT=${COLOR_PROJECT-'\\033[1;34m'}

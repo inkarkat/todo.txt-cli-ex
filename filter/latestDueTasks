@@ -1,8 +1,30 @@
 #!/bin/bash
+###############################################################################
+##
+# FILE:         latestDueTasks
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 28-Nov-2011
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# ATTENTION:
+#   This filter is to be used in post_filter_command, before formatting and
+#   coloring of priorities. It won't work as a TODOTXT_FINAL_FILTER! 
+#
+# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)latestDueTasks	001	(24-Feb-2012)	todo.txt-cli-ex
+###############################################################################
+
 export TODOTXT_FILTER_UNTIL_DUE_DAYSPAN=${TODOTXT_FILTER_UNTIL_DUE_DAYSPAN:-3}
 
-# Attention: This filter is to be used in post_filter_command, before formatting
-# and coloring of priorities. It won't work as a TODOTXT_FINAL_FILTER! 
 awk --re-interval -v date=$1 '
 function getThreshold(date) {
     if (date == "") {
