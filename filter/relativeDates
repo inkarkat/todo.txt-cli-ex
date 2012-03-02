@@ -8,6 +8,16 @@
 #
 ###############################################################################
 # CONTENTS:
+#   A todo.txt-cli filter that translates dates in the format YYYY-MM-DD to a
+#   human-readable date in relation to today, or the passed date.
+#
+#   Translation is done for any date found within a task, especially the "add
+#   date" (cp. todo.sh -t). It's done only when dates are close to the current
+#   date and therefore would be better expressed in relation to today.
+#   The common combination of "done + add date" is translated into a
+#   (potentially relative) date and timespan, e.g. "today, after 3 days".
+#   This combination and any translated dates that consist of multiple words are
+#   wrapped in parentheses, for easier visual parsing.
 #
 # REMARKS:
 #
