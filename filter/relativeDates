@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)relativeDates	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)relativeDates	1.00	(02-Mar-2012)	todo.txt-cli-ex
 ###############################################################################
 
 if [ ${TODOTXT_RELDATE:-1} -ne 0 ]; then
@@ -78,11 +78,11 @@ BEGIN {
     for (i = 1; i <= NF; i++) {
         # Note: The date may already have been highlighted, so we can only make
         # very few assumptions about the delimiters. 
-        dateString = gensub(/^(.*[^[:alpha:]])?([[:alpha:]]:)?([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\3 \\4 \\5 00 00 00", "", $i)
+        dateString = gensub(/^(.*[^[:alnum:]])?([[:alpha:]]:)?([0-9]{4})-([0-9]{2})-([0-9]{2})([^[:alnum:]].*)?$/, "\\3 \\4 \\5 00 00 00", "", $i)
         if (dateString == $i) continue
         newDate = relativeDate(mktime(dateString))
         if (newDate != "")
-            $i = gensub(/([[:alpha:]]:)?([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1" newDate, "", $i)
+            $i = gensub(/(([^[:alnum:]])?([[:alpha:]]:))?([0-9]{4})-([0-9]{2})-([0-9]{2})([^[:alnum:]]|$)/, "\\1" newDate "\\7", "", $i)
     }
     print
 }

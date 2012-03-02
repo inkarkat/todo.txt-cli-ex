@@ -92,21 +92,15 @@ TODO: 4 of 4 tasks shown
 EOF
 
 cat > todo.txt <<EOF
-x 2009-02-10 get a bank loan for 2009-2010
 (B) 2009-02-13 mow the lawn in Feb-2009 +garden m:2009-04-01 @outside
 2009-02-14 plant a 02-13 tree +garden m:2009-02-12 n:2009-10-01
-(C) 2009-02-15 watch F2009-02-12 tv on 2009-02-13 @home
-check the log file 2009-02-12_15:00.12 for errors
 EOF
 test_todo_session 'relativeDates translation of date markers' <<EOF
 >>> todo.sh -p ls
-2 (B) today mow the lawn in Feb-2009 +garden m:2009-04-01 @outside
-4 (C) (in 2 days) watch F2009-02-12 tv on today @home
-3 tomorrow plant a 02-13 tree +garden m:yesterday n:2009-10-01
-5 check the log file yesterday_15:00.12 for errors
-1 x (3 days ago) get a bank loan for 2009-2010
+1 (B) today mow the lawn in Feb-2009 +garden m:2009-04-01 @outside
+2 tomorrow plant a 02-13 tree +garden m:yesterday n:2009-10-01
 --
-TODO: 5 of 5 tasks shown
+TODO: 2 of 2 tasks shown
 EOF
 
 cat > todo.txt <<EOF
@@ -125,6 +119,34 @@ test_todo_session 'relativeDates done date translation' <<EOF
 2 x (today, from same day) mow the lawn +garden m:2009-04-01 @outside
 --
 TODO: 5 of 5 tasks shown
+EOF
+
+cat > todo.txt <<EOF
+(B) 2009-02-13 mow the lawn in Feb-2009 +garden m:2009-04-01 @outside
+(C) 2009-02-15 watch F2009-02-12 tv on 2009-02-13 @home
+2009-02-14 plant a 02-13 tree +garden m:2009-02-12 n:2009-10-01
+check the log file 2009-02-12_15:00.12 for errors
+check the strange file 02009-02-12 for errors
+check the trace file 2009-02-12-15:00.12 for errors
+in 2009-02-13000, what does 2009-02-13 mean?
+is there a date in 2009-02-13000_2009-02-13?
+what does 2009-021-10 or 2009-02-123 mean?
+x 2009-02-10 get a bank loan for 2009-2010
+EOF
+test_todo_session 'relativeDates translation of misc dates' <<EOF
+>>> todo.sh -p ls
+01 (B) today mow the lawn in Feb-2009 +garden m:2009-04-01 @outside
+02 (C) (in 2 days) watch F2009-02-12 tv on today @home
+03 tomorrow plant a 02-13 tree +garden m:yesterday n:2009-10-01
+04 check the log file yesterday_15:00.12 for errors
+05 check the strange file 02009-02-12 for errors
+06 check the trace file yesterday-15:00.12 for errors
+07 in 2009-02-13000, what does today mean?
+08 is there a date in 2009-02-13000_today?
+09 what does 2009-021-10 or 2009-02-123 mean?
+10 x (3 days ago) get a bank loan for 2009-2010
+--
+TODO: 10 of 10 tasks shown
 EOF
 
 test_done
