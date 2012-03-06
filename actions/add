@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)add	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)add	002	(06-Mar-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -34,23 +34,23 @@ shift
 # Note: We only offer the canonicalization of the date for add and actions based
 # on add, but not for all other actions that modify tasks (e.g. append, replace,
 # etc.) This is meant as a convenient shortcut when adding new tasks; existing
-# task markers should be modified through dedicated actions (e.g. schedule). 
+# task markers should be modified through dedicated actions (e.g. schedule).
 task=$*
 markers=$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\([^ ]\+\|([^)]\+)\)' | grep '^[[:graph:]]:')
 IFS=$'\n'
 for marker in $markers
 do
-    dateString=${marker#[[:graph:]]:}
-    dateString=${dateString#(}
+    originalDateString=${marker#[[:graph:]]:}
+    dateString=${originalDateString#(}
     dateString=${dateString%)}
 
     if [[ "$dateString" =~ ^[0-9]+$ ]]; then
         # 'date' also accepts numbers (and always interprets them as the current
-        # day), but numbers should represent ITEM# for task references here. 
+        # day), but numbers should represent ITEM# for task references here.
         continue
     fi
     canonicalDate=$(date -d "$dateString" +%F 2>/dev/null) || continue
-    [ "$canonicalDate" = "$dateString" ] && continue
+    [ "$canonicalDate" = "$originalDateString" ] && continue
 
 
     task=${task/${marker}/${marker:0:2}${canonicalDate}}
