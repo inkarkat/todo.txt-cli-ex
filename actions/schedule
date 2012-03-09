@@ -28,7 +28,7 @@ if [ "$action" = "usage" ]; then
     echo "    $(basename $0) [(all|now|future) [TERM...]]"
     echo "      List scheduled (all, or with now: already open, or future) tasks."
     echo "      If TERM specified, lists only tasks that contain TERM(s)."
-    echo "      Intended to be used with futureTasks."
+    echo "          Intended to be used with futureTasks."
     echo "      Example:  $TODO_SH $(basename $0) tomorrow 42"
     echo ""
     exit
@@ -42,7 +42,7 @@ readonly errmsg="usage: $TODO_SH $(basename $0) [ITEM#[, ITEM#, ...] DATE|none|n
 
 ensureFilter()
 {
-    # Ensure that a futureTasks filter is set. 
+    # Ensure that a futureTasks filter is set.
     if [[ "$TODOTXT_FINAL_FILTER" != *utureTasks* ]]; then
         if [ "$TODOTXT_FINAL_FILTER" = 'cat' ]; then
             TODOTXT_FINAL_FILTER="${TODO_FILTER_DIR:?}/futureTasks"
@@ -54,14 +54,14 @@ ensureFilter()
 listOpen()
 {
     ensureFilter
-    export TODOTXT_FILTER_FUTURE_TASKS=1    # Suppress tasks that are scheduled in the future. 
+    export TODOTXT_FILTER_FUTURE_TASKS=1    # Suppress tasks that are scheduled in the future.
     post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
 }
 listFuture()
 {
     ensureFilter
-    export TODOTXT_FILTER_FUTURE_TASKS=-1   # Suppress tasks that are have already been scheduled. 
+    export TODOTXT_FILTER_FUTURE_TASKS=-1   # Suppress tasks that are have already been scheduled.
     post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
 }
@@ -75,8 +75,8 @@ listAll()
 getUnscheduledTask()
 {
     getTodo "$1"
-    # Remove threshold and priority. 
-    unscheduledTodo=$(echo "$todo" | sed -e "s/${pattern}//g" -e "s/^([A-Z])* //") 
+    # Remove threshold and priority.
+    unscheduledTodo=$(echo "$todo" | sed -e "s/${pattern}//g" -e "s/^([A-Z])* //")
 }
 
 remove()
@@ -134,7 +134,7 @@ fi
 [ "$items" ] || die "$errmsg"
 
 for item in ${items//,/ }
-do 
+do
     case $date in
         '')                     die "$errmsg";;
         none|never|off|del|rm)  remove "$item";;
