@@ -10,13 +10,17 @@
 # CONTENTS:
 #
 # REMARKS:
+#   The recurrence is stored as {DATE}, not via a marker such as r:DATE to avoid
+#   rendering (by the relativeDates filter) and canonicalization (by the add
+#   actions) into a fixed date; which would confuse / break the recurrent
+#   scheduling.
 #
 # COPYRIGHT: (C) 2010-2012 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)recur	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)recur	002	(09-Mar-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -35,11 +39,6 @@ shift
     echo ""
     exit
 }
-
-# Note: The recurrence is stored as {DATE}, not via a marker such as r:DATE to
-# avoid rendering (by the relativeDates filter) and canonicalization (by the add
-# actions) into a fixed date; which would confuse / break the recurrent
-# scheduling.
 
 shopt -s extglob
 errmsg="usage: $TODO_SH $(basename $0) [list [TERM...]]|[ITEM# RELATIVEDATE|none|never|off]"
