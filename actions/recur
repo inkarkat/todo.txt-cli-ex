@@ -44,13 +44,29 @@ shift
 shopt -s extglob
 errmsg="usage: $TODO_SH $(basename $0) [list [TERM...]]|[ITEM# RELATIVEDATE|none|never|off]"
 
+extractRecurDate()
+{
+    sed -ne 's#^.*[[:space:]]\+{\([^}]\+\)}\([[:space:]].*$\|$\)#\1#p'
+}
+validRecurringFilter()
+{
+    while IFS=$'\n' read -r todo
+    do
+        recur=$(echo "$todo" | extractRecurDate)
+        if [ "$recur" ]; then
+            if date -d "$recur" +%F >/dev/null 2>/dev/null; then
+                echo "$todo"
+            fi
+        fi
+    done
+}
 listRecurring()
 {
     # Disable the futureTasks filter that hides recurring tasks scheduled in the
     # future.
     export TODOTXT_FILTER_FUTURE_TASKS=0
 
-    post_filter_command="grep -e '[[:space:]]\+{[^}]\+}\([[:space:]]\|$\)'"
+    post_filter_command="grep -e '{[^}]\+}' | validRecurringFilter"
     _list "$TODO_FILE" "$@"
 }
 
@@ -78,7 +94,7 @@ if [ "$recur" = 'apply' ]; then
     # This hidden subcommand is invoked by the "do" command to trigger the
     # recurrence. A new recurrent task is created from the old done task.
 
-    recur=$(echo "$todo" | sed -ne 's#^.*[[:space:]]\+{\([^}]\+\)}\([[:space:]].*$\|$\)#\1#p')
+    recur=$(echo "$todo" | extractRecurDate)
     [ "$recur" ] || exit 0
     command='add'
 
