@@ -15,9 +15,10 @@
 ::	been changed. 
 ::* REMARKS: 
 ::       	
-::* FILE_SCCS = "@(#)tt cache.cmd	006	(01-Feb-2012)	tools";
+::* FILE_SCCS = "@(#)tt cache.cmd	007	(01-Feb-2012)	tools";
 ::
 ::* REVISION	DATE		REMARKS 
+::	007	03-Feb-2012	Don't use relative times in todo.txt. 
 ::	006	01-Feb-2012	Pass command-line arguments along. 
 ::	005	12-Nov-2011	Replace invocation of "what" and "summary" with
 ::				dedicated "dashboard" add-on. 
@@ -71,7 +72,10 @@ if "%oldModificationDate%" == "%modificationDate%" (
 echo.%modificationDate%> "%dateStore%"
 
 :: Refresh cache contents. 
-set DEBUG=&call tt.cmd -p dashboard %* > "%cacheFile%"
+:: Don't use relative times ("5 minutes ago"), because the output is cached.
+:: Relative dates ("yesterday") are fine, because the cache is refreshed every
+:: day, anyway.  
+set DEBUG=&set TODOTXT_RELTIME=0&call tt.cmd -p dashboard %* > "%cacheFile%"
 :: And print them. 
 type "%cacheFile%"
 
