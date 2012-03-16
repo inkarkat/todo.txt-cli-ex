@@ -12,12 +12,12 @@ relative dates.
 sed -i -e 's+^\(export TODOTXT_FINAL_FILTER=\).*$+\1"${TODO_FILTER_DIR}/relativeDates 2009-02-13"+' todo.cfg
 
 cat > todo.txt <<EOF
+2009-01-12 entered 32 days ago
 2009-01-13 entered a month ago
-2009-01-14 entered 31 days ago
-2009-01-15 entered 30 days ago
-2009-01-30 entered 15 days ago
-2009-01-31 entered 14 days ago
-2009-02-01 entered 13 days ago
+2009-01-14 entered 30 days ago
+2009-01-29 entered 15 days ago
+2009-01-30 entered 14 days ago
+2009-01-31 entered 13 days ago
 2009-02-05 entered 8 days ago
 2009-02-06 entered 7 days ago
 2009-02-07 entered 6 days ago
@@ -39,12 +39,12 @@ cat > todo.txt <<EOF
 EOF
 test_todo_session 'relativeDates add date translation of plain tasks' <<EOF
 >>> todo.sh -p ls
-01 2009-01-13 entered a month ago
-02 2009-01-14 entered 31 days ago
-03 2009-01-15 entered 30 days ago
-04 (two weeks ago) entered 15 days ago
-05 (13 days ago) entered 14 days ago
-06 (12 days ago) entered 13 days ago
+01 2009-01-12 entered 32 days ago
+02 2009-01-13 entered a month ago
+03 2009-01-14 entered 30 days ago
+04 2009-01-29 entered 15 days ago
+05 (two weeks ago) entered 14 days ago
+06 (13 days ago) entered 13 days ago
 07 (8 days ago) entered 8 days ago
 08 (one week ago) entered 7 days ago
 09 (6 days ago) entered 6 days ago
@@ -63,6 +63,64 @@ test_todo_session 'relativeDates add date translation of plain tasks' <<EOF
 22 2009-03-13 in a month
 23 2009-03-14 in 30 days
 24 2009-03-15 in 31 days
+--
+TODO: 24 of 24 tasks shown
+EOF
+
+test_todo_session 'configure relativeDates cutoff point' <<EOF
+>>> TODOTXT_RELDATE_DAYRANGE=6 todo.sh -p ls
+01 2009-01-12 entered 32 days ago
+02 2009-01-13 entered a month ago
+03 2009-01-14 entered 30 days ago
+04 2009-01-29 entered 15 days ago
+05 2009-01-30 entered 14 days ago
+06 2009-01-31 entered 13 days ago
+07 2009-02-05 entered 8 days ago
+08 2009-02-06 entered 7 days ago
+09 (6 days ago) entered 6 days ago
+10 (3 days ago) get a bank loan
+11 (2 days ago) subscribe to pay-tv
+12 yesterday buy groceries
+13 today mow the lawn +garden @outside
+14 tomorrow plant a tree +garden
+15 (in 2 days) watch tv @home
+16 (in 6 days) in 6 days
+17 2009-02-20 in 7 days
+18 2009-02-21 in 8 days
+19 2009-02-26 in 13 days
+20 2009-02-27 in 14 days
+21 2009-02-28 in 15 days
+22 2009-03-13 in a month
+23 2009-03-14 in 30 days
+24 2009-03-15 in 31 days
+--
+TODO: 24 of 24 tasks shown
+
+>>> TODOTXT_RELDATE_DAYRANGE=99 todo.sh -p ls
+01 (32 days ago) entered 32 days ago
+02 (31 days ago) entered a month ago
+03 (30 days ago) entered 30 days ago
+04 (15 days ago) entered 15 days ago
+05 (two weeks ago) entered 14 days ago
+06 (13 days ago) entered 13 days ago
+07 (8 days ago) entered 8 days ago
+08 (one week ago) entered 7 days ago
+09 (6 days ago) entered 6 days ago
+10 (3 days ago) get a bank loan
+11 (2 days ago) subscribe to pay-tv
+12 yesterday buy groceries
+13 today mow the lawn +garden @outside
+14 tomorrow plant a tree +garden
+15 (in 2 days) watch tv @home
+16 (in 6 days) in 6 days
+17 (in one week) in 7 days
+18 (in 8 days) in 8 days
+19 (in 13 days) in 13 days
+20 (in two weeks) in 14 days
+21 (in 15 days) in 15 days
+22 (in 28 days) in a month
+23 (in 29 days) in 30 days
+24 (in 30 days) in 31 days
 --
 TODO: 24 of 24 tasks shown
 EOF
