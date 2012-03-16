@@ -149,4 +149,22 @@ test_todo_session 'relativeDates translation of misc dates' <<EOF
 TODO: 10 of 10 tasks shown
 EOF
 
+cat > todo.txt <<EOF
+(B) 2009-02-13 mow the lawn
+2009-02-14 plant a tree +garden
+EOF
+test_todo_session 'disabling relativeDates' <<EOF
+>>> TODOTXT_RELDATE=1 todo.sh -p ls
+1 (B) today mow the lawn
+2 tomorrow plant a tree +garden
+--
+TODO: 2 of 2 tasks shown
+
+>>> TODOTXT_RELDATE=0 todo.sh -p ls
+1 (B) 2009-02-13 mow the lawn
+2 2009-02-14 plant a tree +garden
+--
+TODO: 2 of 2 tasks shown
+EOF
+
 test_done
