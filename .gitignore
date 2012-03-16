@@ -1,3 +1,5 @@
 todo.sh
 tests/aggregate-results.sh
 tests/test-lib.sh
+tests/test-results/
+tests/trash directory.*/
