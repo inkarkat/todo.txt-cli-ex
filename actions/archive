@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)archive	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)archive	002	(19-Mar-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -58,14 +58,14 @@ listItems()
     # Go through the _list pipeline in order to apply the filters. Some tasks
     # may only be "virtually" done or trashed via markers. By directly
     # processing the TODO_FILE, we would always miss those, but pick up tasks
-    # that are hidden by a filter. 
+    # that are hidden by a filter.
     TODOTXT_VERBOSE=0
     TODOTXT_PLAIN=1
     post_filter_command="grep -e '^ *[0-9]\+ $mark ' | sed -ne 's/^ *\([0-9]\+\) .*$/\1/p'"
     if [ "$items" ]; then
         # Listing of task numbers is unintuitive, because the search pattern is
         # applied in the middle of alignment, when the numbers have already been
-        # space- (but not zero-) aligned. 
+        # space- (but not zero-) aligned.
         _list "$TODO_FILE" "^ *\\(${items//,/\\|}\\) "
     else
         _list "$TODO_FILE" "$@"
@@ -105,23 +105,23 @@ processItems 'X' "$TRASH_FILE" 'trashed' "$items" "$@"
 
 
 if [ $# -eq 0 ]; then
-    # This is a complete, regular archive. 
-    # Use this occasion to make a backup. 
-    if type -P writebackup.sh >/dev/null; then
+    # This is a complete, regular archive.
+    # Use this occasion to make a backup.
+    if type -P writebackup >/dev/null; then
         readonly TODO_BACKUPDIR="${TODO_DIR}.backup/"
         if [ -d "$TODO_BACKUPDIR" ]; then
             cp -f "$TODO_FILE" "${TODO_BACKUPDIR}/todo.txt"
-            writebackup.sh "${TODO_BACKUPDIR}/todo.txt"
+            writebackup "${TODO_BACKUPDIR}/todo.txt"
         else
-            writebackup.sh "$TODO_FILE"
+            writebackup "$TODO_FILE"
         fi
     fi
 fi
 
-# Defragment blank lines. 
+# Defragment blank lines.
 if [ -x "$TODO_ACTIONS_DIR/defragment" ]; then
     # We have a customized defragment script that not only removes the empty
-    # lines, but also adapts cross-task references; use it. 
+    # lines, but also adapts cross-task references; use it.
     "$TODO_FULL_SH" defragment
 else
     sed -i.bak -e '/./!d' "$TODO_FILE"
