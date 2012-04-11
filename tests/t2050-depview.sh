@@ -137,4 +137,54 @@ test_todo_session 'depview blocks with duplicated low-level dependency' <<'EOF'
 TODO: 2 block(s) of 9 dependent tasks.
 EOF
 
+cat > todo.txt <<EOF
+2011-01-01 find a building site +house
+2012-02-01 obtain a bank loan +house w:money w:(salary increase)
+2012-02-01 buy the site +house w:1
+2009-09-09 task a w:5
+2009-09-09 task b w:4
+2009-09-09 task c
+2012-04-11 +buy beer and tacos
+2012-04-11 rent a good movie
+2012-04-11 invite @friends for a home cinema evening w:7 w:8
+EOF
+
+test_todo_session 'depview direct circularity' <<'EOF'
+>>> todo.sh -p depview
+3 buy the site
+  1 find a building site
+\
+9 invite for a home cinema evening
+  7 beer and tacos
+  8 rent a good movie
+--
+TODO: 2 block(s) of 7 dependent tasks.
+Note: Some task dependencies contain a cycle and are not shown.
+EOF
+
+cat > todo.txt <<EOF
+2011-01-01 find a building site +house
+2012-02-01 obtain a bank loan +house w:money w:(salary increase)
+2012-02-01 buy the site +house w:1
+2009-09-09 task a w:6
+2009-09-09 task b w:4
+2009-09-09 task c w:5
+2012-04-11 +buy beer and tacos
+2012-04-11 rent a good movie
+2012-04-11 invite @friends for a home cinema evening w:7 w:8
+EOF
+
+test_todo_session 'depview indirect circularity' <<'EOF'
+>>> todo.sh -p depview
+3 buy the site
+  1 find a building site
+\
+9 invite for a home cinema evening
+  7 beer and tacos
+  8 rent a good movie
+--
+TODO: 2 block(s) of 8 dependent tasks.
+Note: Some task dependencies contain a cycle and are not shown.
+EOF
+
 test_done
