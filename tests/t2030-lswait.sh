@@ -112,4 +112,17 @@ TODO: 1 blocked of 9 tasks shown
 TODO: 1 blocked of 9 tasks shown
 EOF
 
+test_todo_session 'lswait highlighting' <<EOF
+>>> todo.sh lswait
+[7m5[0m 2011-01-01 build your dream home [1;34m+house[0m w:[7m3[0m w:[7m4[0m
+[0m[47m[7m3[0m[47m 2012-02-01 buy the site [1;34m+house[0m[47m w:[7m1[0m[47m w:[7m2[0m[47m[0m
+[7m2[0m 2012-02-01 obtain a bank loan [1;34m+house[0m w:[7;38;5;136mmoney[0m w:[7;38;5;136msalary increase[0m
+[0m[47m[7m4[0m[47m 2012-02-02 hire an architect [1;34m+house[0m[47m w:[7m2[0m[47m w:[7m3[0m[47m[0m
+[7m6[0m today [1;34m+buy[0m a color tv w:[7m5[0m w:[7;38;5;136mmoney[0m
+[0m[47m[7m8[0m[47m today invite [35m@friends[0m[47m for a home cinema evening w:[7m7[0m[47m w:[7m6[0m[47m w:[7m8[0m[47m[0m
+[7m9[0m today rent a good movie w:[7m6[0m
+--
+TODO: 7 blocked of 9 tasks shown
+EOF
+
 test_done
