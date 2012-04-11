@@ -82,4 +82,34 @@ TODO: No tasks have a dependency to 9, 10, 11.
 === 1
 EOF
 
+test_todo_session 'lswait for REASON' <<EOF
+>>> todo.sh -p lswait for "salary increase"
+2 2012-02-01 obtain a bank loan +house w:money w:(salary increase)
+--
+TODO: 1 of 9 tasks shown
+EOF
+
+test_todo_session 'lswait for multiple-REASON' <<EOF
+>>> todo.sh -p lswait for money "salary increase" 2,3
+5 2011-01-01 build your dream home +house w:3 w:4
+3 2012-02-01 buy the site +house w:1 w:2
+2 2012-02-01 obtain a bank loan +house w:money w:(salary increase)
+4 2012-02-02 hire an architect +house w:2 w:3
+6 today +buy a color tv w:5 w:money
+--
+TODO: 5 of 9 tasks shown
+EOF
+
+test_todo_session 'lswait for both-REASON' <<EOF
+>>> todo.sh -p lswait w:money "w:(salary increase)"
+2 2012-02-01 obtain a bank loan +house w:money w:(salary increase)
+--
+TODO: 1 blocked of 9 tasks shown
+
+>>> todo.sh -p lswait w:2 w:3
+4 2012-02-02 hire an architect +house w:2 w:3
+--
+TODO: 1 blocked of 9 tasks shown
+EOF
+
 test_done

@@ -27,8 +27,9 @@ shift
     echo "      Displays all blocked tasks that wait for a precondition."
     echo "      If TERM specified, lists only tasks that contain TERM(s)."
     echo "    $(basename $0) for DEPITEM#[, DEPITEM#, ...]"
+    echo "    $(basename $0) for REASON for Waiting[, REASON, ...]"
     echo "      Displays all tasks that are blocked because of a dependency to"
-    echo "      any one of DEPITEM#(s)."
+    echo "      any one of DEPITEM#(s) or REASON."
     echo ""
     exit
 }
@@ -39,14 +40,22 @@ shift
 # them.
 export COLOR_BLOCKED=
 
-if [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
-    # We have dependent tasks: DEPITEM#.
+if [ "$1" = 'for' -a $# -gt 1 ]; then
+    # We have dependent tasks DEPITEM# or REASON.
     shift # Remove the "for" filler argument.
 
     waitPattern=
-    for waitDependentTaskNum in ${*//,/ }
+    for waitDependence
     do
-        waitPattern=${waitPattern}${waitPattern:+\\|}${waitDependentTaskNum}
+        if [[ "$waitDependence" =~ ^[0-9,]+$ ]]; then
+            for waitDependentTaskNum in ${waitDependence//,/ }
+            do
+                waitPattern=${waitPattern}${waitPattern:+\\|}${waitDependentTaskNum}
+            done
+        else
+            # Enclose REASONs in parentheses if they consist of multiple words.
+            waitPattern=${waitPattern}${waitPattern:+\\|}$(echo "$waitDependence" | sed -e '/[ \t]/s/.*/(&)/')
+        fi
     done
     waitPattern=' w:\('${waitPattern}'\)\([ \t]\|$\)'
 
