@@ -33,7 +33,7 @@ if [ "$action" = "usage" ]; then
     exit
 elif [ "$action" = "list" ]; then
     TODOTXT_VERBOSE=0
-    post_filter_command="grep -e '^ \\{0,\\}$1 ' | sed -e 's/ w:[0-9]\+//'"
+    post_filter_command="grep -e '^ \\{0,\\}$1 ' | sed -e 's/ w:[0-9]\+//g'"
     # Note: Must use '^ \{0,\}', because '^ *$1' doesn't match for $1="1".
     # Remove the w:### markers from the output, as this information is already
     # included in the task indentation.
