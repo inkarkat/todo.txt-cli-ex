@@ -38,7 +38,7 @@ cat > todo.txt <<EOF
 2009-03-15 in 31 days
 EOF
 test_todo_session 'relativeDates add date translation of plain tasks' <<EOF
->>> todo.sh -p ls
+>>> todo.sh -p command ls
 01 2009-01-12 entered 32 days ago
 02 2009-01-13 entered a month ago
 03 2009-01-14 entered 30 days ago
@@ -68,7 +68,7 @@ TODO: 24 of 24 tasks shown
 EOF
 
 test_todo_session 'configure relativeDates cutoff point' <<EOF
->>> TODOTXT_RELDATE_DAYRANGE=6 todo.sh -p ls
+>>> TODOTXT_RELDATE_DAYRANGE=6 todo.sh -p command ls
 01 2009-01-12 entered 32 days ago
 02 2009-01-13 entered a month ago
 03 2009-01-14 entered 30 days ago
@@ -96,7 +96,7 @@ test_todo_session 'configure relativeDates cutoff point' <<EOF
 --
 TODO: 24 of 24 tasks shown
 
->>> TODOTXT_RELDATE_DAYRANGE=99 todo.sh -p ls
+>>> TODOTXT_RELDATE_DAYRANGE=99 todo.sh -p command ls
 01 (32 days ago) entered 32 days ago
 02 (31 days ago) entered a month ago
 03 (30 days ago) entered 30 days ago
@@ -132,7 +132,7 @@ x 2009-02-10 get a bank loan
 (C) 2009-02-15 watch tv @home
 EOF
 test_todo_session 'relativeDates add date translation of prioritized and done tasks' <<EOF
->>> todo.sh -p ls
+>>> todo.sh -p command ls
 2 (B) today mow the lawn +garden @outside
 4 (C) (in 2 days) watch tv @home
 3 tomorrow plant a tree +garden
@@ -140,7 +140,7 @@ test_todo_session 'relativeDates add date translation of prioritized and done ta
 --
 TODO: 4 of 4 tasks shown
 
->>> todo.sh ls
+>>> todo.sh command ls
 [0;32m2 (B) today mow the lawn +garden @outside[0m
 [1;34m4 (C) (in 2 days) watch tv @home[0m
 3 tomorrow plant a tree +garden
@@ -154,7 +154,7 @@ cat > todo.txt <<EOF
 2009-02-14 plant a 02-13 tree +garden m:2009-02-12 n:2009-10-01
 EOF
 test_todo_session 'relativeDates translation of date markers' <<EOF
->>> todo.sh -p ls
+>>> todo.sh -p command ls
 1 (B) today mow the lawn in Feb-2009 +garden m:2009-04-01 @outside
 2 tomorrow plant a 02-13 tree +garden m:yesterday n:2009-10-01
 --
@@ -169,7 +169,7 @@ x 2009-02-12 2009-02-05 water the lawn +garden
 x 2009-02-10 2009-01-12 watch tv @home
 EOF
 test_todo_session 'relativeDates done date translation' <<EOF
->>> todo.sh -p ls
+>>> todo.sh -p command ls
 5 x (3 days ago, after 29 days) watch tv @home
 4 x (yesterday, after 7 days) water the lawn +garden
 3 x (yesterday, from day before) plant a tree +garden
@@ -192,7 +192,7 @@ what does 2009-021-10 or 2009-02-123 mean?
 x 2009-02-10 get a bank loan for 2009-2010
 EOF
 test_todo_session 'relativeDates translation of misc dates' <<EOF
->>> todo.sh -p ls
+>>> todo.sh -p command ls
 01 (B) today mow the lawn in Feb-2009 +garden m:2009-04-01 @outside
 02 (C) (in 2 days) watch F2009-02-12 tv on today @home
 03 tomorrow plant a 02-13 tree +garden m:yesterday n:2009-10-01
@@ -212,13 +212,13 @@ cat > todo.txt <<EOF
 2009-02-14 plant a tree +garden
 EOF
 test_todo_session 'disabling relativeDates' <<EOF
->>> TODOTXT_RELDATE=1 todo.sh -p ls
+>>> TODOTXT_RELDATE=1 todo.sh -p command ls
 1 (B) today mow the lawn
 2 tomorrow plant a tree +garden
 --
 TODO: 2 of 2 tasks shown
 
->>> TODOTXT_RELDATE=0 todo.sh -p ls
+>>> TODOTXT_RELDATE=0 todo.sh -p command ls
 1 (B) 2009-02-13 mow the lawn
 2 2009-02-14 plant a tree +garden
 --
