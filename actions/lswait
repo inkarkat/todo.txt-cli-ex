@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)lswait	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)lswait	002	(11-Apr-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -28,7 +28,7 @@ shift
     echo "      If TERM specified, lists only tasks that contain TERM(s)."
     echo "    $(basename $0) for DEPITEM#[, DEPITEM#, ...]"
     echo "      Displays all tasks that are blocked because of a dependency to"
-    echo "      DEPITEM#(s)."
+    echo "      any one of DEPITEM#(s)."
     echo ""
     exit
 }
@@ -36,12 +36,12 @@ shift
 # Omit the "blocked" highlighting in favor of the more readable alternating task
 # highlighting for readability; all tasks are blocked, anyway. Also, this way
 # the "blocker" highlighting stands out better and puts further emphasis on
-# them. 
+# them.
 export COLOR_BLOCKED=
 
 if [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
-    # We have dependent tasks: DEPITEM#. 
-    shift # Remove the "for" filler argument. 
+    # We have dependent tasks: DEPITEM#.
+    shift # Remove the "for" filler argument.
 
     waitPattern=
     for waitDependentTaskNum in ${*//,/ }
@@ -51,22 +51,26 @@ if [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
     waitPattern=' w:\('${waitPattern}'\)\([ \t]\|$\)'
 
     items=$(sed -n -e '/[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE")
-    items=${items//$'\n'/ } # Flatten all collected task numbers into a space-delimited list. 
+    items=${items//$'\n'/ } # Flatten all collected task numbers into a space-delimited list.
     if [ "$TODOTXT_LSWAIT_SHOW_ITEMS" ]; then
-        # Hidden functionality for other addons. 
+        # Hidden functionality for other addons.
         echo "$items"
     else
         if [ "$items" ]; then
             _list "$TODO_FILE" "^ *\\(${items// /\\|}\\) "
         else
-            die "TODO: No tasks have a dependency to ${*// /,}."
+            IFS=,
+            dependencyText="$*"
+            unset IFS
+            dependencyText="${dependencyText//,/, }"
+            die "TODO: No tasks have a dependency to ${dependencyText}."
         fi
     fi
 else
     # Consider only tasks that are not yet done or trashed and contain the "w:"
     # wait marker.
     # The tasks are already numbered when the filter is applied, so there
-    # definitely is a space in front of the marker. 
+    # definitely is a space in front of the marker.
     post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e ' w:[^ ]'"
 
     _list "$TODO_FILE" "$@" | sed -e "/^TODO:/s/of [0-9]\+ tasks shown/blocked \0/"
