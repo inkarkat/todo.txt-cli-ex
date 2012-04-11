@@ -36,13 +36,13 @@ EOF
 test_todo_session 'wait for DEPITEM#' <<EOF
 >>> todo.sh -p wait 3 for 2
 3 2012-02-01 buy the site w:wife w:2
-TODO: 3 has become dependent on w:2.
+TODO: 3 has become dependent on 2.
 EOF
 
 test_todo_session 'wait for multiple DEPITEM#' <<EOF
->>> todo.sh -p wait 5 for 3,4
-5 2011-01-01 build your dream home w:3 w:4
-TODO: 5 has become dependent on w:3 w:4.
+>>> todo.sh -p wait 5 for 2 3,4
+5 2011-01-01 build your dream home w:2 w:3 w:4
+TODO: 5 has become dependent on 2, 3, 4.
 EOF
 
 test_todo_session 'wait for additional DEPITEM#' <<EOF
@@ -51,8 +51,8 @@ test_todo_session 'wait for additional DEPITEM#' <<EOF
 TODO: 6 added.
 
 >>> todo.sh -p wait 5 for 6
-5 2011-01-01 build your dream home w:3 w:4 w:6
-TODO: 5 has become dependent on w:6.
+5 2011-01-01 build your dream home w:2 w:3 w:4 w:6
+TODO: 5 has become dependent on 6.
 EOF
 
 test_done
