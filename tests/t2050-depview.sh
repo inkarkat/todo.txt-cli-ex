@@ -187,4 +187,40 @@ TODO: 2 block(s) of 8 dependent tasks.
 Note: Some task dependencies contain a cycle and are not shown.
 EOF
 
+cat > todo.txt <<EOF
+2011-01-01 find a building site +house
+2012-02-01 obtain a bank loan +house w:money
+2012-02-01 buy the site +house w:1 w:2
+2012-02-02 hire an architect +house w:2 w:3
+2011-01-01 build your dream home +house w:3 w:4
+2012-04-11 +buy a color tv w:money
+2012-04-11 +buy beer and tacos
+2012-04-11 invite @friends for a home cinema evening w:7 w:6 w:9
+2012-04-11 rent a good movie w:6
+EOF
+test_todo_session 'depview highlighting' <<'EOF'
+>>> todo.sh command pri 3 b
+3 (B) 2012-02-01 buy the site +house w:1 w:2
+TODO: 3 prioritized (B).
+
+>>> todo.sh depview
+[7m5[0m build your dream home
+  [7m4[0m hire an architect
+    [0;32m[7m3[0;32m (B) buy the site[0m
+      [7m1[0m find a building site
+      [0;38;5;136m[7m2[0;38;5;136m obtain a bank loan w:[7;38;5;136mmoney[0;38;5;136m[0m
+    [0;38;5;136m[7m2[0;38;5;136m obtain a bank loan w:[7;38;5;136mmoney[0;38;5;136m[0m
+  [0;32m[7m3[0;32m (B) buy the site[0m
+    [7m1[0m find a building site
+    [0;38;5;136m[7m2[0;38;5;136m obtain a bank loan w:[7;38;5;136mmoney[0;38;5;136m[0m
+\
+[7m8[0m invite for a home cinema evening
+  [7m7[0m beer and tacos
+  [7m9[0m rent a good movie
+    [0;38;5;136m[7m6[0;38;5;136m a color tv w:[7;38;5;136mmoney[0;38;5;136m[0m
+  [0;38;5;136m[7m6[0;38;5;136m a color tv w:[7;38;5;136mmoney[0;38;5;136m[0m
+--
+TODO: 2 block(s) of 9 dependent tasks.
+EOF
+
 test_done
