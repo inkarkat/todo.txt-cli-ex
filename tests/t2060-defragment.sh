@@ -159,4 +159,88 @@ TODO: 11 of 11 tasks shown
 TODO: 11 of 11 tasks shown
 EOF
 
+cat > todo.txt <<EOF
+
+2011-01-01 find a building site w:1 +house
+
+2012-02-02 obtain a bank loan +house w:money
+2012-02-03 buy the site +house w:2 w:3 w:4
+2012-02-03 hire an architect +house w:4 w:5 w:99
+EOF
+test_todo_session 'defragment nonexisting task numbers' <<EOF
+>>> todo.sh -p command ls
+2 2011-01-01 find a building site w:1 +house
+4 2012-02-02 obtain a bank loan +house w:money
+5 2012-02-03 buy the site +house w:2 w:3 w:4
+6 2012-02-03 hire an architect +house w:4 w:5 w:99
+--
+TODO: 4 of 4 tasks shown
+
+>>> todo.sh defragment
+
+>>> todo.sh -p command ls
+1 2011-01-01 find a building site w:??? +house
+2 2012-02-02 obtain a bank loan +house w:money
+3 2012-02-03 buy the site +house w:1 w:??? w:2
+4 2012-02-03 hire an architect +house w:2 w:3 w:97
+--
+TODO: 4 of 4 tasks shown
+EOF
+
+cat > todo.txt <<EOF
+
+2011-01-01 find a building site +house
+
+2012-02-02 obtain a bank loan +house m:2
+2012-02-03 buy the site +house marker:6 M:6 :6 m:6a m:-6
+2012-02-03 hire an architect +house !:4 *:5
+EOF
+test_todo_session 'defragment marker syntax' <<EOF
+>>> todo.sh -p command ls
+2 2011-01-01 find a building site +house
+4 2012-02-02 obtain a bank loan +house m:2
+5 2012-02-03 buy the site +house marker:6 M:6 :6 m:6a m:-6
+6 2012-02-03 hire an architect +house !:4 *:5
+--
+TODO: 4 of 4 tasks shown
+
+>>> todo.sh defragment
+
+>>> todo.sh -p command ls
+1 2011-01-01 find a building site +house
+2 2012-02-02 obtain a bank loan +house m:1
+3 2012-02-03 buy the site +house marker:6 M:4 :6 m:6a m:-6
+4 2012-02-03 hire an architect +house !:2 *:3
+--
+TODO: 4 of 4 tasks shown
+EOF
+
+cat > todo.txt <<EOF
+
+2011-01-01 find a building site +house
+
+2012-02-02 obtain a bank loan +house m:2
+2012-02-03 buy the site +house marker:6 M:6 :6 m:6a m:-6
+2012-02-03 hire an architect +house !:4 *:5
+EOF
+test_todo_session 'defragment change marker syntax' <<EOF
+>>> todo.sh -p command ls
+2 2011-01-01 find a building site +house
+4 2012-02-02 obtain a bank loan +house m:2
+5 2012-02-03 buy the site +house marker:6 M:6 :6 m:6a m:-6
+6 2012-02-03 hire an architect +house !:4 *:5
+--
+TODO: 4 of 4 tasks shown
+
+>>> TODOTXT_DEFRAGMENT_MARKER_PATTERN='^[[:lower:]]+:[0-9]+$' todo.sh defragment
+
+>>> todo.sh -p command ls
+1 2011-01-01 find a building site +house
+2 2012-02-02 obtain a bank loan +house m:1
+3 2012-02-03 buy the site +house marker:4 M:6 :6 m:6a m:-6
+4 2012-02-03 hire an architect +house !:4 *:5
+--
+TODO: 4 of 4 tasks shown
+EOF
+
 test_done
