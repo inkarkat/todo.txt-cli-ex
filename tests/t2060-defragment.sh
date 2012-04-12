@@ -151,8 +151,8 @@ TODO: 11 of 11 tasks shown
 05 2012-03-01 build your dream home +house w:3 w:4
 06 2012-03-11 +buy a color tv w:money
 07 2012-03-12 +buy beer and tacos
-08 2012-03-13 invite @friends for a home cinema evening w:06 w:05 w:09
-09 2012-03-14 rent a good movie w:06
+08 2012-03-13 invite @friends for a home cinema evening w:6 w:5 w:9
+09 2012-03-14 rent a good movie w:6
 10 2012-03-18 go jogging w:11
 11 2012-03-18 purchase new walking shoes
 --
