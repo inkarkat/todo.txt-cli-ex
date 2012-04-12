@@ -271,4 +271,32 @@ TODO: 4 of 4 tasks shown
 TODO: 4 of 4 tasks shown
 EOF
 
+cat > todo.txt <<EOF
+
+2011-01-01 find a building site +house is no easy task to do
+
+2012-02-02 obtain a bank loan +house after thing 2
+2012-02-03 buy the site +house w:2 after thing 6
+2012-02-03 hire an architect after item 4 and thing 5
+EOF
+test_todo_session 'defragment change reference syntax' <<EOF
+>>> todo.sh -p command ls
+2 2011-01-01 find a building site +house is no easy task to do
+4 2012-02-02 obtain a bank loan +house after thing 2
+5 2012-02-03 buy the site +house w:2 after thing 6
+6 2012-02-03 hire an architect after item 4 and thing 5
+--
+TODO: 4 of 4 tasks shown
+
+>>> TODOTXT_DEFRAGMENT_REFERENCE_PATTERN='^(item|thing)$' todo.sh defragment
+
+>>> todo.sh -p command ls
+1 2011-01-01 find a building site +house is no easy task to do
+2 2012-02-02 obtain a bank loan +house after thing 1
+3 2012-02-03 buy the site +house w:1 after thing 4
+4 2012-02-03 hire an architect after item 2 and thing 3
+--
+TODO: 4 of 4 tasks shown
+EOF
+
 test_done

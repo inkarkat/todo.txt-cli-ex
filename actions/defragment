@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)defragment	003	(12-Apr-2012)	todo.txt-cli-ex
+# @(#)defragment	004	(12-Apr-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -31,13 +31,14 @@ shift
 }
 
 : ${TODOTXT_DEFRAGMENT_MARKER_PATTERN:='^[[:graph:]]:[0-9]+$'}
+: ${TODOTXT_DEFRAGMENT_REFERENCE_PATTERN:='^task$'}
 
 # Defragment blank lines.
 # Note: Deletion of blank lines must proceed from end to begin to avoid adapting
 # remaining line numbers.
 for emptyLineNum in $(sed -n '/./!=' "$TODO_FILE" | tac)
 do
-    awk -v markerPattern=$TODOTXT_DEFRAGMENT_MARKER_PATTERN -v lineNum=$emptyLineNum '
+    awk -v "markerPattern=$TODOTXT_DEFRAGMENT_MARKER_PATTERN" -v "referencePattern=$TODOTXT_DEFRAGMENT_REFERENCE_PATTERN" -v "lineNum=$emptyLineNum" '
         function adapt(oldNum,     newNum) {
             if (oldNum > lineNum) {
                 return oldNum - 1
@@ -62,7 +63,7 @@ do
                     match($i, /[0-9]+/)
                     oldNum = substr($i, RSTART, RLENGTH) + 0
                     sub(/[0-9]+/, adapt(oldNum), $i)
-                } else if ($(i - 1) == "task" && $i ~ /^[0-9]+$/) {
+                } else if ($(i - 1) ~ referencePattern && $i ~ /^[0-9]+$/) {
                     oldNum = $i + 0
                     $i = adapt(oldNum)
                 }
