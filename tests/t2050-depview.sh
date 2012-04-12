@@ -10,10 +10,10 @@ This test covers the listing of the dependency structure of blocked tasks.
 cat > todo.txt <<EOF
 2011-01-01 find a building site +house
 2012-02-01 obtain a bank loan +house w:money w:(salary increase)
-2012-02-01 buy the site +house w:1
-2012-04-11 +buy beer and tacos
-2012-04-11 rent a good movie
-2012-04-11 invite @friends for a home cinema evening w:4 w:5
+2012-02-02 buy the site +house w:1
+2012-03-11 +buy beer and tacos
+2012-03-12 rent a good movie
+2012-03-13 invite @friends for a home cinema evening w:4 w:5
 EOF
 
 test_todo_session 'depview one-level dependency' <<'EOF'
@@ -32,10 +32,10 @@ cat > todo.txt <<EOF
 2011-01-01 find a building site +house
 2012-02-01 buy the site +house w:1
 2012-02-02 hire an architect +house w:2
-2011-01-01 build your dream home +house w:3
-2012-04-11 +buy a tv set
-2012-04-11 rent a good movie w:5
-2012-04-11 invite @friends for a home cinema evening w:6
+2012-03-11 build your dream home +house w:3
+2012-03-12 +buy a tv set
+2012-03-13 rent a good movie w:5
+2012-03-14 invite @friends for a home cinema evening w:6
 EOF
 
 test_todo_session 'depview two-level dependency' <<'EOF'
@@ -54,12 +54,12 @@ EOF
 
 cat > todo.txt <<EOF
 2011-01-01 build your dream home +house w:2
-2012-02-02 hire an architect +house w:3
-2012-02-01 buy the site +house w:4
-2011-01-01 find a building site +house
-2012-04-11 +buy a tv set
-2012-04-11 invite @friends for a home cinema evening w:7
-2012-04-11 rent a good movie w:5
+2012-02-01 hire an architect +house w:3
+2012-02-02 buy the site +house w:4
+2012-03-11 find a building site +house
+2012-03-12 +buy a tv set
+2012-03-13 invite @friends for a home cinema evening w:7
+2012-03-14 rent a good movie w:5
 EOF
 
 test_todo_session 'depview inverted two-level dependency' <<'EOF'
@@ -79,13 +79,13 @@ EOF
 cat > todo.txt <<EOF
 2011-01-01 find a building site +house
 2012-02-01 obtain a bank loan +house w:money
-2012-02-01 buy the site +house w:1 w:2
-2012-02-02 hire an architect +house w:2 w:3
-2011-01-01 build your dream home +house w:3 w:4
-2012-04-11 +buy a color tv w:5 w:money
-2012-04-11 +buy beer and tacos
-2012-04-11 invite @friends for a home cinema evening w:7 w:6
-2012-04-11 rent a good movie
+2012-02-02 buy the site +house w:1 w:2
+2012-03-11 hire an architect +house w:2 w:3
+2012-03-12 build your dream home +house w:3 w:4
+2012-03-13 +buy a color tv w:5 w:money
+2012-03-13 +buy beer and tacos
+2012-03-14 invite @friends for a home cinema evening w:7 w:6
+2012-03-14 rent a good movie
 EOF
 test_todo_session 'depview single block with duplicated low-level dependency' <<'EOF'
 >>> todo.sh -p depview
@@ -108,13 +108,13 @@ EOF
 cat > todo.txt <<EOF
 2011-01-01 find a building site +house
 2012-02-01 obtain a bank loan +house w:money
-2012-02-01 buy the site +house w:1 w:2
-2012-02-02 hire an architect +house w:2 w:3
-2011-01-01 build your dream home +house w:3 w:4
-2012-04-11 +buy a color tv w:money
-2012-04-11 +buy beer and tacos
-2012-04-11 invite @friends for a home cinema evening w:7 w:6 w:9
-2012-04-11 rent a good movie w:6
+2012-02-02 buy the site +house w:1 w:2
+2012-03-11 hire an architect +house w:2 w:3
+2012-03-12 build your dream home +house w:3 w:4
+2012-03-13 +buy a color tv w:money
+2012-03-13 +buy beer and tacos
+2012-03-14 invite @friends for a home cinema evening w:7 w:6 w:9
+2012-03-14 rent a good movie w:6
 EOF
 test_todo_session 'depview blocks with duplicated low-level dependency' <<'EOF'
 >>> todo.sh -p depview
@@ -140,13 +140,13 @@ EOF
 cat > todo.txt <<EOF
 2011-01-01 find a building site +house
 2012-02-01 obtain a bank loan +house w:money w:(salary increase)
-2012-02-01 buy the site +house w:1
-2009-09-09 task a w:5
-2009-09-09 task b w:4
-2009-09-09 task c
-2012-04-11 +buy beer and tacos
-2012-04-11 rent a good movie
-2012-04-11 invite @friends for a home cinema evening w:7 w:8
+2012-02-02 buy the site +house w:1
+2012-03-11 task a w:5
+2012-03-12 task b w:4
+2012-03-13 task c
+2012-03-13 +buy beer and tacos
+2012-03-14 rent a good movie
+2012-03-14 invite @friends for a home cinema evening w:7 w:8
 EOF
 
 test_todo_session 'depview direct circularity' <<'EOF'
@@ -165,13 +165,13 @@ EOF
 cat > todo.txt <<EOF
 2011-01-01 find a building site +house
 2012-02-01 obtain a bank loan +house w:money w:(salary increase)
-2012-02-01 buy the site +house w:1
-2009-09-09 task a w:6
-2009-09-09 task b w:4
-2009-09-09 task c w:5
-2012-04-11 +buy beer and tacos
-2012-04-11 rent a good movie
-2012-04-11 invite @friends for a home cinema evening w:7 w:8
+2012-02-02 buy the site +house w:1
+2012-03-11 task a w:6
+2012-03-12 task b w:4
+2012-03-13 task c w:5
+2012-03-13 +buy beer and tacos
+2012-03-14 rent a good movie
+2012-03-14 invite @friends for a home cinema evening w:7 w:8
 EOF
 
 test_todo_session 'depview indirect circularity' <<'EOF'
@@ -190,17 +190,17 @@ EOF
 cat > todo.txt <<EOF
 2011-01-01 find a building site +house
 2012-02-01 obtain a bank loan +house w:money
-2012-02-01 buy the site +house w:1 w:2
-2012-02-02 hire an architect +house w:2 w:3
-2011-01-01 build your dream home +house w:3 w:4
-2012-04-11 +buy a color tv w:money
-2012-04-11 +buy beer and tacos
-2012-04-11 invite @friends for a home cinema evening w:7 w:6 w:9
-2012-04-11 rent a good movie w:6
+2012-02-02 buy the site +house w:1 w:2
+2012-03-11 hire an architect +house w:2 w:3
+2012-03-12 build your dream home +house w:3 w:4
+2012-03-13 +buy a color tv w:money
+2012-03-13 +buy beer and tacos
+2012-03-14 invite @friends for a home cinema evening w:7 w:6 w:9
+2012-03-14 rent a good movie w:6
 EOF
 test_todo_session 'depview highlighting' <<'EOF'
 >>> todo.sh command pri 3 b
-3 (B) 2012-02-01 buy the site +house w:1 w:2
+3 (B) 2012-02-02 buy the site +house w:1 w:2
 TODO: 3 prioritized (B).
 
 >>> todo.sh depview
