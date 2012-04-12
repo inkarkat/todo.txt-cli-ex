@@ -243,4 +243,32 @@ TODO: 4 of 4 tasks shown
 TODO: 4 of 4 tasks shown
 EOF
 
+cat > todo.txt <<EOF
+
+2011-01-01 find a building site +house is no easy task to do
+
+2012-02-02 obtain a bank loan +house after task 2
+2012-02-03 buy the site +house w:2 after task 6
+2012-02-03 hire an architect after task 4 and task 5
+EOF
+test_todo_session 'defragment reference syntax' <<EOF
+>>> todo.sh -p command ls
+2 2011-01-01 find a building site +house is no easy task to do
+4 2012-02-02 obtain a bank loan +house after task 2
+5 2012-02-03 buy the site +house w:2 after task 6
+6 2012-02-03 hire an architect after task 4 and task 5
+--
+TODO: 4 of 4 tasks shown
+
+>>> todo.sh defragment
+
+>>> todo.sh -p command ls
+1 2011-01-01 find a building site +house is no easy task to do
+2 2012-02-02 obtain a bank loan +house after task 1
+3 2012-02-03 buy the site +house w:1 after task 4
+4 2012-02-03 hire an architect after task 2 and task 3
+--
+TODO: 4 of 4 tasks shown
+EOF
+
 test_done
