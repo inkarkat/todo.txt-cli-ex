@@ -75,7 +75,7 @@ addedAndDoneStat()
 
     if [ $addedWhenNum -eq 0 -a $doneWhenNum -eq 0 ]; then
         if [ "$when" = 'today' ]; then
-            echo "None added or done $when yet."
+            echo "none added or done $when yet."
         else
             echo "None added or done $when"
         fi
@@ -101,8 +101,9 @@ filter=
 echo "TODO: ${listNum} ${filter}tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
 echo "TODO: ${activeNum} open, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${doneNum} done"
 
+addedAndDoneYesterday=$(addedAndDoneStat 'yesterday' "$@")
 addedAndDoneToday=$(addedAndDoneStat 'today' "$@")
-echo "TODO: $addedAndDoneToday"
+echo "TODO: ${addedAndDoneYesterday}; ${addedAndDoneToday}"
 
 if [ "$prioritizedProjects" ]; then
     echo "TODO: prioritized $prioritizedProjects"
