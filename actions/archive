@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)archive	002	(19-Mar-2012)	todo.txt-cli-ex
+# @(#)archive	003	(13-Apr-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -104,18 +104,10 @@ processItems 'x' "$DONE_FILE" 'archived' "$items" "$@"
 processItems 'X' "$TRASH_FILE" 'trashed' "$items" "$@"
 
 
-if [ $# -eq 0 ]; then
+if [ $# -eq 0 -a -x "$TODO_ACTIONS_DIR/backup" ]; then
     # This is a complete, regular archive.
     # Use this occasion to make a backup.
-    if type -P writebackup >/dev/null; then
-        readonly TODO_BACKUPDIR="${TODO_DIR}.backup/"
-        if [ -d "$TODO_BACKUPDIR" ]; then
-            cp -f "$TODO_FILE" "${TODO_BACKUPDIR}/todo.txt"
-            writebackup "${TODO_BACKUPDIR}/todo.txt"
-        else
-            writebackup "$TODO_FILE"
-        fi
-    fi
+    "$TODO_FULL_SH" backup
 fi
 
 # Defragment blank lines.
