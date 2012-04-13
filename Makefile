@@ -5,14 +5,14 @@ TESTS = $(wildcard tests/t[0-9][0-9][0-9][0-9]-*.sh)
 # ../todo.txt-cli working copy next to this.
 test-copy-deps: todo.sh tests/test-lib.sh tests/aggregate-results.sh
 
-todo.sh:
-	cp ../todo.txt-cli/todo.sh .
+todo.sh: ../todo.txt-cli/todo.sh
+	cp $< .
 
-tests/test-lib.sh:
-	cp ../todo.txt-cli/tests/test-lib.sh tests/
+tests/test-lib.sh: ../todo.txt-cli/tests/test-lib.sh
+	cp $< tests/
 
-tests/aggregate-results.sh:
-	cp ../todo.txt-cli/tests/aggregate-results.sh tests/
+tests/aggregate-results.sh: ../todo.txt-cli/tests/aggregate-results.sh
+	cp $< tests/
 
 test-pre-clean:
 	rm -rf tests/test-results "tests/trash directory"*
