@@ -64,9 +64,29 @@ activeNum=$(
 futureNum=$((listNum - activeNum - waitNum - doneNum - trashedNum))  # All tasks that will only come due in the future.
 # When the futureTasks filter isn't enabled, this will be 0.
 
-today=$(date +%F)
-addedTodayNum=$("$TODO_FULL_SH" -p ls "^ *[0-9]\\+ \\((.) \\)\\?$today " "$@" | wc -l) # All (potentially prioritized) active tasks added today.
-doneTodayNum=$("$TODO_FULL_SH" -p lsdone "^ *[0-9]\\+ x $today " "$@" | wc -l) # All (archived and from todo.txt) tasks done today.
+addedAndDoneStat()
+{
+    local -r when=$1
+    local -r whenDate="$(date -d "$when" +%F)"
+    shift
+
+    addedWhenNum=$("$TODO_FULL_SH" -p ls "^ *[0-9]\\+ \\((.) \\)\\?$whenDate " "$@" | wc -l) # All (potentially prioritized) active tasks added on whenDate.
+    doneWhenNum=$("$TODO_FULL_SH" -p lsdone "^ *[0-9]\\+ x $whenDate " "$@" | wc -l) # All (archived and from todo.txt) tasks done on whenDate.
+
+    if [ $addedWhenNum -eq 0 -a $doneWhenNum -eq 0 ]; then
+        if [ "$when" = 'today' ]; then
+            echo "None added or done $when yet."
+        else
+            echo "None added or done $when"
+        fi
+    else
+        addedText=
+        [ $addedWhenNum -gt 0 ] && addedText="added +${addedWhenNum}"
+        doneText=
+        [ $doneWhenNum -gt 0 ] && doneText="${addedText:+ / }done -${doneWhenNum}"
+        echo "$when ${addedText}${doneText}"
+    fi
+}
 
 waitReasons=
 if [ $waitNum -gt 0 ]; then
@@ -81,15 +101,8 @@ filter=
 echo "TODO: ${listNum} ${filter}tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
 echo "TODO: ${activeNum} open, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${doneNum} done"
 
-if [ $addedTodayNum -eq 0 -a $doneTodayNum -eq 0 ]; then
-    echo "TODO: None added or done today yet."
-else
-    addedText=
-    [ $addedTodayNum -gt 0 ] && addedText="added +${addedTodayNum}"
-    doneText=
-    [ $doneTodayNum -gt 0 ] && doneText="${addedText:+ / }done -${doneTodayNum}"
-    echo "TODO: today ${addedText}${doneText}"
-fi
+addedAndDoneToday=$(addedAndDoneStat 'today' "$@")
+echo "TODO: $addedAndDoneToday"
 
 if [ "$prioritizedProjects" ]; then
     echo "TODO: prioritized $prioritizedProjects"
