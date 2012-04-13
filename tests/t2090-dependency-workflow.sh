@@ -114,12 +114,11 @@ TODO: 1 blocked of 5 tasks shown
 --
 TODO: 1 blocked task(s) waiting for 1 dependent task(s).
 
->>> todo.sh -p -x archive
+>>> TODOTXT_BACKUP_COMMAND=none todo.sh -p -x archive
 1 x 2009-02-13 find a building site
 --
 TODO: 1 of 5 tasks archived
 TODO: No tasks have been trashed.
-Backed up to todo.txt.20090213a
 
 >>> todo.sh -p -x blockerview
 --- 2 buy the site ---

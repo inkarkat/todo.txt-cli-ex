@@ -45,12 +45,11 @@ test_todo_session 'archive with defragment' <<EOF
 --
 TODO: 11 of 11 tasks shown
 
->>> todo.sh -p -x archive
+>>> TODOTXT_BACKUP_COMMAND=none todo.sh -p -x archive
 18 x 2012-03-19 2012-03-18 purchase new walking shoes
 --
 TODO: 1 of 11 tasks archived
 TODO: No tasks have been trashed.
-Backed up to todo.txt.20090213a
 
 >>> todo.sh -p -x command ls
 01 2011-01-01 find a building site +house
