@@ -103,40 +103,40 @@ test_todo_session 'blockerview highlighting' <<'EOF'
 3 (B) 2012-02-02 buy the site +house w:1 w:2
 TODO: 3 prioritized (B).
 
->>> todo.sh blockerview
+>>> TERM_COLORS=16 todo.sh blockerview
 --- salary increase ---
-[0;38;5;136m[7m2[0;38;5;136m obtain a bank loan w:[7;38;5;136mmoney[0;38;5;136m[0m
+[0;33m[7m2[0;33m obtain a bank loan w:[7;33mmoney[0;33m[0m
 \
 --- [7m1[0m find a building site ---
-[0;32m[7m3[0;32m (B) buy the site w:[7;38;5;136m2[0m[0;32m
+[0;32m[7m3[0;32m (B) buy the site w:[7;33m2[0m[0;32m
 \
---- [0;38;5;136m[7m2[0;38;5;136m obtain a bank loan w:[7;38;5;136mmoney[0;38;5;136m w:[7;38;5;136msalary increase[0;38;5;136m[0m ---
-[0;32m[7m3[0;32m (B) buy the site w:[7;38;5;136m1[0m[0;32m
-[0;38;5;136m[7m4[0;38;5;136m hire an architect w:[7m3[0;38;5;136m[0m
+--- [0;33m[7m2[0;33m obtain a bank loan w:[7;33mmoney[0;33m w:[7;33msalary increase[0;33m[0m ---
+[0;32m[7m3[0;32m (B) buy the site w:[7;33m1[0m[0;32m
+[0;33m[7m4[0;33m hire an architect w:[7m3[0;33m[0m
 \
---- [0;32m[7m3[0;32m (B) buy the site w:[7m1[0;32m w:[7;38;5;136m2[0m[0;32m ---
-[0;38;5;136m[7m4[0;38;5;136m hire an architect w:[7m2[0;38;5;136m[0m
-[0;38;5;136m[7m5[0;38;5;136m build your dream home w:[7m4[0;38;5;136m[0m
+--- [0;32m[7m3[0;32m (B) buy the site w:[7m1[0;32m w:[7;33m2[0m[0;32m ---
+[0;33m[7m4[0;33m hire an architect w:[7m2[0;33m[0m
+[0;33m[7m5[0;33m build your dream home w:[7m4[0;33m[0m
 \
---- [0;38;5;136m[7m4[0;38;5;136m hire an architect w:[7m2[0;38;5;136m w:[7m3[0;38;5;136m[0m ---
-[0;38;5;136m[7m5[0;38;5;136m build your dream home w:[7m3[0;38;5;136m[0m
+--- [0;33m[7m4[0;33m hire an architect w:[7m2[0;33m w:[7m3[0;33m[0m ---
+[0;33m[7m5[0;33m build your dream home w:[7m3[0;33m[0m
 \
---- [0;38;5;136m[7m5[0;38;5;136m build your dream home w:[7m3[0;38;5;136m w:[7m4[0;38;5;136m[0m ---
-[0;38;5;136m[7m6[0;38;5;136m a color tv w:[7;38;5;136mmoney[0;38;5;136m[0m
+--- [0;33m[7m5[0;33m build your dream home w:[7m3[0;33m w:[7m4[0;33m[0m ---
+[0;33m[7m6[0;33m a color tv w:[7;33mmoney[0;33m[0m
 \
---- [0;38;5;136m[7m6[0;38;5;136m a color tv w:[7m5[0;38;5;136m w:[7;38;5;136mmoney[0;38;5;136m[0m ---
-[0;38;5;136m[7m8[0;38;5;136m invite for a home cinema evening w:[7m7[0;38;5;136m w:[7m8[0;38;5;136m[0m
+--- [0;33m[7m6[0;33m a color tv w:[7m5[0;33m w:[7;33mmoney[0;33m[0m ---
+[0;33m[7m8[0;33m invite for a home cinema evening w:[7m7[0;33m w:[7m8[0;33m[0m
 [7m9[0m rent a good movie
 \
 --- [7m7[0m beer and tacos ---
-[0;38;5;136m[7m8[0;38;5;136m invite for a home cinema evening w:[7m6[0;38;5;136m w:[7m8[0;38;5;136m[0m
+[0;33m[7m8[0;33m invite for a home cinema evening w:[7m6[0;33m w:[7m8[0;33m[0m
 \
---- [0;38;5;136m[7m8[0;38;5;136m invite for a home cinema evening w:[7m7[0;38;5;136m w:[7m6[0;38;5;136m w:[7m8[0;38;5;136m[0m ---
-[0;38;5;136m[7m8[0;38;5;136m invite for a home cinema evening w:[7m7[0;38;5;136m w:[7m6[0;38;5;136m[0m
+--- [0;33m[7m8[0;33m invite for a home cinema evening w:[7m7[0;33m w:[7m6[0;33m w:[7m8[0;33m[0m ---
+[0;33m[7m8[0;33m invite for a home cinema evening w:[7m7[0;33m w:[7m6[0;33m[0m
 \
 --- money ---
-[0;38;5;136m[7m2[0;38;5;136m obtain a bank loan w:[7;38;5;136msalary increase[0;38;5;136m[0m
-[0;38;5;136m[7m6[0;38;5;136m a color tv w:[7m5[0;38;5;136m[0m
+[0;33m[7m2[0;33m obtain a bank loan w:[7;33msalary increase[0;33m[0m
+[0;33m[7m6[0;33m a color tv w:[7m5[0;33m[0m
 \
 --
 TODO: 3 blocked task(s) waiting for 2 blocker(s).
