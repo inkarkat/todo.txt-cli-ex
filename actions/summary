@@ -83,7 +83,7 @@ addedAndDoneStat()
         addedText=
         [ $addedWhenNum -gt 0 ] && addedText="added +${addedWhenNum}"
         doneText=
-        [ $doneWhenNum -gt 0 ] && doneText="${addedText:+ / }done -${doneWhenNum}"
+        [ $doneWhenNum -gt 0 ] && doneText="${addedText:+ / }-${doneWhenNum} done"
         echo "$when ${addedText}${doneText}"
     fi
 }
