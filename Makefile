@@ -27,7 +27,7 @@ test: aggregate-results
 	rm -rf tests/test-results
 
 ci:
-	cd tests && bash4 onchange -exec ./{} -i \; t[0-9][0-9][0-9][0-9]-*.sh
+	cd tests && onchange -exec ./{} -i \; t[0-9][0-9][0-9][0-9]-*.sh
 
 # Force tests to get run every time
 .PHONY: test aggregate-results $(TESTS)
