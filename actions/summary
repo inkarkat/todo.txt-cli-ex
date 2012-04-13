@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)summary	002	(13-Apr-2012)	todo.txt-cli-ex
+# @(#)summary	003	(13-Apr-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -29,6 +29,9 @@ shift
     echo ""
     exit
 }
+
+# Configuration to limit the priorities that are considered.
+: ${TODOTXT_SUMMARY_PRIORITIES:=A-Z}
 
 export TODOTXT_VERBOSE=0    # Turn off the list footer.
 
@@ -70,6 +73,7 @@ if [ $waitNum -gt 0 ]; then
     waitReasons=$("$TODO_FULL_SH" listblockers "$@" | sed -n -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
 fi
 
+prioritizedProjects=$("$TODO_FULL_SH" lspriprj "$TODOTXT_SUMMARY_PRIORITIES" "$@" | sed -n -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
 
 
 echo "TODO: ${listNum} tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
@@ -82,9 +86,12 @@ else
     [ $addedTodayNum -gt 0 ] && addedText="added +${addedTodayNum}"
     doneText=
     [ $doneTodayNum -gt 0 ] && doneText="${addedText:+ / }done -${doneTodayNum}"
-    echo "TODO: Today ${addedText}${doneText}"
+    echo "TODO: today ${addedText}${doneText}"
 fi
 
+if [ "$prioritizedProjects" ]; then
+    echo "TODO: prioritized $prioritizedProjects"
+fi
 if [ "$waitReasons" ]; then
     echo "TODO: waiting for $waitReasons"
 fi
