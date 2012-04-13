@@ -76,11 +76,13 @@ fi
 prioritizedProjects=$("$TODO_FULL_SH" lspriprj "$TODOTXT_SUMMARY_PRIORITIES" "$@" | sed -n -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
 
 
-echo "TODO: ${listNum} tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
+filter=
+[ $# -gt 0 ] && filter="$* "
+echo "TODO: ${listNum} ${filter}tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
 echo "TODO: ${activeNum} open, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${doneNum} done"
 
 if [ $addedTodayNum -eq 0 -a $doneTodayNum -eq 0 ]; then
-    echo "TODO: No tasks added or done today yet."
+    echo "TODO: None added or done today yet."
 else
     addedText=
     [ $addedTodayNum -gt 0 ] && addedText="added +${addedTodayNum}"
