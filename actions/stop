@@ -23,8 +23,8 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [on DATE|DATE-] ITEM#[, ITEM#, ...] [COMMENT]"
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] [on DATE|DATE-] [COMMENT]"
+    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]|all [on DATE|DATE-] [COMMENT]"
+    echo "    $(basename $0) [on DATE|DATE-] ITEM#[, ITEM#, ITEM#, ...]|all [COMMENT]"
     echo "      Marks task(s) on line ITEM# as not being worked on any more in todo.txt,"
     echo "      optionally appending COMMENT."
     echo ""
@@ -34,4 +34,4 @@ shift
 errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [on DATE|DATE-] [COMMENT]"
 [ $# -eq 0 ] && die "$errmsg"
 
-"$TODO_FULL_SH" pri none "$@"
+"$TODO_FULL_SH" depri "$@"
