@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)adddo	002	(18-Apr-2012)	todo.txt-cli-ex
+# @(#)adddo	003	(18-Apr-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -29,9 +29,9 @@ shift
     exit
 }
 
-# call back to the main script to add
-if "$TODO_FULL_SH" add "$@"; then
-    # figure out the line of what we just added, and "do" it
-    line=$(sed -n '$ =' "$TODO_FILE")
-    "$TODO_FULL_SH" do "$line"
-fi
+# Call back to the main script to add
+"$TODO_FULL_SH" add "$@" || exit $?
+
+# Figure out the line of what we just added, and "do" it.
+item=$(sed -n '$ =' "$TODO_FILE")
+"$TODO_FULL_SH" do "$item"

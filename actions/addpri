@@ -34,9 +34,9 @@ if [[ "$1" = [a-zA-Z] ]]; then
     shift
 fi
 
-# call back to the main script to add
-if "$TODO_FULL_SH" add "$@"; then
-    # figure out the line of what we just added, and prioritize it
-    line=$(sed -n '$ =' "$TODO_FILE")
-    "$TODO_FULL_SH" command pri "$line" $pri
-fi
+# Call back to the main script to add.
+"$TODO_FULL_SH" add "$@" || exit $?
+
+# Figure out the line of what we just added, and prioritize it.
+item=$(sed -n '$ =' "$TODO_FILE")
+"$TODO_FULL_SH" command pri "$item" $pri
