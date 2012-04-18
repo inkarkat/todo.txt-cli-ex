@@ -27,9 +27,10 @@ shift
     echo "    $(basename $0) PRIORITY|none ITEM#[, ITEM#, ...] [on DATE|DATE-] [until DATE|-DATE] [COMMENT]"
     echo "    $(basename $0) ITEM#[, ITEM#, ...] PRIORITY|none [on DATE|DATE-] [until DATE|-DATE] [COMMENT]"
     echo "      Adds PRIORITY to task(s) on line ITEM#, or deprioritizes with none."
-    echo "      With DATE-, priorization will only happen on DATE (via A:DATE)."
+    echo "      With DATE-, prioritization will only happen on DATE (via A:DATE)."
     echo "      With -DATE, the task will stay prioritized until DATE (via d:DATE)."
-    echo "      Remove a (de-)priorization on DATE via priority=none."
+    echo "      Remove a (de-)prioritization on DATE via priority=none. For immediate"
+    echo "      deprioritization, use depri."
     echo ""
     exit
 }
