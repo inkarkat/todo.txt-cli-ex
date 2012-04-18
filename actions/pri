@@ -107,7 +107,7 @@ do
 
     if [ "$beginDate" ]; then
         if [ "$pri" = "none" ]; then
-            whenwhat="will be not be prioritized on $beginDate"
+            whenwhat="will be deprioritized on $beginDate"
         else
             whenwhat="will be prioritized ($newpri) on $beginDate"
         fi
