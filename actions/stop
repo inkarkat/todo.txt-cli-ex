@@ -16,36 +16,22 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)stop	001	18-Apr-2012	todo.txt-cli-ex
+# @(#)stop	002	18-Apr-2012	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
+    echo "    $(basename $0) [on DATE|DATE-] ITEM#[, ITEM#, ...] [COMMENT]"
+    echo "    $(basename $0) ITEM#[, ITEM#, ...] [on DATE|DATE-] [COMMENT]"
     echo "      Marks task(s) on line ITEM# as not being worked on any more in todo.txt,"
     echo "      optionally appending COMMENT."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [on DATE|DATE-] [COMMENT]"
 [ $# -eq 0 ] && die "$errmsg"
 
-items=
-while [[ "$1" =~ ^[,0-9]+$ ]]
-do
-    items="$items $1"
-    shift
-done
-[ "$items" ] || die "$errmsg"
-
-for item in ${items//,/ }
-do
-    if [ $# -gt 0 ]; then
-        "$TODO_FULL_SH" command append $item "$@" || exit $?
-    fi
-
-    "$TODO_FULL_SH" depri "$item"
-done
+"$TODO_FULL_SH" pri none "$@"
