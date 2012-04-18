@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)cheatsheet	001	18-Apr-2012	todo.txt-cli-ex
+# @(#)cheatsheet	002	18-Apr-2012	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -34,10 +34,11 @@ shift
 priorityHelp()
 {
     cat <<EOF
-(A) top priority: do ASAP
+(A) top priority:  do ASAP
 (B) must priority: important and work-related tasks, to be done soon
-(C) want priority: optional, stretch goals that may be done opportunistically
-(P) pending: tasks currently in progress, only one step away from completion
+(C) want priority: private or side tasks, to be done if time permits
+(O) opportunity:   optional, stretch goals that may be done opportunistically
+(P) pending:       tasks currently in progress, only a step away from completion
 (V) Vim-related tasks that I may attack next
 EOF
 if [ "$TODOTXT_WHAT_PRIORITIES" ]; then
