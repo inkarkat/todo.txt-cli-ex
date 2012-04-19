@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)add	002	(06-Mar-2012)	todo.txt-cli-ex
+# @(#)add	003	(19-Apr-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -36,7 +36,7 @@ shift
 # etc.) This is meant as a convenient shortcut when adding new tasks; existing
 # task markers should be modified through dedicated actions (e.g. schedule).
 task=$*
-markers=$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\([^ ]\+\|([^)]\+)\)' | grep '^[[:graph:]]:')
+markers=$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\(([^)]\+)\|[^ ]\+\)' | grep '^[[:graph:]]:')
 IFS=$'\n'
 for marker in $markers
 do
