@@ -35,7 +35,7 @@ shift
     echo "      Remove the recurrent scheduling of task ITEM#."
     echo "      The task will still be scheduled once more."
     echo "    $(basename $0) [list [TERM...]]"
-    echo "      List recurring taks that contain TERM(s)."
+    echo "      List recurring tasks that contain TERM(s)."
     echo ""
     exit
 }
