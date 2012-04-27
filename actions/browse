@@ -1,7 +1,7 @@
 #!/bin/bash
 ###############################################################################
 ##
-# FILE:         nav
+# FILE:         browse
 # PRODUCT:      todo.txt-cli-ex
 # AUTHOR:       Philippe Teuwen
 # MAINTAINER:   Ingo Karkat <ingo@karkat.de>
@@ -15,7 +15,7 @@
 # SOURCE:
 #   https://github.com/doegox/todo.txt-cli/blob/extras/todo.actions.d/nav
 #
-# @(#)nav	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)browse	002	(27-Apr-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
