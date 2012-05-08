@@ -13,7 +13,7 @@
 # REMARKS:
 #
 # SOURCE:
-#   https://github.com/the1ts/todo.txt-plugins/tree/master/actions/contextview 
+#   https://github.com/the1ts/todo.txt-plugins/tree/master/actions/contextview
 #
 # COPYRIGHT: (C) 2009 Paul Mansfield
 #            (C) 2010-2012 Ingo Karkat
@@ -21,7 +21,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)contextview	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)contextview	002	(08-May-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -40,7 +40,7 @@ fi
 makeTaskCounts()
 {
     if [ "$additional_filter_command" ]; then
-        # Just count them; done tasks have already been filtered away. 
+        # Just count them; done tasks have already been filtered away.
         sed -n '$ ='
     else
         awk '
@@ -76,7 +76,7 @@ END {
     fi
 }
 
-# Configuration to only summarize many unassociated tasks. 
+# Configuration to only summarize many unassociated tasks.
 : ${TODOTXT_CONTEXTVIEW_UNASSOCIATED_THRESHOLD:=10}
 
 original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
@@ -88,20 +88,20 @@ if [ "$1" = '-a' ]; then
     additional_filter_command=
 fi
 
-# Show contexts in alphabetical order and tasks in priority order. 
+# Show contexts in alphabetical order and tasks in priority order.
 let contextCnt=0
 tasks=
 
-# Find all contexts. 
-readonly contexts=$(eval "$(filtercommand 'cat "$TODO_FILE"' '' "$@")" | grep -o '[^ ]*@[^ ]\+' | grep '^@' | sort -u)
+# Find all contexts.
+readonly contexts=$("$TODO_FULL_SH" command listcon "$@")
 
-# For each context show header and the list of tasks. 
-export HIDE_CONTEXTS_SUBSTITUTION='[[:space:]]@[[:graph:]]\{1,\}'   # Omitting all contexts from the list. 
-for context in $contexts; do 
-    # Use core _list function, does numbering and coloring for us. 
+# For each context show header and the list of tasks.
+export HIDE_CONTEXTS_SUBSTITUTION='[[:space:]]@[[:graph:]]\{1,\}'   # Omitting all contexts from the list.
+for context in $contexts; do
+    # Use core _list function, does numbering and coloring for us.
     post_filter_command="${additional_filter_command}grep '$context\\( \\|$\\)'"
     contextList=$(_list "$TODO_FILE" "$@")
-    if [ "$contextList" ]; then # Even though we're operating only on context tasks containing TERM, a task filter may still filter away all tasks for a context. 
+    if [ "$contextList" ]; then # Even though we're operating only on context tasks containing TERM, a task filter may still filter away all tasks for a context.
         taskCounts=$(echo "${projectList}" | makeTaskCounts)
         [ $contextCnt -gt 0 ] && echo ""
         echo "--- ${context} ($taskCounts) ---"
@@ -115,7 +115,7 @@ for context in $contexts; do
     fi
 done
 
-# Show tasks not associated with a context. 
+# Show tasks not associated with a context.
 unassociatedCnt=0
 post_filter_command="${additional_filter_command}grep -ve '[[:space:]]@[[:graph:]]'"
 contextList=$(_list "$TODO_FILE" "$@")

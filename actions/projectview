@@ -13,7 +13,7 @@
 # REMARKS:
 #
 # SOURCE:
-#   https://github.com/the1ts/todo.txt-plugins/tree/master/actions/projectview 
+#   https://github.com/the1ts/todo.txt-plugins/tree/master/actions/projectview
 #
 # COPYRIGHT: (C) 2009 Paul Mansfield
 #            (C) 2010-2012 Ingo Karkat
@@ -40,7 +40,7 @@ fi
 makeTaskCounts()
 {
     if [ "$additional_filter_command" ]; then
-        # Just count them; done tasks have already been filtered away. 
+        # Just count them; done tasks have already been filtered away.
         sed -n '$ ='
     else
         awk '
@@ -76,7 +76,7 @@ END {
     fi
 }
 
-# Configuration to only summarize many unassociated tasks. 
+# Configuration to only summarize many unassociated tasks.
 : ${TODOTXT_PROJECTVIEW_UNASSOCIATED_THRESHOLD:=10}
 
 original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
@@ -88,20 +88,20 @@ if [ "$1" = '-a' ]; then
     additional_filter_command=
 fi
 
-# Show projects in alphabetical order and tasks in priority order. 
+# Show projects in alphabetical order and tasks in priority order.
 let projectCnt=0
 tasks=
 
-# Find all projects. 
+# Find all projects.
 readonly projects=$("$TODO_FULL_SH" command listproj "$@")
 
-# For each project show header and the list of tasks. 
-export HIDE_PROJECTS_SUBSTITUTION='[[:space:]][+][[:graph:]]\{1,\}' # Omitting all projects from the list. 
-for project in $projects; do 
-    # Use core _list function, does numbering and coloring for us. 
+# For each project show header and the list of tasks.
+export HIDE_PROJECTS_SUBSTITUTION='[[:space:]][+][[:graph:]]\{1,\}' # Omitting all projects from the list.
+for project in $projects; do
+    # Use core _list function, does numbering and coloring for us.
     post_filter_command="${additional_filter_command}grep '$project\\( \\|$\\)'"
     projectList=$(_list "$TODO_FILE" "$@")
-    if [ "$projectList" ]; then # Even though we're operating only on project tasks containing TERM, a task filter may still filter away all tasks for a project. 
+    if [ "$projectList" ]; then # Even though we're operating only on project tasks containing TERM, a task filter may still filter away all tasks for a project.
         taskCounts=$(echo "${projectList}" | makeTaskCounts)
         [ $projectCnt -gt 0 ] && echo ""
         echo "--- ${project#+} ($taskCounts) ---"
@@ -115,7 +115,7 @@ for project in $projects; do
     fi
 done
 
-# Show tasks not associated to a project. 
+# Show tasks not associated to a project.
 unassociatedCnt=0
 post_filter_command="${additional_filter_command}grep -ve '[[:space:]]+[[:graph:]]'"
 projectList=$(_list "$TODO_FILE" "$@")
