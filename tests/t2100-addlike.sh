@@ -105,6 +105,17 @@ TODO: 2 of 2 tasks shown
 EOF
 
 > todo.txt
+test_todo_session 'addlike only projects and contexts' <<EOF
+>>> todo.sh add +buy @grocer +meat
+1 +buy @grocer +meat
+TODO: 1 added.
+
+>>> todo.sh addlike 1 chicken
+2 +buy @grocer +meat chicken
+TODO: 2 added.
+EOF
+
+> todo.txt
 test_todo_session 'addlike omit ITEM#' <<EOF
 >>> todo.sh add +tv @home watch movies
 1 +tv @home watch movies
@@ -117,6 +128,52 @@ TODO: 2 added.
 >>> todo.sh addlike smell the fish
 3 +flowers @outside smell the fish
 TODO: 3 added.
+
+>>> todo.sh -p list
+2 +flowers @outside notice the daisies
+3 +flowers @outside smell the fish
+1 +tv @home watch movies
+--
+TODO: 3 of 3 tasks shown
+EOF
+
+> todo.txt
+test_todo_session 'addlike omit THINGS TO ADD' <<EOF
+>>> todo.sh add +flowers @outside notice the daisies
+1 +flowers @outside notice the daisies
+TODO: 1 added.
+
+>>> todo.sh addlike 1
+2 +flowers @outside
+TODO: 2 added.
+
+>>> todo.sh -p list
+2 +flowers @outside
+1 +flowers @outside notice the daisies
+--
+TODO: 2 of 2 tasks shown
+EOF
+
+> todo.txt
+test_todo_session 'addlike omit all' <<EOF
+>>> todo.sh add +tv @home watch movies
+1 +tv @home watch movies
+TODO: 1 added.
+
+>>> todo.sh add +flowers @outside notice the daisies
+2 +flowers @outside notice the daisies
+TODO: 2 added.
+
+>>> todo.sh addlike
+3 +flowers @outside
+TODO: 3 added.
+
+>>> todo.sh -p list
+3 +flowers @outside
+2 +flowers @outside notice the daisies
+1 +tv @home watch movies
+--
+TODO: 3 of 3 tasks shown
 EOF
 
 > todo.txt
