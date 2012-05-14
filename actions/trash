@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)trash	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)trash	002	(14-May-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -42,7 +42,7 @@ TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 cleanup()
 {
     if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
-        # Finally delete the marked lines. 
+        # Finally delete the marked lines.
         sed -i.bak -e '/^!DELETED$/d' "$TODO_FILE"
     fi
 }
@@ -63,11 +63,11 @@ done
 [ "$items" ] || die "$errmsg"
 
 [ "$RECURSIVE_DO" ] || > ~/.todo-lastdone
-# Split multiple trash's, if comma separated change to whitespace separated. 
-# Loop the 'trash' function for each task. 
+# Split multiple trash's, if comma separated change to whitespace separated.
+# Loop the 'trash' function for each task.
 for item in ${items//,/ }
-do 
-    # Always append more even when the task is already trashed. 
+do
+    # Always append more even when the task is already trashed.
     if [ $# -gt 0 ]; then
         "$TODO_FULL_SH" command append $item "$@" || exit $?
     fi
@@ -75,39 +75,39 @@ do
     getTodo "$item"
 
     # Check if this task has already been done or trashed, but allow a --hard
-    # re-trash of an already trashed task. 
+    # re-trash of an already trashed task.
     if [ "${todo:0:2}" = 'x ' ]; then
-        echo "$item is already marked done."
+        die "TODO: $item is already marked done."
     elif [ ! "$isHard" -a "${todo:0:2}" = 'X ' ]; then
-        echo "$item is already marked as trashed."
+        echo "TODO: $item is already marked as trashed."
     else
         now=$(date '+%Y-%m-%d')
-        # Remove priority once task is trashed. 
+        # Remove priority once task is trashed.
         sed -i.bak $item"s/^(.) //" "$TODO_FILE"
-        # Add "X" trashed marker and timestamp like the 'do' command. 
+        # Add "X" trashed marker and timestamp like the 'do' command.
         sed -i.bak $item's|^\(X \([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\?\)\?|'"X $now |" "$TODO_FILE"
 
         if [ "$isHard" ]; then
-            # Immediately move task to trash. 
+            # Immediately move task to trash.
             sed -e "$item!d" "$TODO_FILE" >> "$TRASH_FILE"
             if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
-                # Delete line (changes line numbers). 
+                # Delete line (changes line numbers).
                 # Note: Cannot actually remove lines inside the loop, as this may
-                # make following task numbers invalid. 
+                # make following task numbers invalid.
                 sed -i.bak -e $item"s/^.*/!DELETED/" "$TODO_FILE"
             else
                 # leave blank line behind (preserves line numbers)
                 sed -i.bak -e $item"s/^.*//" "$TODO_FILE"
             fi
 
-            # Untrash from trash.txt via 'untrash'. 
+            # Untrash from trash.txt via 'untrash'.
         else
-            # Allow untrashing via 'undo'. 
+            # Allow untrashing via 'undo'.
             printf '%s ' $item >> ~/.todo-lastdone
         fi
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             if [ "$isHard" ]; then
-                trashItem=$(sed -n '$ =' "$TRASH_FILE") 
+                trashItem=$(sed -n '$ =' "$TRASH_FILE")
                 getNewtodo "$trashItem" "$TRASH_FILE"
                 echo "$trashItem $newtodo"
                 echo "TODO: $item put into $(getPrefix "$TRASH_FILE") as ${trashItem}."
@@ -119,7 +119,7 @@ do
         fi
 
         if [ -x "$TODO_ACTIONS_DIR/lswait" ]; then
-            # Check for tasks that depended on the trashed task. 
+            # Check for tasks that depended on the trashed task.
             depitems=$(TODOTXT_LSWAIT_SHOW_ITEMS=1 "$TODO_FULL_SH" lswait 'for' "$item")
             if [ "$depitems" ]; then
                 [[ "$1" =~ \  ]] && depTaskPlural='s' || depTaskPlural=
