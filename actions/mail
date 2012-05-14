@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)mail	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)mail	002	(14-May-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -35,7 +35,8 @@ shift
     echo "      -m uses MESSAGE as the email body."
     echo "      Recipients are taken from @Person (first letter uppercase, must be found"
     echo "      in email address book then), @name@host, or if none is found uses"
-    echo "      TODOTXT_MAIL_DEFAULT_RECIPIENTS. Or add / edit them through -e."
+    echo "      TODOTXT_MAIL_DEFAULT_RECIPIENTS (containing comma-separated entries)."
+    echo "      Or add / edit them through -e."
     echo "      The email can be copied to TODOTXT_MAIL_DEFAULT_CC and"
     echo "      TODOTXT_MAIL_DEFAULT_BCC."
     echo ""
@@ -50,10 +51,10 @@ type -P email >/dev/null || die "TODO: Cannot send email; command 'email' not fo
 
 # Consider only tasks that are not yet done or trashed. The tasks are already
 # numbered when the filter is applied, so there definitely is a space in front
-# of the marker. 
+# of the marker.
 post_filter_command="grep -ve '^ *[0-9]\+ [xX] '"
 
-# No highlighting and verbose summary. 
+# No highlighting and verbose summary.
 TODOTXT_VERBOSE=0
 TODOTXT_PLAIN=1
 
@@ -99,7 +100,7 @@ fi
 if [ "$items" ]; then
     # Listing of task numbers is unintuitive, because the search pattern is
     # applied in the middle of alignment, when the numbers have already been
-    # space- (but not zero-) aligned. 
+    # space- (but not zero-) aligned.
     tasks=$(_list "$TODO_FILE" "^ *\\(${items//,/\\|}\\) ")
 else
     tasks=$(_list "$TODO_FILE" "$@")
@@ -137,7 +138,8 @@ printEmail()
 " || local bodySeparator=
     cat <<EOF
 Subject:   $subject
-To:        $recipients
+To:        ${recipients//
+/,}
 Cc:        $cc
 Bcc:       $bcc
 ${bodySeparator}${body}
