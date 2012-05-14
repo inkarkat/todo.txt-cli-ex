@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)did	002	(26-Apr-2012)	todo.txt-cli-ex
+# @(#)did	003	(14-May-2012)	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -84,6 +84,9 @@ do
     # 'replace' command doesn't handle done tasks, and may do surprising things
     # to existing priorities and dates. This also would have confusing output.
     getTodo "$item"
+    if [ "${todo:0:2}" = 'X ' ]; then
+        die "TODO: $item is already marked as trashed."
+    fi
     # Do not check if this item has already been done; this allows
     # retroactive changes to the done date.
     # remove priority once item is done

@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)do        001     (24-Feb-2012)   todo.txt-cli-ex
+# @(#)do        002     (14-May-2012)   todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -74,6 +74,8 @@ do
             # Prevent the trash error message in such a case.
             RECURSIVE_DO='true' "$TODO_FULL_SH" trash $item || exit $?
         fi
+    elif [ "${todo:0:2}" = 'X ' ]; then
+        die "TODO: $item is already marked as trashed."
     else
         "$TODO_FULL_SH" command do $item || exit $?
         printf '%s ' $item >> ~/.todo-lastdone
