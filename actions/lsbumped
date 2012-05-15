@@ -31,7 +31,11 @@ shift
 }
 
 : ${TODOTXT_BUMP_MARKER:='!'}
-post_filter_command="grep -e ' ${TODOTXT_BUMP_MARKER}:[0-9]\+'"
+
+# Consider only tasks that are not yet done or trashed and contain the bump
+# marker.
+post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e ' ${TODOTXT_BUMP_MARKER}:[0-9]\+'"
+
 # To sort based on the number of bumps, temporarily add the bump count to the
 # front, do a numeric sort, then remove the count again.
 TODOTXT_SORT_COMMAND="sed -e 's/^.* ${TODOTXT_BUMP_MARKER}:\\([0-9]\\+\\).*\$/\\1 &/' | sort -nr | sed -e 's/^[0-9]\+ //'"
