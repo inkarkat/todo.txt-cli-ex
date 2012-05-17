@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)comment	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)comment	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -45,7 +45,7 @@ done
 
 
 for item in ${items//,/ }
-do 
+do
     getTodo "$item"
 
     if [[ "$todo" =~ $TODOTXT_COMMENT_SYMBOL ]]; then
@@ -54,7 +54,7 @@ do
             *)                        prefix="; ";;
         esac
     else
-        # Do not pass leading space; the append action adds that itself. 
+        # Do not pass leading space; the append action adds that itself.
         prefix="${TODOTXT_COMMENT_SYMBOL# }"
     fi
     "$TODO_FULL_SH" command append $item "${prefix}$*"

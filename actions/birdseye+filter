@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)birdseye+filter	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)birdseye+filter	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 [ "$ITEM" ] || exit 1
@@ -44,7 +44,7 @@ else
 fi
 
 # birdseye does not duplicate the todo.sh filtering functionality, therefore
-# need to process the task and done lists ourselves. 
+# need to process the task and done lists ourselves.
 TMPTODO=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0")T.$$")
 TMPDONE=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0")D.$$")
 
@@ -55,7 +55,7 @@ export TODO_FILE=$TMPTODO
 export DONE_FILE=$TMPDONE
 
 # Note: Cannot launch birdseye via "$TODO_FULL_SH" birdseye, because the todo.sh
-# invocation would overwrite the custom TODO_FILE and DONE_FILE config settings. 
+# invocation would overwrite the custom TODO_FILE and DONE_FILE config settings.
 "$TODO_ACTIONS_DIR/birdseye" birdseye "${which}-${ITEM}"
 rc=$?
 rm "$TMPTODO" "$TMPDONE" 2>/dev/null

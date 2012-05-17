@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)projectstat	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)projectstat	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 export ITEM='projects'

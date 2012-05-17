@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)dup	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)dup	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -70,7 +70,7 @@ case "$1" in
         [ $# -ge 2 ] || die "$errmsg"
         goal=$1
         # Ensure that an actual GOAL is given, and do not just pick a following
-        # ITEM# as the GOAL. 
+        # ITEM# as the GOAL.
         [[ "$goal" =~ ^[,0-9]+$ ]] && die "$errmsg"
         shift
         dupItems=$*
@@ -85,7 +85,7 @@ case "$1" in
     *)  die "$errmsg";;
 esac
 
-# Split multiple duplicates, if comma separated change to whitespace separated. 
+# Split multiple duplicates, if comma separated change to whitespace separated.
 for dupItem in ${dupItems//,/ }
 do
     case $subaction in
@@ -94,7 +94,7 @@ do
             eval 'RECURSIVE_DO=true "$TODO_FULL_SH" trash' ${isHard:+--hard} '$dupItem' || exit $?
             ;;
         append)
-            # Do not pass leading space; the append action adds that itself. 
+            # Do not pass leading space; the append action adds that itself.
             "$TODO_FULL_SH" command append $dupItem "j:$goal" || exit $?
             ;;
         link)
@@ -108,6 +108,6 @@ done
 
 if [ "$subaction" = 'append' ]; then
     # The append action just prints the resulting task, so add a proper final
-    # message myself. 
+    # message myself.
     echo "TODO: ${dupItems// /,} now share the goal $goal"
 fi

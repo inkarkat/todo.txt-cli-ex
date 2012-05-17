@@ -34,7 +34,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)relativeDates	1.10	(16-Mar-2012)	todo.txt-cli-ex
+# @(#)relativeDates	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 if [ ${TODOTXT_RELDATE:-1} -ne 0 ]; then

@@ -21,7 +21,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)contextview	002	(08-May-2012)	todo.txt-cli-ex
+# @(#)contextview	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1

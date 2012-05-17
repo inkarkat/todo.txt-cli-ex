@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)undo	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)undo	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -42,17 +42,17 @@ if [ $# -eq 0 ]; then
     rm ~/.todo-lastdone
     [ "$items" ] || die "TODO: No undo information available!"
 else
-    # Split multiple undo's, if comma separated change to whitespace separated. 
+    # Split multiple undo's, if comma separated change to whitespace separated.
     items=${*//,/ }
 fi
 
-# Loop the 'undo' function for each task. 
-for item in $items; do 
+# Loop the 'undo' function for each task.
+for item in $items; do
     getTodo "$item"
 
-    # Check whether this task is actually done or trashed. 
+    # Check whether this task is actually done or trashed.
     if [ "${todo:0:2}" = 'x ' -o "${todo:0:2}" = 'X ' ]; then
-        # Remove "x" done / "X" trashed marker and timestamp. 
+        # Remove "x" done / "X" trashed marker and timestamp.
         sed -i.bak $item"s|^[xX] [0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} ||" "$TODO_FILE"
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             getNewtodo "$item"
@@ -67,7 +67,7 @@ for item in $items; do
         "$TODO_FULL_SH" uncomment -q "$item"
     elif [[ "$todo" =~  \ [xz]:[0-9]{4}-[0-9]{2}-[0-9]{2} ]]; then
         # The task may have been scheduled to expire; in this case, remove the
-        # expire marker. 
+        # expire marker.
         "$TODO_FULL_SH" subst $item ' [xz]:[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' ''
     else
         echo "TODO: $item is not marked done or trashed. Has it been archived?"

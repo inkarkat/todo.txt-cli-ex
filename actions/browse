@@ -15,7 +15,7 @@
 # SOURCE:
 #   https://github.com/doegox/todo.txt-cli/blob/extras/todo.actions.d/nav
 #
-# @(#)browse	002	(27-Apr-2012)	todo.txt-cli-ex
+# @(#)browse	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1

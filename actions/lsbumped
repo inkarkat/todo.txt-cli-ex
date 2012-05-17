@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)lsbumped	001	15-May-2012	todo.txt-cli-ex
+# @(#)lsbumped	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1

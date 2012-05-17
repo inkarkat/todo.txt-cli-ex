@@ -12,10 +12,10 @@
 # REMARKS:
 #
 # SOURCE:
-#   Derived from the schedule action by FND: 
+#   Derived from the schedule action by FND:
 #   https://github.com/FND/todo.txt-cli/blob/extensions/schedule
 #
-# @(#)until	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)until	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -53,7 +53,7 @@ readonly errmsg="usage: $TODO_SH $(basename $0) [ITEM#[, ITEM#, ...] DATE [zap]|
 
 ensureFilter()
 {
-    # Ensure that the latestDueTasks filter is set. 
+    # Ensure that the latestDueTasks filter is set.
     if [[ "$TODOTXT_FINAL_FILTER" != *latestDueTasks* ]]; then
         if [ "$TODOTXT_FINAL_FILTER" = 'cat' ]; then
             TODOTXT_FINAL_FILTER="${TODO_FILTER_DIR:?}/latestDueTasks"
@@ -81,14 +81,14 @@ getUnscheduledTask()
     if [ "$isZap" ]; then
         marker='z'
     else
-        # Keep existing type of marker; either "u:" or "z:". 
+        # Keep existing type of marker; either "u:" or "z:".
         marker=$(echo "$todo" | sed -ne "s/^.*${pattern}.*\$/\\1/p")
-        # And default to "u:". 
+        # And default to "u:".
         marker=${marker:-u}
     fi
 
-    # Remove threshold and priority. 
-    unscheduledTodo=$(echo "$todo" | sed -e "s/${pattern}//g" -e "s/^([A-Z])* //") 
+    # Remove threshold and priority.
+    unscheduledTodo=$(echo "$todo" | sed -e "s/${pattern}//g" -e "s/^([A-Z])* //")
 }
 
 remove()
@@ -149,7 +149,7 @@ fi
 [ "$items" ] || die "$errmsg"
 
 for item in ${items//,/ }
-do 
+do
     case $date in
         '')
             if [ "$isZap" ]; then

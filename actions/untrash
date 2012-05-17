@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)untrash	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)untrash	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -39,26 +39,26 @@ TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 
 cleanup()
 {
-    # Finally delete the marked lines. 
+    # Finally delete the marked lines.
     sed -i.bak -e '/^!DELETED$/d' "$TRASH_FILE"
 }
 trap 'cleanup' EXIT
 
-# Split multiple untrash's, if comma separated change to whitespace separated. 
-# Loop the 'untrash' function for each task. 
+# Split multiple untrash's, if comma separated change to whitespace separated.
+# Loop the 'untrash' function for each task.
 for item in ${*//,/ }
-do 
-    [ "$item" = 'last' ] && item=$(sed -n '$ =' "$TRASH_FILE") 
+do
+    [ "$item" = 'last' ] && item=$(sed -n '$ =' "$TRASH_FILE")
 
     getTodo "$item" "$TRASH_FILE"
 
     # Move task to todo.txt, without the "X" trashed marker and timestamp that
-    # has been prepended by the 'trash' command. 
+    # has been prepended by the 'trash' command.
     sed -e "$item!d" -e $item's/^\(X \)\?[0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} //' "$TRASH_FILE" >> "$TODO_FILE"
 
-    # Delete line (changes line numbers, but that's okay in the trash). 
+    # Delete line (changes line numbers, but that's okay in the trash).
     # Note: Cannot actually remove lines inside the loop, as this may make
-    # following task numbers invalid. 
+    # following task numbers invalid.
     sed -i.bak -e $item"s/^.*/!DELETED/" "$TRASH_FILE"
 
     TASKNUM=$(sed -n '$ =' "$TODO_FILE")

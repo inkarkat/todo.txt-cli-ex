@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)split	001	19-Apr-2012	todo.txt-cli-ex
+# @(#)split	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1

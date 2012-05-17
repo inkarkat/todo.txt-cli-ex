@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)del	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)del	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -43,12 +43,12 @@ done
 [ "$items" ] || die "$errmsg"
 
 for item in ${items//,/ }
-do 
+do
     "$TODO_FULL_SH" command del $item "$@" || exit $?
 
     if [ $# -eq 0 -a -x "$TODO_ACTIONS_DIR/unwait" ]; then
-        # Unblock tasks that depended on the deleted task. 
+        # Unblock tasks that depended on the deleted task.
         "$TODO_FULL_SH" unwait 'for' $item | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
-        : # Always exit with a successful exit code even when the command complained. 
+        : # Always exit with a successful exit code even when the command complained.
     fi
 done

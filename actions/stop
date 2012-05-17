@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)stop	002	18-Apr-2012	todo.txt-cli-ex
+# @(#)stop	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1

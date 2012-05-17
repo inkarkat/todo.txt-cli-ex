@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)dashboard	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)dashboard	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -53,7 +53,7 @@ if [ "$HOSTNAME" ]; then
 
     if [ $# -gt 0 ]; then
         # When filter TERM(s) are given, still include information about any
-        # other local tasks. 
+        # other local tasks.
         allHereTaskNum=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here | sed -n '$ =')
         if [ $allHereTaskNum -gt 0 ]; then
             if [ $hereTaskNum -gt 0 ]; then

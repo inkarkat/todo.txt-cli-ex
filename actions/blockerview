@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)blockerview	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)blockerview	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -30,7 +30,7 @@ shift
     exit
 }
 
-# Remove projects, contexts and done / add date(s) to shorten the tasks. 
+# Remove projects, contexts and done / add date(s) to shorten the tasks.
 : ${TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION='[[:space:]][+@][[:graph:]]\{1,\}\| \([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\}\)\{1,2\}'}
 if [ "$TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION" ]; then
     export HIDE_CUSTOM_SUBSTITUTION=$TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION
@@ -39,21 +39,21 @@ fi
 original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 TODOTXT_VERBOSE=0
 
-# Show wait reasons in alphabetical order and blocked tasks in priority order. 
+# Show wait reasons in alphabetical order and blocked tasks in priority order.
 let blockerCnt=0
 let dependentTaskCnt=0
 let invalidDependentTaskCnt=0
 tasksOnBlocker=
 tasksOnDependentTask=
 
-# Find all wait markers and sort. 
+# Find all wait markers and sort.
 IFS=$'\n'
 for waitMarker in $(sed -e '/^[xX] /d' -e '/ w:/!d' -e 's/ w:[^ ]/\n&/g' "$TODO_FILE" | sed -n -e 's/^.* \(w:([^)]*)\).*$/\1/p;t' -e 's/^.* \(w:[^ ]*\).*$/\1/p' | sort -u )
 do
-    blocker=$(echo "$waitMarker" | sed -e 's/w:(\([^)]*\))/\1/' -e 's/w:\([^ ]*\)/\1/') 
+    blocker=$(echo "$waitMarker" | sed -e 's/w:(\([^)]*\))/\1/' -e 's/w:\([^ ]*\)/\1/')
 
     if [[ "$blocker" =~ ^[0-9]+$ ]]; then
-        # Translate dependent task number into a fully rendered, but shortened task description. 
+        # Translate dependent task number into a fully rendered, but shortened task description.
         deptodo=$(export TODOTXT_FILTER_SCHEDULED=0; export TODOTXT_FILTER_FUTURE_TASKS=0; post_filter_command= _list "$TODO_FILE" "^ *$blocker ")
         if [ ! "$deptodo" ]; then
             deptodo='???'
@@ -66,7 +66,7 @@ do
     fi
 
     # Extract all tasks that contain the waitMarker and remove the marker itself
-    # before any final filter performs highlighting. 
+    # before any final filter performs highlighting.
     post_filter_command="sed -e '\| ${waitMarker//|/\\|}|!d' -e 's| ${waitMarker//|/\\|}||g'"
     waitList=$(_list "$TODO_FILE" "$@")
     if [[ -n "$waitList" ]]; then

@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)subst	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)subst	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -36,7 +36,7 @@ item=$1; shift
 
 getTodo "$item"
 # Get task without potential priority, the "replace" command will maintain the
-# priority. 
+# priority.
 todo=${todo#(?) }
 
 replace()
@@ -44,10 +44,10 @@ replace()
     cleaninput
     input=${input//%/\\%}
     # Above takes care of the replacement; for the pattern, we only have to escape
-    # the substitution delimiter, as it's supposed to be an sed regexp. 
+    # the substitution delimiter, as it's supposed to be an sed regexp.
     # Note: Use a substitution delimiter that has no special meaning as a regexp
     # symbol. For example, "|" causes problems when it is contained in pattern
-    # (e.g. /\(^\| \)/), and then mistakenly double-escaped. 
+    # (e.g. /\(^\| \)/), and then mistakenly double-escaped.
     newtodo=$(echo "$todo" | sed "s%${pattern//%/\\%}%${input}%g") || exit 1
 }
 

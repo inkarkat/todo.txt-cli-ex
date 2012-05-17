@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)lsarchive	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)lsarchive	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -30,6 +30,6 @@ shift
 }
 
 # Omit the "done" highlighting in favor of the more readable alternating task
-# highlighting for readability; all tasks are done, anyway. 
+# highlighting for readability; all tasks are done, anyway.
 export HIDE_COLOR_DONE=1
 "$TODO_FULL_SH" listfile "${DONE_FILE:?}" "$@"

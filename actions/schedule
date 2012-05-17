@@ -15,7 +15,7 @@
 # SOURCE:
 #   https://github.com/FND/todo.txt-cli/blob/extensions/schedule
 #
-# @(#)schedule	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)schedule	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1

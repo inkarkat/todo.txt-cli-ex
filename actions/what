@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)what	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)what	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -30,7 +30,7 @@ shift
     exit
 }
 
-# Configuration to limit the priorities that are considered. 
+# Configuration to limit the priorities that are considered.
 : ${TODOTXT_WHAT_PRIORITIES:=A-Z}
 
 export TODOTXT_LSDUE_TASKINCLUSION="-e '^ *[0-9]\+ ([${TODOTXT_WHAT_PRIORITIES}])'"

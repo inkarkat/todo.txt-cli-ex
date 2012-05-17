@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)lstrash	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)lstrash	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -33,6 +33,6 @@ errmsg="usage: $TODO_SH $(basename $0) [TERM...]"
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 # Omit the "trashed" highlighting in favor of the more readable alternating task
-# highlighting for readability; all tasks are trashed, anyway. 
+# highlighting for readability; all tasks are trashed, anyway.
 export HIDE_COLOR_TRASH=1
 "$TODO_FULL_SH" listfile "$TRASH_FILE" "$@"

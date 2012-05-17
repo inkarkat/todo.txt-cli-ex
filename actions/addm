@@ -13,10 +13,10 @@
 # REMARKS:
 #
 # SOURCE:
-#   Posted on the todo.txt mailing list: 
+#   Posted on the todo.txt mailing list:
 #   http://tech.groups.yahoo.com/group/todotxt/message/2723
 #
-# @(#)addm	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)addm	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -58,6 +58,6 @@ if [ -x "$TODO_ACTIONS_DIR/add" ]; then
   export ADDACTION='addm'
   "$TODO_ACTIONS_DIR/add" addm "$items"
 else
-  # Call back to the main script to addm. 
+  # Call back to the main script to addm.
   "$TODO_FULL_SH" command addm "$items"
 fi

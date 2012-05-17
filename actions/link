@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)link	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)link	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -46,9 +46,9 @@ fi
 
 links=
 linkMarkers=
-# Split multiple dep's, if comma separated change to whitespace separated. 
+# Split multiple dep's, if comma separated change to whitespace separated.
 for targetItem in ${*//,/ }
-do 
+do
     links="${links}${links:+, }${targetItem}"
     linkMarkers="${linkMarkers}${linkMarkers:+ }l:${targetItem}"
 done

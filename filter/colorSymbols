@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)colorSymbols	001	(24-Feb-2012)	todo.txt-cli-ex
+# @(#)colorSymbols	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 export COLOR_CONTEXT=${COLOR_CONTEXT-'\\033[35m'}
@@ -52,17 +52,17 @@ function getLineColor() {
     if (lineColor != "") {
         # Some matches here (for contexts and projects) are not cleanly
         # delimited at the end (unlike the match for date, whose format and
-        # length is fix), and match as much non-whitespace as possible. 
+        # length is fix), and match as much non-whitespace as possible.
         # This eats the end color that closes the line highlighting when such a
         # match occurs at the end of the line. In that case, the end color is
         # included in the match, and instead of "match-lineColor-lineEndColor",
         # it is "match-lineEndColor-lineColor", so the coloring bleeds into the
-        # following line. 
+        # following line.
         # To fix that, remove the line end color before the matches, and put it
-        # back on at the end. 
+        # back on at the end.
         # TODO: We just check for the DEFAULT highlight, so no custom end colors
         # are supported yet. However, this works fine for ANSI escape sequences,
-        # and HTML colorings that have all the same closing tag (e.g. </span>). 
+        # and HTML colorings that have all the same closing tag (e.g. </span>).
         defaultColor = highlight("DEFAULT")
         if (substr($0, length($0) - length(defaultColor) + 1) == defaultColor) {
             lineEndColor = defaultColor
@@ -70,7 +70,7 @@ function getLineColor() {
         }
     }
 
-    # Highlight alternating lines. 
+    # Highlight alternating lines.
     if (hasHighlight("COLOR_ALTERNATING") && wasUncolored && lineColor == "") {
         $0 = highlight("COLOR_ALTERNATING") $0 highlightend("COLOR_ALTERNATING", lineColor)
         lineColor = highlight("COLOR_ALTERNATING")
@@ -79,17 +79,17 @@ function getLineColor() {
     if (hasHighlight("COLOR_TASKNUM")) {
         netTask = substr($0, length(lineColor) + 1)
         if (! match(netTask, /^[0-9]+ [xX] /)) {
-            # Lazy-initialize task number width. 
+            # Lazy-initialize task number width.
             if (taskNumWidth <= 0) {
                 match(netTask, /[0-9]+ /)
                 taskNumWidth = RLENGTH - 1
             }
 
-            # Highlight current task number. 
+            # Highlight current task number.
             $0 = gensub(/([0-9]+) /, highlight("COLOR_TASKNUM") "\\1" highlightend("COLOR_TASKNUM", lineColor) " ", " ")
 
             # Highlight any m:42 references to other tasks, and normalize number
-            # width to e.g. m:042. 
+            # width to e.g. m:042.
             for (i = 1; i <= NF; i++) {
                 taskNum = gensub(/^[lkjw]:([0-9]+)/, "\\1", "", $i)
                 if (taskNum == $i) continue
@@ -104,9 +104,9 @@ function getLineColor() {
 
     $0 = $0 lineEndColor
 
-    # Remember line highlighting for highlighting of alternate lines. 
+    # Remember line highlighting for highlighting of alternate lines.
     # This has the advantage over a simple "NR % 2" that the line following an
-    # otherwise highlighted tasks is never highlighted, which is nicer visually. 
+    # otherwise highlighted tasks is never highlighted, which is nicer visually.
     wasUncolored = (lineColor == "")
 
     print
