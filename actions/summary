@@ -64,28 +64,10 @@ activeNum=$(
 futureNum=$((listNum - activeNum - waitNum - doneNum - trashedNum))  # All tasks that will only come due in the future.
 # When the futureTasks filter isn't enabled, this will be 0.
 
-addedAndDoneStat()
+inOutStat()
 {
-    local -r when=$1
-    local -r whenDate="$(date -d "$when" +%F)"
-    shift
-
-    addedWhenNum=$("$TODO_FULL_SH" -p ls "^ *[0-9]\\+ \\((.) \\)\\?$whenDate " "$@" | wc -l) # All (potentially prioritized) active tasks added on whenDate.
-    doneWhenNum=$("$TODO_FULL_SH" -p lsdone "^ *[0-9]\\+ x $whenDate " "$@" | wc -l) # All (archived and from todo.txt) tasks done on whenDate.
-
-    if [ $addedWhenNum -eq 0 -a $doneWhenNum -eq 0 ]; then
-        if [ "$when" = 'today' ]; then
-            echo "none added or done $when yet."
-        else
-            echo "None added or done $when"
-        fi
-    else
-        addedText=
-        [ $addedWhenNum -gt 0 ] && addedText="added +${addedWhenNum}"
-        doneText=
-        [ $doneWhenNum -gt 0 ] && doneText="${addedText:+ / }-${doneWhenNum} done"
-        echo "$when ${addedText}${doneText}"
-    fi
+    local -r inOut=$("$TODO_FULL_SH" -p inout -s "$@")
+    echo "${inOut#TODO: }"
 }
 
 waitReasons=
@@ -101,9 +83,9 @@ filter=
 echo "TODO: ${listNum} ${filter}tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
 echo "TODO: ${activeNum} open, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${doneNum} done"
 
-addedAndDoneYesterday=$(addedAndDoneStat 'yesterday' "$@")
-addedAndDoneToday=$(addedAndDoneStat 'today' "$@")
-echo "TODO: ${addedAndDoneYesterday}; ${addedAndDoneToday}"
+inOutYesterday=$(inOutStat 'yesterday' "$@")
+inOutToday=$(inOutStat 'today' "$@")
+echo "TODO: ${inOutYesterday}; ${inOutToday}"
 
 if [ "$prioritizedProjects" ]; then
     echo "TODO: prioritized $prioritizedProjects"
