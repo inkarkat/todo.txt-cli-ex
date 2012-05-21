@@ -86,11 +86,11 @@ processItems()
     moveItems=$(listItems "$mark" "$items" "$@")
 
     if [ "$moveItems" ]; then
-        moveCnt=$(printf %s "$moveItems" | wc -l)
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             _list "$TODO_FILE" "^ *\\(${moveItems//$'\n'/\\|}\\) " | sed -e "\$s/tasks shown/tasks ${what}/"
         else
-            echo "TODO: $moveCnt ${what}."
+            moveCnt=$(echo "$moveItems" | wc -l)
+            echo "TODO: $moveCnt task(s) ${what}."
         fi
 
         sed -ne "${moveItems//$'\n'/p;}p" "$TODO_FILE" >> "$FILE"
