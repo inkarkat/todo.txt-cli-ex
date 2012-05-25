@@ -15,9 +15,11 @@
 ::	been changed. 
 ::* REMARKS: 
 ::       	
-::* FILE_SCCS = "@(#)tt cache.cmd	007	(01-Feb-2012)	tools";
+::* FILE_SCCS = "@(#)tt cache.cmd	008	(13-Mar-2012)	tools";
 ::
 ::* REVISION	DATE		REMARKS 
+::	008	13-Mar-2012	Allow to override todo.txt location via
+::				TODO_FILE.
 ::	007	03-Feb-2012	Don't use relative times in todo.txt. 
 ::	006	01-Feb-2012	Pass command-line arguments along. 
 ::	005	12-Nov-2011	Replace invocation of "what" and "summary" with
@@ -45,8 +47,12 @@ set dateStore=%TEMP%\%~n0.dat
 set cacheFile=%TEMP%\%~n0.txt
 set isModified=
 
+if not defined TODO_FILE (
+    set TODO_FILE=%HOME%\todo\todo.txt
+)
+
 :: Read modification date of data file. 
-for %%f in ("%HOME%\todo\todo.txt") do set modificationDate=%%~tf
+for %%f in ("%TODO_FILE%") do set modificationDate=%%~tf
 :: Check that cache is still existent.  
 if not exist "%dateStore%" (goto:run)
 if not exist "%cacheFile%" (goto:run)
