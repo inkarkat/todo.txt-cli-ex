@@ -112,7 +112,7 @@ fi
 recipients=$(
     (
         echo "$tasks" | grep -o '[^ ]*@[^ ]\+' | sed -ne '/^@\([[:upper:]]\|.\+@.\+\)/s/^.//p'
-        echo "$tasks" | grep -o '[^ ]\+' | sed -ne "/${TODOTXT_MAIL_MARKER_PATTERN}/s/^[^:]\+://p"
+        echo "$tasks" | grep -o '[^ ]\+' | sed -ne "/${TODOTXT_MAIL_MARKER_PATTERN}/s/^[^:]\\+://p"
     ) | sort -u
 )
 [ "$recipients" ] || recipients=$TODOTXT_MAIL_DEFAULT_RECIPIENTS
@@ -166,7 +166,7 @@ if [ "$isEdit" ]; then
     recipients=$(sed -ne '/^To:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
     cc=$(sed -ne '/^Cc:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
     bcc=$(sed -ne '/^Bcc:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
-    body=$(sed -e "1,/^-=-=-=-=-=-=-=-=-=# Don't remove this line #=-=-=-=-=-=-=-=-=-$/d" "$TMPEDIT")
+    body=$(sed -e "1,/^-=-=-=-=-=-=-=-=-=# Don't remove this line #=-=-=-=-=-=-=-=-=-\$/d" "$TMPEDIT")
 fi
 
 if [ "$isTest" ]; then

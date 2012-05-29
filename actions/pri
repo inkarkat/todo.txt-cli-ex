@@ -58,7 +58,7 @@ datePri()
         # Remove any (de-)priorizations for the same date.
         # Replace existing date-priorization with the same priority in-place or
         # append new date-priorization.
-        newtodo=$(echo "$todo" | sed -e "s| [dA-Z]:${date}||" | sed -e "s| ${marker}:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| ${marker}:${date}|" -e t -e "s| *\$| ${marker}:${date}|") || exit 1
+        newtodo=$(echo "$todo" | sed -e "s| [dA-Z]:${date}||" | sed -e "s| ${marker}:"'\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}'"| ${marker}:${date}|" -e t -e "s| *\$| ${marker}:${date}|") || exit 1
     fi
 
     input=$newtodo

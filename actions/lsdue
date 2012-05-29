@@ -71,5 +71,5 @@ post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | \
 if [ "$TODOTXT_LSDUE_TASKINCLUSION" ]; then
     _list "$TODO_FILE" "$@"
 else
-    _list "$TODO_FILE" "$@" | sed -e "/^TODO:/s/of [0-9]\+ tasks shown/${summary}/"
+    _list "$TODO_FILE" "$@" | sed -e "/^TODO:/s/of [0-9]\\+ tasks shown/${summary}/"
 fi

@@ -82,5 +82,5 @@ else
     # definitely is a space in front of the marker.
     post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e ' w:[^ ]'"
 
-    _list "$TODO_FILE" "$@" | sed -e "/^TODO:/s/of [0-9]\+ tasks shown/blocked \0/"
+    _list "$TODO_FILE" "$@" | sed -e '/^TODO:/s/of [0-9]\+ tasks shown/blocked \0/'
 fi

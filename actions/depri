@@ -104,11 +104,11 @@ do
 
         if [ "$endDate" = 'never' ]; then
             # Remove existing date-depriorization.
-            newtodo=$(echo "$todo" | sed -e "s| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}||") || exit 1
+            newtodo=$(echo "$todo" | sed -e 's| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}||') || exit 1
         else
             # Replace existing date-depriorization with the same deprioritization
             # in-place or append new date-depriorization.
-            newtodo=$(echo "$todo" | sed -e "s| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| d:${endDate}|" -e t -e "s| *\$| d:${endDate}|") || exit 1
+            newtodo=$(echo "$todo" | sed -e 's| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| '"d:${endDate}|" -e t -e "s| *\$| d:${endDate}|") || exit 1
         fi
 
         input=$newtodo
