@@ -26,9 +26,13 @@ shift
     echo "    $(basename $0) [TERM...]"
     echo "      Adds a done task specified by TERM(s) as an open task again."
     echo "      When multiple tasks are found, queries which task to choose."
+    echo "    $(basename $0) ITEM#[, ITEM#, ...] [TERM...]"
+    echo "      Adds done, but not yet archived task(s) from todo.txt as open task(s)."
     echo ""
     exit
 }
+
+shopt -s extglob
 
 stripRawTasks()
 {
@@ -48,7 +52,22 @@ addTask()
     fi
 }
 
-doneTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" -p -x lsdone "$@" | stripRawTasks | uniq)
+items=
+while [[ "$1" =~ ^[,0-9]+$ ]]
+do
+    item=${1%,}
+    item=${item#,}
+    items="${items}${items:+,}$item"
+    shift
+done
+if [ "$items" ]; then
+    # Listing of task numbers is unintuitive, because the search pattern is
+    # applied in the middle of alignment, when the numbers have already been
+    # space- (but not zero-) aligned.
+    doneTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" -p -x lsdo "^ *\\(${items//,/\\|}\\) " "$@" | stripRawTasks | uniq)
+else
+    doneTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" -p -x lsdone "$@" | stripRawTasks | uniq)
+fi
 if [ ! "$doneTasks" ]; then
     die "TODO: No tasks found."
 fi
