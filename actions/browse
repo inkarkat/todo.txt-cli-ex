@@ -59,37 +59,14 @@ done
 
 
 
-# Trying to be smart...
-# on Debian alike:
 if [ "$TODOTXT_BROWSER" ]; then
     exec "$TODOTXT_BROWSER" "${urls[@]}"
+elif $(which browse >/dev/null 2>&1); then
+    exec browse "${urls[@]}"
 elif $(which x-www-browser >/dev/null 2>&1); then
     exec x-www-browser "${urls[@]}"
-# with freedesktop.org utils:
 elif $(which xdg-open >/dev/null 2>&1); then
     exec xdg-open "${urls[@]}"
-# if you have git:
-elif [ -x /usr/lib/git-core/git-web--browse ]; then
-    cd /usr/lib/git-core && ./git-web--browse "${urls[@]}"
-# last resort, a la mano...
-elif $(which firefox >/dev/null 2>&1); then
-    exec firefox "${urls[@]}"
-elif $(which konqueror >/dev/null 2>&1); then
-    exec konqueror "${urls[@]}"
-elif $(which nautilus >/dev/null 2>&1); then
-    exec nautilus "${urls[@]}"
-# Windows?
-elif [ -x "/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe" ]; then
-    exec "/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe" "${urls[@]}"
-elif [ -x "/cygdrive/c/Program Files (x86)/Mozilla Firefox/firefox.exe" ]; then
-    exec "/cygdrive/c/Program Files (x86)/Mozilla Firefox/firefox.exe" "${urls[@]}"
-# OS X?
-elif [ -x "/usr/bin/open" ]; then
-    exec "/usr/bin/open" "${urls[@]}"
 else
-    echo "Sorry I'm giving up, cannot find your browser :-("
-    echo "Under cygwin, consider creating a shortcut in the path, like"
-    echo "ln -s \"/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe\" /usr/local/bin/firefox"
-
-    exit 1
+    die "TODO: Cannot find a web browser; point the TODOTXT_BROWSER environment variable to one."
 fi
