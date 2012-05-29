@@ -52,7 +52,7 @@ do
     for url in $taskUrls
     do
         urls+=("$url")
-        echo "adding $url"
+        echo "$url"
     done
 done
 [ ${#urls} -gt 0 ] || exit 1
@@ -61,11 +61,11 @@ done
 
 if [ "$TODOTXT_BROWSER" ]; then
     exec "$TODOTXT_BROWSER" "${urls[@]}"
-elif $(which browse >/dev/null 2>&1); then
+elif type -P browse >/dev/null; then
     exec browse "${urls[@]}"
-elif $(which x-www-browser >/dev/null 2>&1); then
+elif type -P x-www-browser >/dev/null; then
     exec x-www-browser "${urls[@]}"
-elif $(which xdg-open >/dev/null 2>&1); then
+elif type -P xdg-open >/dev/null; then
     exec xdg-open "${urls[@]}"
 else
     die "TODO: Cannot find a web browser; point the TODOTXT_BROWSER environment variable to one."
