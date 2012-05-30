@@ -25,10 +25,7 @@ shift
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [TERM...]"
     echo "      Displays all the lines in todo.txt AND done.txt AND trash.txt that"
-    echo "      contain TERM(s) sorted by priority with line  numbers.  Hides all tasks"
-    echo "      that contain TERM(s) preceded by a minus sign (i.e. -TERM).  If no"
-    echo "      TERM specified, lists entire todo.txt AND done.txt AND trash.txt"
-    echo "      concatenated and sorted."
+    echo "      contain TERM(s) sorted by added date. Tasks without a date come first."
     echo ""
     exit
 }
@@ -38,7 +35,12 @@ TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 TOTAL=$( sed -n '$ =' "$TODO_FILE" )
 PADDING=${#TOTAL}
 
-post_filter_command="${post_filter_command:-}${post_filter_command:+ | }awk -v TOTAL=$TOTAL -v PADDING=$PADDING '{ \$1 = sprintf(\"%\" PADDING \"d\", (\$1 > TOTAL ? 0 : \$1)); print }' "
+# To sort based on the entered date, add a dummy second column for tasks that
+# are not prioritized, done or trashed, do the sort on field 3, and finally
+# remove the dummy column again.
+post_filter_command="${post_filter_command:-}${post_filter_command:+ | }awk -v TOTAL=$TOTAL -v PADDING=$PADDING '{ \$1 = sprintf(\"%\" PADDING \"d\", (\$1 > TOTAL ? 0 : \$1)); print }' | sed -e '/^ *[0-9]\\+ \\([xX]\\|(.)\\) /!s/^ *[0-9]\\+ /&(.) /'"
+TODOTXT_SORT_COMMAND="env LC_COLLATE=C sort -f -k3,3 | sed -e 's/^\( *[0-9]\\+ \)(\.) /\\1/'"
+export TODOTXT_FILTER_FUTURE_TASKS=0
 cat "$TODO_FILE" "$DONE_FILE" "$TRASH_FILE" | TODOTXT_VERBOSE=0 _format '' "$PADDING" "$@"
 
 if [ $TODOTXT_VERBOSE -gt 0 ]; then
