@@ -54,6 +54,7 @@ m:marker and m:(a marker with spaces), especially
 A:2012-04-01 ... Z:2012-01-01 prioritize on date.
 d:2012-12-12 deprioritize after date.
 a:42         "also, <a href>" related to task number. No action on do and trash.
+a:(gg foo)   explicit search URL for the browse action.
 l:42         unidirectionally linked to task number, which becomes done (but not
              trashed) recursively.
              There is no marker for bidirectional linking; if you want to mark

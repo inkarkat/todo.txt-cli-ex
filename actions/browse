@@ -31,7 +31,7 @@ shift
 }
 
 if [[ ! "$1" =~ ^[0-9]+$ ]]; then
-    post_filter_command="grep '[a-z]\\+://[^ ]\\+'"
+    post_filter_command="grep -e '[a-z]\\+://[^ ]\\+' -e ' a:\\([0-9]*[^0-9]\\)\\+[0-9]*\\( \\|\$\\)'"
     _list "$TODO_FILE" "$@"
     exit 0
 fi
@@ -44,13 +44,27 @@ do
     getTodo "$item"
 
     taskUrls=$(echo "$todo" | grep -o '[a-z]\+://[^ ]\+')
-    if [ -z "$taskUrls" ]; then
+    linkMarkers=$(echo "$todo" | grep -o '[^ ]*a:[^(][^[:space:]]*' | grep '^a:'; echo "$todo" | grep -o '[^ ]*a:([^)]\+)' | grep '^a:')
+    if [ -z "$taskUrls" -a -z "$linkMarkers" ]; then
         [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
         echo "TODO: No URL found in task $item."
     fi
 
+    IFS=$'\n'
     for url in $taskUrls
     do
+        urls+=("$url")
+        echo "$url"
+    done
+    for linkMarker in $linkMarkers
+    do
+        url=${linkMarker#a:(}
+        if [ "$url" = "$linkMarker" ]; then
+            url=${linkMarker#a:}
+        else
+            url=${url%)}
+        fi
+
         urls+=("$url")
         echo "$url"
     done
