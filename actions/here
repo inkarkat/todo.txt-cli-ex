@@ -23,14 +23,28 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [DATE] [TERM...]"
+    echo "    $(basename $0) [-s] [TERM...]"
     echo "      Displays all tasks with a context of the current host / location."
     echo "      If TERM specified, lists only tasks that contain TERM(s)."
+    echo "      With -s, show just the summary."
     echo ""
     exit
 }
 
-[ "$HOSTNAME" ] || die "Cannot determine hostname!"
+isSummaryOnly=
+if [ "$1" = '-s' ]; then
+    isSummaryOnly=t
+    shift
+fi
+
+[ "$HOSTNAME" ] || die "TODO: Cannot determine hostname!"
 
 post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e '@$(echo "$HOSTNAME" | tr 'A-Z' 'a-z')'"
-_list "$TODO_FILE" "$@"
+if [ "$isSummaryOnly" ]; then
+    cnt=$(TODOTXT_VERBOSE=0 _list "$TODO_FILE" "$@" | wc -l)
+    if [ $cnt -ge 1 ]; then
+        printf 'TODO: You have %d local task(s) open on this system.\n' $cnt
+    fi
+else
+    _list "$TODO_FILE" "$@"
+fi
