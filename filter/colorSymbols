@@ -72,7 +72,8 @@ function getLineColor() {
 
     # Highlight alternating lines.
     if (hasHighlight("COLOR_ALTERNATING") && wasUncolored && lineColor == "") {
-        $0 = highlight("COLOR_ALTERNATING") $0 highlightend("COLOR_ALTERNATING", lineColor)
+        $0 = highlight("COLOR_ALTERNATING") $0
+        lineEndColor = highlightend("COLOR_ALTERNATING", lineColor)
         lineColor = highlight("COLOR_ALTERNATING")
     }
 
