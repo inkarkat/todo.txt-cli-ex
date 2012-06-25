@@ -24,7 +24,7 @@
 
 export TODOTXT_FILTER_FUTURE_TASKS=${TODOTXT_FILTER_FUTURE_TASKS:-1}
 #   1: Suppress tasks that are scheduled in the future.
-#  -1: Suppress tasks that are have already been scheduled.
+#  -1: Suppress tasks that have already been scheduled.
 #   0: Disable the futureTasks filter.
 
 if [ $TODOTXT_FILTER_FUTURE_TASKS -ne 0 ]; then
@@ -58,7 +58,7 @@ BEGIN {
         # Suppress tasks that are scheduled in the future.
         next
     } else if (ENVIRON["TODOTXT_FILTER_FUTURE_TASKS"] < 0 && date <= threshold) {
-        # Suppress tasks that are have already been scheduled.
+        # Suppress tasks that have already been scheduled.
         next
     }
 }
