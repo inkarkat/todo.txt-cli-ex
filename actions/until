@@ -34,10 +34,11 @@ if [ "$action" = "usage" ]; then
     echo "    $(basename $0) none|never|off|del|rm ITEM#[, ITEM#, ...]"
     echo "    $(basename $0) ITEM#[, ITEM#, ...] none|never|off|del|rm"
     echo "      Remove do-until date of a task."
-    echo "    $(basename $0) [(any|all|now|soon) [TERM...]]"
+    echo "    $(basename $0) [(any|all|now|on DATE|soon [on DATE]) [TERM...]]"
     echo "      List tasks (all, or with now: already due, or with soon: already or about"
     echo "      to become due) with a do-until \"u:date\" or"
     echo "      do-until-then-trash \"z:date\" ultimate date."
+    echo "      With on DATE: as seen on DATE, not today."
     echo "      If TERM specified, lists only tasks that contain TERM(s)."
     echo "      Intended to be used with lsdue and colorFutureTasks."
     echo "      Example: $TODO_SH $(basename $0) \"next week\" 42"
@@ -61,10 +62,27 @@ ensureFilter()
             TODOTXT_FINAL_FILTER="${TODO_FILTER_DIR:?}/latestDueTasks ${TODOTXT_FINAL_FILTER:+|} ${TODOTXT_FINAL_FILTER}"
         fi
     fi
+
+    # When a threshold is passed, install it.
+    if [ $# -gt 0 ]; then
+        TODOTXT_FINAL_FILTER=${TODOTXT_FINAL_FILTER/latestDueTasks/latestDueTasks "$1"}
+
+        # Also pass the threshold to the relativeDates filter.
+        if [[ "$TODOTXT_FINAL_FILTER" == *relativeDates* ]]; then
+            TODOTXT_FINAL_FILTER=${TODOTXT_FINAL_FILTER/relativeDates/relativeDates $1}
+        fi
+    fi
 }
 listDue()
 {
-    ensureFilter
+    threshold=''
+    if [ "$1" = 'on' -a "$2" != '' ]; then
+        threshold=$(date -d "$2" +%F) || exit 1
+        shift
+        shift
+    fi
+
+    ensureFilter "$threshold"
     post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
 }
@@ -118,11 +136,12 @@ replace()
 }
 
 
-if [ $# -eq 0 -o "$1" = 'all' -o "$1" = 'any' -o "$1" = 'now' -o "$1" = 'soon' ]; then
+if [ $# -eq 0 -o "$1" = 'all' -o "$1" = 'any' -o "$1" = 'now' -o "$1" = 'on' -o "$1" = 'soon' ]; then
     what=$1
     shift
     case $what in
         now)        export TODOTXT_FILTER_UNTIL_DUE_DAYSPAN=0; listDue "$@";;
+        on)         export TODOTXT_FILTER_UNTIL_DUE_DAYSPAN=0; listDue on "$@";;
         soon)       listDue "$@";;
         all|any)    listAll "$@";;
         *)          listAll;;
