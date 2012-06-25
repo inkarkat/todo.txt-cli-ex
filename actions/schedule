@@ -25,8 +25,9 @@ if [ "$action" = "usage" ]; then
     echo "    $(basename $0) DATE|none|never|off|del|rm ITEM#[, ITEM#, ...]"
     echo "    $(basename $0) ITEM#[, ITEM#, ...] DATE|none|never|off|del|rm"
     echo "      Set, change or remove scheduled date of task ITEM#."
-    echo "    $(basename $0) [(all|now|future) [TERM...]]"
+    echo "    $(basename $0) [(all|now|on DATE|future [on DATE]) [TERM...]]"
     echo "      List scheduled (all, or with now: already open, or future) tasks."
+    echo "      With on DATE: as seen on DATE, not today."
     echo "      If TERM specified, lists only tasks that contain TERM(s)."
     echo "          Intended to be used with futureTasks."
     echo "      Example:  $TODO_SH $(basename $0) tomorrow 42"
@@ -50,17 +51,41 @@ ensureFilter()
             TODOTXT_FINAL_FILTER="${TODO_FILTER_DIR:?}/futureTasks ${TODOTXT_FINAL_FILTER:+|} ${TODOTXT_FINAL_FILTER}"
         fi
     fi
+
+    # When a threshold is passed, install it.
+    if [ $# -gt 0 ]; then
+        TODOTXT_FINAL_FILTER=${TODOTXT_FINAL_FILTER/utureTasks/utureTasks "$1"}
+
+        # Also pass the threshold to the relativeDates filter.
+        if [[ "$TODOTXT_FINAL_FILTER" == *relativeDates* ]]; then
+            TODOTXT_FINAL_FILTER=${TODOTXT_FINAL_FILTER/relativeDates/relativeDates $1}
+        fi
+    fi
 }
 listOpen()
 {
-    ensureFilter
+    threshold=''
+    if [ "$1" = 'on' -a "$2" != '' ]; then
+        threshold=$(date -d "$2" +%F) || exit 1
+        shift
+        shift
+    fi
+
+    ensureFilter "$threshold"
     export TODOTXT_FILTER_FUTURE_TASKS=1    # Suppress tasks that are scheduled in the future.
     post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
 }
 listFuture()
 {
-    ensureFilter
+    threshold=''
+    if [ "$1" = 'on' -a "$2" != '' ]; then
+        threshold=$(date -d "$2" +%F) || exit 1
+        shift
+        shift
+    fi
+
+    ensureFilter "$threshold"
     export TODOTXT_FILTER_FUTURE_TASKS=-1   # Suppress tasks that are have already been scheduled.
     post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
@@ -106,11 +131,12 @@ replace()
 }
 
 
-if [ $# -eq 0 -o "$1" = 'all' -o "$1" = 'now' -o "$1" = 'future' ]; then
+if [ $# -eq 0 -o "$1" = 'all' -o "$1" = 'now' -o "$1" = 'on' -o "$1" = 'future' ]; then
     what=$1
     shift
     case $what in
         now)    listOpen "$@";;
+        on)     listOpen on "$@";;
         future) listFuture "$@";;
         all)    listAll "$@";;
         *)      listAll;;
