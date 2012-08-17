@@ -60,7 +60,7 @@ l:42         unidirectionally linked to task number, which becomes done (but not
              There is no marker for bidirectional linking; if you want to mark
              one task done when another is done and vice versa, they are
              probably duplicates, and one of them should be deleted.
-             Alternatively, they could be cross-linked separately.
+             Alternatively, cross-link them separately: todo.sh dup link 42 43
 k:42         kill task number, which is trashed when this task is done.
 j:42         bidirectionally joined / contradependent with task number;
              when one is done, the other(s) are trashed recursively.
