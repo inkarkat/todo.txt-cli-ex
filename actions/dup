@@ -30,7 +30,7 @@ shift
     echo "    $(basename $0) goal GOAL ITEM#[, ITEM#, ...]"
     echo "      Bidirectionally join the tasks on lines ITEM# together"
     echo "      as contradependent tasks. Use this when the tasks are"
-    echo "      different takes on achieving the same goal."
+    echo "      different takes on achieving the same GOAL."
     echo "    $(basename $0) link ITEM# ITEM#[, ITEM#, ...]"
     echo "      Bidirectionally cross-link the tasks on lines ITEM# together"
     echo "      as duplicate tasks. Use this when doing one task should do all others,"
