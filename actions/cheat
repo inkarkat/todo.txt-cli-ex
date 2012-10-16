@@ -1,7 +1,7 @@
 #!/bin/bash
 ###############################################################################
 ##
-# FILE:         cheatsheet
+# FILE:         cheat
 # PRODUCT:      todo.txt-cli-ex
 # AUTHOR:       Ingo Karkat <ingo@karkat.de>
 # DATE CREATED: 18-Apr-2012
@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)cheatsheet	$Id$	todo.txt-cli-ex
+# @(#)cheat	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -24,7 +24,8 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [pri|marker|syntax]"
-    echo "      TODO"
+    echo "      Print a cheat sheet for the use of priorities, defined markers, and"
+    echo "      general todo.txt syntax in the context of the todo.txt-ex extensions."
     echo ""
     exit
 }
@@ -33,13 +34,13 @@ shift
 
 priorityHelp()
 {
-    cat <<EOF
+    sort <<EOF
 (A) top priority:  do ASAP
 (B) must priority: important and work-related tasks, to be done soon
 (C) want priority: private or side tasks, to be done if time permits
 (O) opportunity:   optional, stretch goals that may be done opportunistically
-(P) pending:       tasks currently in progress, only a step away from completion
-(V) Vim-related tasks that I may attack next
+(P) pending:       tasks currently in progress, only a step away from completion${TODOTXT_CHEAT_CUSTOM_PRIORITIES:+
+}${TODOTXT_CHEAT_CUSTOM_PRIORITIES}
 EOF
 if [ "$TODOTXT_WHAT_PRIORITIES" ]; then
     echo "Priorities $TODOTXT_WHAT_PRIORITIES are included in the todo.sh what output."
