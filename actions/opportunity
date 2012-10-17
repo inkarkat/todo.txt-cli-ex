@@ -25,7 +25,7 @@ shift
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] DATE"
     echo "      Adds priority O to task(s) on line ITEM#,"
-    echo "      and automatically de-prioritized on DATE."
+    echo "      and automatically de-prioritize the task(s) on DATE."
     echo ""
     exit
 }
