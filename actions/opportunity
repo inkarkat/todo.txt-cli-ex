@@ -48,6 +48,15 @@ shift
 
 for item in ${items[*]//,/ }
 do
-    "$TODO_FULL_SH" append "$item" "d:${depriDate}" || exit $?
+    getTodo "$item"
+
+    # Replace existing date-deprioritization with the same deprioritization
+    # in-place or append new date-deprioritization.
+    newtodo=$(echo "$todo" | sed -e 's| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| '"d:${depriDate}|" -e t -e "s| *\$| d:${depriDate}|") || exit 1
+
+    input=$newtodo
+    cleaninput "for sed"
+    sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE"
+
     "$TODO_FULL_SH" pri "$item" O || exit $?
 done
