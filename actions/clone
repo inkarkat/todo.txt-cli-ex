@@ -29,6 +29,8 @@ shift
     exit
 }
 
+shopt -s extglob
+
 errmsg="usage: $TODO_SH $(basename $0) ITEM# [PATTERN REPLACEMENT ...]"
 item=$1; shift
 
