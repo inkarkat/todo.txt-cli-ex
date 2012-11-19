@@ -88,6 +88,7 @@ todo=${todo#(?) }
 recur=$*; shift
 recurType=
 command="replace $item"
+isApply=
 
 if [ "$recur" = 'apply' ]; then
     # This hidden subcommand is invoked by the "do" command to trigger the
@@ -96,6 +97,7 @@ if [ "$recur" = 'apply' ]; then
     recur=$(echo "$todo" | extractRecurDate)
     [ "$recur" ] || exit 0
     command='add'
+    isApply=t
 
     # Clone the current task:
     # - Re-get task with potential priority, we want to keep it.
@@ -103,6 +105,8 @@ if [ "$recur" = 'apply' ]; then
     # - Update the creation date if the task has one. An additional entry date
     #   via TODOTXT_DATE_ON_ADD will be suppressed by the -T option.
     # - The scheduling marker will be updated by the regular code below.
+    # - Finally, when such exists, the user is asked (maybe he wants to
+    #   accumulate them) whether the done comment should be removed.
     today=$(date +%F)
     todo=$(sed -e "$item!d" -e 's/^x [0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} //' -e 's/^\(([A-Z]) \)\{0,1\}[0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} /\1'"${today}"' /' "$TODO_FILE")
 fi
@@ -128,7 +132,7 @@ if [ "$command" != "add" -a "$newtodo" = "$todo" ]; then
     [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
     die "TODO: Recurrence didn't change"
 fi
-"$TODO_FULL_SH" -T command $command "$newtodo"
+"$TODO_FULL_SH" -T command $command "$newtodo" || exit $?
 
 if [ "$recurType" ]; then
     today=$(date +%F)   # Need to calculate time differences from midnight.
@@ -141,4 +145,10 @@ if [ "$recurType" ]; then
         *)  recurTimespan="in $recurTimespan days";;
     esac
     echo "TODO: $recurType scheduled for $nextdate, $recurTimespan"
+fi
+
+if [ "$isApply" -a -x "$TODO_ACTIONS_DIR/uncomment" ]; then
+    # Figure out the line of what we just added, and "uncomment" it.
+    item=$(sed -n '$ =' "$TODO_FILE")
+    "$TODO_FULL_SH" uncomment -q "$item"
 fi
