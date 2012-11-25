@@ -19,9 +19,13 @@
 ::	under the terms of the GNU General Public License.
 ::	See http://www.gnu.org/copyleft/gpl.txt
 ::
-::* FILE_SCCS = "@(#)todo cache.cmd	009	(26-May-2012)	todo.txt-cli-ex";
+::* FILE_SCCS = "@(#)todo cache.cmd	010	(25-Nov-2012)	todo.txt-cli-ex";
 ::
 ::* REVISION	DATE		REMARKS
+::	010	25-Nov-2012	Add the size of todo.txt to the timestamp to
+::				avoid that updates within the same minute are
+::				overlooked due to the low precision of the
+::				file's modification date.
 ::	009	26-May-2012	Rename to todo.cmd, and have separate tt alias.
 ::	008	13-Mar-2012	Allow to override todo.txt location via
 ::				TODO_FILE.
@@ -57,19 +61,22 @@ if not defined TODO_FILE (
 )
 
 :: Read modification date of data file.
-for %%f in ("%TODO_FILE%") do set modificationDate=%%~tf
+:: Note: Because the precision of the returned value is just one minute, let's
+:: add the file's size to it. This prevents overlooking an update within the
+:: same minute (as long as it changes the file size).
+for %%f in ("%TODO_FILE%") do set modificationDate=%%~tzf
 :: Check that cache is still existent.
 if not exist "%dateStore%" (goto:run)
 if not exist "%cacheFile%" (goto:run)
 
 :: Read recorded data file modification date from cache and the cache's age.
 for /F "delims=" %%o in ('type "%dateStore%"') do set oldModificationDate=%%o
-for %%f in ("%dateStore%") do set cacheModificationDate=%%~tf
+for %%f in ("%dateStore%") do set cacheModificationDate=%%~tzf
 
 :: Refresh the cache when a new day has started, to avoid showing stale data.
 :: (New tasks may have been scheduled on a new day.)
 :: Note: This assumes a date format that starts with the day,
-:: i.e. 12-May-2011 10:53
+:: i.e. 12-May-2011 10:53 31337
 if not "%date:~0,2%" == "%cacheModificationDate:~0,2%" (ping -n 30 localhost >NUL 2>&1 & goto:run)
 
 :: Use the cache when the data file has not been changed today.
