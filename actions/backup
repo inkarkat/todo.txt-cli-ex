@@ -24,7 +24,7 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0)"
-    echo "      Writes a backup copy of todo.txt."
+    echo "      Writes a backup copy of todo.txt, done.txt, etc."
     echo ""
     exit
 }
@@ -34,6 +34,8 @@ shift
 # Use a custom backup script if it exists, fall back on a simple copy to a
 # timestamp; do nothing when the command is "none".
 : ${TODOTXT_BACKUP_COMMAND:=writebackup}
+# Files to include in the backup.
+: ${TODOTXT_BACKUP_FILES:='{todo,done,trash}.txt'}
 
 
 if [ "$TODOTXT_BACKUP_COMMAND" = 'none' ]; then
@@ -41,16 +43,20 @@ if [ "$TODOTXT_BACKUP_COMMAND" = 'none' ]; then
     :
 elif type -P "$TODOTXT_BACKUP_COMMAND" >/dev/null; then
     if [ -d "${TODOTXT_BACKUP_DIR%/}" ]; then
-        "$TODOTXT_BACKUP_COMMAND" -d "${TODOTXT_BACKUP_DIR%/}" "$TODO_FILE"
+        eval '"$TODOTXT_BACKUP_COMMAND" -d "${TODOTXT_BACKUP_DIR%/}" "${TODO_DIR}/"'${TODOTXT_BACKUP_FILES}
     else
-        "$TODOTXT_BACKUP_COMMAND" "$TODO_FILE"
+        eval '"$TODOTXT_BACKUP_COMMAND" "${TODO_DIR}/"'${TODOTXT_BACKUP_FILES}
     fi
 else
     readonly timestamp=$(date +%F_%H%M%S)
-    readonly backupFilename="todo_${timestamp}.bak"
-    if [ -d "${TODOTXT_BACKUP_DIR%/}" ]; then
-        cp "$TODO_FILE" "${TODOTXT_BACKUP_DIR%/}/${backupFilename}" && echo "Backed up to ${TODOTXT_BACKUP_DIR%/}/${backupFilename}"
-    else
-        cp "$TODO_FILE" "$backupFilename" && echo "Backed up to ${backupFilename}"
-    fi
+    eval 'for todofile in "${TODO_DIR}/"'${TODOTXT_BACKUP_FILES}'
+    do
+        filename=$(basename -- "$todofile")
+        backupFilename="${filename%.txt}_${timestamp}.bak"
+        if [ -d "${TODOTXT_BACKUP_DIR%/}" ]; then
+            cp "$todofile" "${TODOTXT_BACKUP_DIR%/}/${backupFilename}" && echo "Backed up to ${TODOTXT_BACKUP_DIR%/}/${backupFilename}"
+        else
+            cp "$TODO_FILE" "$backupFilename" && echo "Backed up to ${backupFilename}"
+        fi
+    done'
 fi
