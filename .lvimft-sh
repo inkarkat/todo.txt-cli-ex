@@ -1,0 +1,4 @@
+if expand('%:t') =~# '^t\d\+-'
+    silent! call ExtractSnipsFile(expand('<sfile>:h') . '/.vim/tests.snippets', 'sh')
+endif
+silent! call InsertTemplate#Path#AddLocal(expand('<sfile>:p:h') . '/.vim')
