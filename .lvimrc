@@ -1,2 +1,3 @@
 setlocal tabstop=8 softtabstop=4 shiftwidth=4 expandtab
 let b:product = 'todo.txt-cli-ex'
+setf sh " Default to shell scripts; that's the main content of the repository.
