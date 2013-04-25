@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -49,8 +49,14 @@ do
         # day), but numbers should represent ITEM# for task references here.
         continue
     fi
+
     canonicalDate=$(date -d "$dateString" +%F 2>/dev/null) || continue
     [ "$canonicalDate" = "$originalDateString" ] && continue
+
+    # Multiple human dates (e.g. "today", "now", and especially all time
+    # specifications) resolve to the current day. Don't canonicalize them unless
+    # "today" is used.
+    [ "$originalDateString" != 'today' ] && [ "$canonicalDate" = "$(date +%F)" ] && continue
 
 
     task=${task/${marker}/${marker:0:2}${canonicalDate}}
