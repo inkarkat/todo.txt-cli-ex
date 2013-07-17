@@ -16,7 +16,7 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)lsr	001	(29-Jan-2013)	todo.txt-cli-ex
+# @(#)lsr	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
