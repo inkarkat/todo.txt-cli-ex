@@ -18,7 +18,7 @@
 #   This filter is to be used in post_filter_command, before formatting and
 #   coloring of priorities. It won't work as a TODOTXT_FINAL_FILTER!
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -28,7 +28,7 @@
 
 : ${TODOTXT_COMMENT_SYMBOL:= => }
 
-awk --re-interval -v commentSymbol="$TODOTXT_COMMENT_SYMBOL" '
+awk -v commentSymbol="$TODOTXT_COMMENT_SYMBOL" '
 / *[0-9]+ [xX] / {
     # Do not process done tasks.
     print

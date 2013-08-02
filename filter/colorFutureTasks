@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -52,7 +52,7 @@ if [ $TODOTXT_PLAIN -eq 0 ]; then
         export COLOR_UNTIL_3DAY=${COLOR_UNTIL_3DAY-$DEFAULT'\\033[43m'}
     fi
 
-    awk --re-interval -v date=$1 '
+    awk -v date=$1 '
 function getThreshold(date) {
     if (date == "") {
         return mktime(strftime("%Y %m %d 00 00 00", systime()))
@@ -171,7 +171,7 @@ BEGIN {
 { print }
 '
 elif [ $TODOTXT_FILTER_FUTURE_TASKS -ne 0 ]; then
-    awk --re-interval -v date=$1 '
+    awk -v date=$1 '
 function getThreshold(date) {
     if (date == "") {
         return mktime(strftime("%Y %m %d 00 00 00", systime()))

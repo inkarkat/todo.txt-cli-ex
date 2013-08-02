@@ -38,7 +38,7 @@
 ###############################################################################
 
 if [ ${TODOTXT_RELDATE:-1} -ne 0 ]; then
-awk --re-interval -v date=$1 -v dayRange=${TODOTXT_RELDATE_DAYRANGE:-14} '
+awk -v date=$1 -v dayRange=${TODOTXT_RELDATE_DAYRANGE:-14} '
 function highlight(colorVar,      color) {
     color = ENVIRON[colorVar]
     gsub(/\\+033/, "\033", color)

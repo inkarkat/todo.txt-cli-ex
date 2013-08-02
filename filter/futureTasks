@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -28,7 +28,7 @@ export TODOTXT_FILTER_FUTURE_TASKS=${TODOTXT_FILTER_FUTURE_TASKS:-1}
 #   0: Disable the futureTasks filter.
 
 if [ $TODOTXT_FILTER_FUTURE_TASKS -ne 0 ]; then
-    awk --re-interval -v date=$1 '
+    awk -v date=$1 '
 function highlight(colorVar,      color) {
     color = ENVIRON[colorVar]
     gsub(/\\+033/, "\033", color)

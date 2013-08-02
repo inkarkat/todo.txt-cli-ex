@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -26,7 +26,7 @@ export COLOR_DATE=${COLOR_DATE-$CYAN}
 export COLOR_ALTERNATING=${COLOR_ALTERNATING-$DEFAULT'\\033[47m'}
 
 if [ $TODOTXT_PLAIN -eq 0 ]; then
-awk --re-interval '
+awk '
 function hasHighlight(colorVar) {
     return (ENVIRON[colorVar] != "")
 }
