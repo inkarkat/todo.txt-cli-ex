@@ -27,7 +27,7 @@ if [ $TODOTXT_PLAIN -eq 0 ]; then
     # element when it is used to continue the line highlighting.
 
     if [ ${TERM_COLORS:-0} -ge 256 ]; then
-        export COLOR_DUE_FUTURE=${COLOR_DUE_FUTURE-$DEFAULT'\\033[48;5;195m'}
+        export COLOR_DUE_FUTURE=${COLOR_DUE_FUTURE-$DEFAULT'\\033[48;5;244m'}
         export COLOR_DUE_TODAY=${COLOR_DUE_TODAY-$DEFAULT'\\033[48;5;190m'}
         export COLOR_DUE_1DAY=${COLOR_DUE_1DAY-$DEFAULT'\\033[48;5;193m'}
         export COLOR_DUE_2DAY=${COLOR_DUE_2DAY-$DEFAULT'\\033[48;5;230m'}
