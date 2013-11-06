@@ -14,14 +14,17 @@
 ::	This script caches the output as long as the todo.txt data file hasn't
 ::	been changed.
 ::* REMARKS:
-::* COPYRIGHT: (C) 2010-2012 Ingo Karkat
+::* COPYRIGHT: (C) 2010-2013 Ingo Karkat
 ::	This program is free software; you can redistribute it and/or modify it
 ::	under the terms of the GNU General Public License.
 ::	See http://www.gnu.org/copyleft/gpl.txt
 ::
-::* FILE_SCCS = "@(#)todo cache.cmd	010	(25-Nov-2012)	todo.txt-cli-ex";
+::* FILE_SCCS = "@(#)todo cache.cmd	011	(06-Nov-2013)	todo.txt-cli-ex";
 ::
 ::* REVISION	DATE		REMARKS
+::	011	06-Nov-2013	Also capture stderr in the cache file. I've
+::				implemented a check for Dropbox conflicts and
+::				want that visible on my Desktop, too.
 ::	010	25-Nov-2012	Add the size of todo.txt to the timestamp to
 ::				avoid that updates within the same minute are
 ::				overlooked due to the low precision of the
@@ -93,7 +96,7 @@ echo.%modificationDate%> "%dateStore%"
 :: Don't use relative times ("5 minutes ago"), because the output is cached.
 :: Relative dates ("yesterday") are fine, because the cache is refreshed every
 :: day, anyway.
-set DEBUG=&set TODOTXT_RELTIME=0&call todo.cmd -p dashboard %* > "%cacheFile%"
+set DEBUG=&set TODOTXT_RELTIME=0&call todo.cmd -p dashboard %* > "%cacheFile%" 2>&1
 :: And print them.
 type "%cacheFile%"
 
