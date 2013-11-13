@@ -19,9 +19,13 @@
 ::	under the terms of the GNU General Public License.
 ::	See http://www.gnu.org/copyleft/gpl.txt
 ::
-::* FILE_SCCS = "@(#)todo cache.cmd	011	(06-Nov-2013)	todo.txt-cli-ex";
+::* FILE_SCCS = "@(#)todo cache.cmd	012	(13-Nov-2013)	todo.txt-cli-ex";
 ::
 ::* REVISION	DATE		REMARKS
+::	012	13-Nov-2013	Try to fix duplicated content in the cache by
+::				first moving the previous cache away.
+::				Add feature to show the previous cache when the
+::				command yields no output at all.
 ::	011	06-Nov-2013	Also capture stderr in the cache file. I've
 ::				implemented a check for Dropbox conflicts and
 ::				want that visible on my Desktop, too.
@@ -57,6 +61,7 @@ setlocal enableextensions
 
 set dateStore=%TEMP%\%~n0.dat
 set cacheFile=%TEMP%\%~n0.txt
+set backupFile=%TEMP%\%~n0.bak
 set isModified=
 
 if not defined TODO_FILE (
@@ -92,12 +97,25 @@ if "%oldModificationDate%" == "%modificationDate%" (
 :: Record current modification date of data file for next run.
 echo.%modificationDate%> "%dateStore%"
 
+:: Save the old cache contents in case the task report now fails.
+move /Y "%cacheFile%" "%backupFile%" >NUL 2>&1
+
 :: Refresh cache contents.
 :: Don't use relative times ("5 minutes ago"), because the output is cached.
 :: Relative dates ("yesterday") are fine, because the cache is refreshed every
 :: day, anyway.
 set DEBUG=&set TODOTXT_RELTIME=0&call todo.cmd -p dashboard %* > "%cacheFile%" 2>&1
-:: And print them.
+
+:: Rather than showing no tasks or errors, re-use the old cache file, with an
+:: added warning.
+for %%s in ("%cacheFile%") do set cacheFileSize=%%~zs
+if not exist "%cacheFile%" set cacheFileSize=0
+if %cacheFileSize% EQU 0 (
+    echo.TODO CACHE: Update of tasks failed, showing outdated tasks!> "%cacheFile%"
+    findstr /B /V "TODO CACHE: " "%backupFile%" >> "%cacheFile%"
+)
+
+:: Print the refreshed cache contents.
 type "%cacheFile%"
 
 endlocal
