@@ -13,7 +13,10 @@
 ::	are launched.
 ::	This script caches the output as long as the todo.txt data file hasn't
 ::	been changed.
-::* REMARKS:
+::
+::* DEPENDENCIES:
+::  - Unix "tee" command.
+::
 ::* COPYRIGHT: (C) 2010-2013 Ingo Karkat
 ::	This program is free software; you can redistribute it and/or modify it
 ::	under the terms of the GNU General Public License.
@@ -22,10 +25,17 @@
 ::* FILE_SCCS = "@(#)todo cache.cmd	012	(13-Nov-2013)	todo.txt-cli-ex";
 ::
 ::* REVISION	DATE		REMARKS
-::	012	13-Nov-2013	Try to fix duplicated content in the cache by
-::				first moving the previous cache away.
-::				Add feature to show the previous cache when the
-::				command yields no output at all.
+::	012	13-Nov-2013	Show the previous cache (with a warning) when
+::				the todo.sh command yields no output at all.
+::				XXX: Capturing stderr has the strange side
+::				effect (but only when running under Samurize!)
+::				that the final type "%cacheFile%" is also
+::				captured in the cache file itself, leading to
+::				duplicated output. Couldn't find the root cause,
+::				but working around with "tee" prevents the
+::				problem, and has the slight advantage that
+::				now partial information is shown before the next
+::				full update, at the cost of an added dependency.
 ::	011	06-Nov-2013	Also capture stderr in the cache file. I've
 ::				implemented a check for Dropbox conflicts and
 ::				want that visible on my Desktop, too.
@@ -100,22 +110,26 @@ echo.%modificationDate%> "%dateStore%"
 :: Save the old cache contents in case the task report now fails.
 move /Y "%cacheFile%" "%backupFile%" >NUL 2>&1
 
+:: Immediately create a new empty cache file so that when this script is invoked
+:: concurrently, it won't create a race to refresh the cache.
+copy /Y NUL "%cacheFile%" >NUL 2>&1
+
 :: Refresh cache contents.
 :: Don't use relative times ("5 minutes ago"), because the output is cached.
 :: Relative dates ("yesterday") are fine, because the cache is refreshed every
 :: day, anyway.
-set DEBUG=&set TODOTXT_RELTIME=0&call todo.cmd -p dashboard %* > "%cacheFile%" 2>&1
+set DEBUG=&set TODOTXT_RELTIME=0&call todo.cmd -p dashboard %* 2>&1 | tee "%cacheFile%"
 
 :: Rather than showing no tasks or errors, re-use the old cache file, with an
-:: added warning.
+:: added warning. Drop the date store so that the refresh is attempted again on
+:: the following run.
 for %%s in ("%cacheFile%") do set cacheFileSize=%%~zs
 if not exist "%cacheFile%" set cacheFileSize=0
 if %cacheFileSize% EQU 0 (
-    echo.TODO CACHE: Update of tasks failed, showing outdated tasks!> "%cacheFile%"
-    findstr /B /V "TODO CACHE: " "%backupFile%" >> "%cacheFile%"
+    del /Q "%dateStore%"
+    echo.TODO CACHE: Update of tasks failed, showing outdated tasks!
+    move /Y "%backupFile%" "%cacheFile%" >NUL 2>&1
+    type "%cacheFile%"
 )
-
-:: Print the refreshed cache contents.
-type "%cacheFile%"
 
 endlocal
