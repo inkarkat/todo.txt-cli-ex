@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -99,7 +99,7 @@ do
     shift
 done
 [ ${#items} -gt 0 ] || die "$errmsg"
-newpri=$( printf "%s\n" "$pri" | tr 'a-z' 'A-Z' )
+newpri=${pri^^}
 
 for item in ${items[*]//,/ }
 do

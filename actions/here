@@ -46,7 +46,7 @@ fi
 
 if [ -z "$TODOTXT_HERE_DESIGNATOR" ]; then
     [ -n "$HOSTNAME" ] || die "TODO: Cannot determine hostname!"
-    export TODOTXT_HERE_DESIGNATOR="@$(echo "$HOSTNAME" | tr 'A-Z' 'a-z')"
+    export TODOTXT_HERE_DESIGNATOR="@${HOSTNAME,,}"
 fi
 
 post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e ' ${TODOTXT_HERE_DESIGNATOR}\( \|$\)'"
