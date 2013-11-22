@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2012 Ingo Karkat
+# COPYRIGHT: (C) 2012-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -35,7 +35,7 @@ shopt -s extglob
 errmsg="usage: $TODO_SH $(basename $0) ITEM# [PATTERN]"
 item=$1; shift
 if [ $# -eq 0 ]; then
-    pattern=' \+and \+'
+    pattern=',\? \+and \+'
 elif [ "$*" ]; then
     pattern=$*
 else
