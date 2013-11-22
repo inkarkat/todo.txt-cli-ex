@@ -1,0 +1,36 @@
+#!/bin/bash
+###############################################################################
+##
+# FILE:         lsdopart
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 27-May-2010
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2013 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)lsdopart	$Id$	todo.txt-cli-ex
+###############################################################################
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [TERM...]"
+    echo "      Displays all partially done tasks from todo.txt."
+    echo "      If TERM specified, lists only tasks that contain TERM(s)."
+    echo ""
+    exit
+}
+
+: ${TODOTXT_PARTIALDONE_PATTERN='\([^()]+ => [0-9]{4}-[0-9]{2}-[0-9]{2}( [^()]+)?\)'}
+
+post_filter_command="grep -v -e '^ *[0-9]\+ [xX] ' | grep -E '${TODOTXT_PARTIALDONE_PATTERN}'"
+_list "$TODO_FILE" "$@"
