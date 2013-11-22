@@ -102,10 +102,14 @@ function getLineColor() {
         }
     }
     partialDonePattern = ENVIRON["TODOTXT_PARTIALDONE_PATTERN"]
-    if (partialDonePattern != "" && hasHighlight("COLOR_DONE")) $0 = gensub(partialDonePattern, highlight("COLOR_DONE") "&" highlightend("COLOR_DONE", lineColor), "g")
-    if (hasHighlight("COLOR_CONTEXT")) $0 = gensub(/ (@[^ ]+)/, " " highlight("COLOR_CONTEXT") "\\1" highlightend("COLOR_CONTEXT", lineColor), "g")
-    if (hasHighlight("COLOR_PROJECT")) $0 = gensub(/ (\+[^ ]+)/, " " highlight("COLOR_PROJECT") "\\1" highlightend("COLOR_PROJECT", lineColor), "g")
-    if (hasHighlight("COLOR_DATE"))   $0 = gensub(/ ([0-9]{4}-[0-9]{2}-[0-9]{2}) /, " " highlight("COLOR_DATE") "\\1" lineColor " ", "")
+    if (partialDonePattern != "" && hasHighlight("COLOR_DONE"))
+        $0 = gensub(partialDonePattern, highlight("COLOR_DONE") "&" highlightend("COLOR_DONE", lineColor), "g")
+    if (hasHighlight("COLOR_CONTEXT"))
+        $0 = gensub(/ (@[^ ]+)/, " " highlight("COLOR_CONTEXT") "\\1" highlightend("COLOR_CONTEXT", lineColor), "g")
+    if (hasHighlight("COLOR_PROJECT"))
+        $0 = gensub(/ (\+[^ ]+)/, " " highlight("COLOR_PROJECT") "\\1" highlightend("COLOR_PROJECT", lineColor), "g")
+    if (hasHighlight("COLOR_DATE"))
+        $0 = gensub(/ ([0-9]{4}-[0-9]{2}-[0-9]{2}) /, " " highlight("COLOR_DATE") "\\1" lineColor " ", "")
 
     $0 = $0 lineEndColor
 
