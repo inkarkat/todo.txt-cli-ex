@@ -96,7 +96,7 @@ else
     donePart=$(printf "$TODOTXT_PARTIALDONE_TEMPLATE" "$part" "$now")
 fi
 input=$donePart
-literalPart=$(echo "$part" | sed -e 's/[][\$*.^]/\\&/g')
+literalPart=$(echo "$part" | sed -e 's/[][\$*.^|]/\\&/g')
 cleaninput "for sed"
 sed -i.bak "$item s|${literalPart}|${input}|" "$TODO_FILE"
 getNewtodo "$item"
