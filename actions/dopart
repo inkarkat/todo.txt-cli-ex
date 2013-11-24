@@ -33,9 +33,10 @@ shift
     exit
 }
 
+: ${TODOTXT_COMMENT_SYMBOL:= => }
 : ${TODOTXT_PARTIALDONE_PATTERN='\([^()]+ => [0-9]{4}-[0-9]{2}-[0-9]{2}( [^()]+)?\)'}
-: ${TODOTXT_PARTIALDONE_TEMPLATE='(%s => %s)'}
-: ${TODOTXT_PARTIALDONE_TEMPLATE_WITH_COMMENT='(%s => %s %s)'}
+: ${TODOTXT_PARTIALDONE_TEMPLATE="(%s${TODOTXT_COMMENT_SYMBOL}%s)"}
+: ${TODOTXT_PARTIALDONE_TEMPLATE_WITH_COMMENT="(%s${TODOTXT_COMMENT_SYMBOL}%s %s)"}
 shopt -s extglob
 . "${TODO_ACTIONS_DIR}/../lib/common.sh"
 
