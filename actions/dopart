@@ -85,7 +85,8 @@ fi
 
 now=$(date '+%Y-%m-%d')
 if [ "$*" ]; then
-    donePart=$(printf "$TODOTXT_PARTIALDONE_TEMPLATE_WITH_COMMENT" "$part" "$now" "$*")
+    comment=${*#${TODOTXT_COMMENT_SYMBOL# }}
+    donePart=$(printf "$TODOTXT_PARTIALDONE_TEMPLATE_WITH_COMMENT" "$part" "$now" "$comment")
 else
     donePart=$(printf "$TODOTXT_PARTIALDONE_TEMPLATE" "$part" "$now")
 fi
