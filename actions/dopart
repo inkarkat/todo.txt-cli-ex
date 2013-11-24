@@ -23,9 +23,12 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM# PART# [COMMENT]"
+    echo "    $(basename $0) ITEM# PART#[, PART#, ...] [COMMENT]"
     echo "      Marks the part with count PART# (determined by splitting on [,;] and the"
     echo "      word \"and\") of the line ITEM# as done, optionally appending COMMENT."
+    echo "    $(basename $0) ITEM#"
+    echo "      Lists all parts (determined by splitting on [,;] and the word \"and\")"
+    echo "      of the line ITEM#."
     echo "    $(basename $0) ITEM# PATTERN [COMMENT]"
     echo "      Marks the part the line ITEM# that matches PATTERN as done, optionally"
     echo "      appending COMMENT."
@@ -40,6 +43,61 @@ shift
 shopt -s extglob
 . "${TODO_ACTIONS_DIR}/../lib/common.sh"
 
+listParts()
+{
+    echo "$text" | sed -e "s/${partSeparatorPattern}/\\n/g" | sed = | sed -e 'N; s/\n/ /'
+}
+doParts()
+{
+    # First check the parts individually ...
+    for part in "${parts[@]}"
+    do
+        if echo "$part" | grep -q -E "^ *${TODOTXT_PARTIALDONE_PATTERN} *$"; then
+            die "TODO: That part is already done: $part"
+        fi
+    done
+    # ... then all concatenated.
+    IFS=' '
+    if echo "${parts[*]}" | grep -q -E "^ *${TODOTXT_PARTIALDONE_PATTERN} *$"; then
+        die "TODO: These parts are already done: ${parts[*]}"
+    fi
+
+
+    local now=$(date '+%Y-%m-%d')
+    if [ "$*" ]; then
+        local comment=${*#${TODOTXT_COMMENT_SYMBOL# }}
+        comment=${comment//\\/\\\\}
+        comment=${comment//#/\\#}
+        comment=${comment//&/\\&}
+        local donePart=$(printf "$TODOTXT_PARTIALDONE_TEMPLATE_WITH_COMMENT" "&" "$now" "$comment")
+    else
+        local donePart=$(printf "$TODOTXT_PARTIALDONE_TEMPLATE" "&" "$now")
+    fi
+
+    # Concatenate the literally matched parts with the pattern for the part
+    # spearator.
+    local partPattern=
+    local isFirst=t
+    for part in "${parts[@]}"
+    do
+        [ "$isFirst" ] && isFirst= || partPattern="${partPattern}\\(${partSeparatorPattern}\\)"
+        partPattern="${partPattern}$(echo "$part" | sed -e 's/[][\$*.^|]/\\&/g')"
+    done
+
+    sed -i.bak "$item s#${partPattern}#${donePart}#" "$TODO_FILE"
+    getNewtodo "$item"
+    if [ $TODOTXT_VERBOSE -gt 0 ]; then
+        echo "$item $newtodo"
+
+        # To get the actual text of the parts that were done (including the used
+        # separators), substitute the original task again and this time extract
+        # the part pattern.
+        changedPart=$(echo "$todo" | sed "s#^.*\(${partPattern}\).*\$#${donePart/&/\\1}#")
+        echo "TODO: part of $item marked as done: ${changedPart}"
+    fi
+}
+
+
 errmsg="usage: $TODO_SH $(basename $0) ITEM# PART#|PATTERN [COMMENT]"
 item=$1; shift
 [ -z "$item" ] && die "$errmsg"
@@ -47,18 +105,38 @@ item=$1; shift
 getTodo "$item"
 
 splitTodo "$todo"
+readonly partSeparatorPattern=',\? \+and \+\|[,;] \+'
 
-if [[ "$1" = +([0-9]) ]]; then
-    count=$1
-    pattern=',\? \+and \+\|[,;] \+'
-    part=$(echo "$text" | sed -e "s/${pattern}/\\n/g" | sed -ne "${count}p")
-    if [ ! "$part" ]; then
-        echo "TODO: No such part; available parts:"
-        echo "$text" | sed -e "s/${pattern}/\\n/g" | sed = | sed -e 'N; s/\n/ /'
-        exit 1
-    fi
+if [[ "$1" =~ ^[,0-9]+$ ]]; then
+    counts=
+    while [[ "$1" =~ ^[,0-9]+$ ]]
+    do
+        counts="${counts}${counts:+ }$1"
+        shift
+    done
+    typeset -a countList=(${counts//,/ })
+    typeset -a parts=()
+    let countIdx=0
+    while [ $countIdx -lt ${#countList[@]} ]
+    do
+        count=${countList[$countIdx]}
+        part=$(echo "$text" | sed -e "s/${partSeparatorPattern}/\\n/g" | sed -ne "${count}p")
+        if [ ! "$part" ]; then
+            echo "TODO: No part ${count}; available parts:"
+            listParts
+            exit 1
+        fi
+        parts+=("$part")
+        if [ $((countIdx + 1)) -eq ${#countList[@]} ] || [ ${countList[$((countIdx + 1))]} -ne $((count + 1)) ]; then
+            doParts "$@"
+            parts=()
+        fi
+
+        let countIdx+=1
+    done
 elif [ "$1" ]; then
     pattern=$1
+    shift
     case $pattern in
         ^*)     before='';;
         \.\**)  before='^';;
@@ -72,35 +150,14 @@ elif [ "$1" ]; then
     part=$(echo "$text" | sed -ne "s/${before}\(${pattern}\)${after}/\1/gp")
     [ "$part" ] || die "TODO: pattern \"${pattern}\" does not match"
     [ "$part" = "$text" ] && die "TODO: pattern \"${pattern}\" matches the entire task"
+
+    typeset -a parts=("$part")
+    doParts "$@"
 else
-    die "$errmsg"
+    echo "TODO: Available parts:"
+    listParts
+    exit 0
 fi
-shift
-
-if echo "$part" | grep -q -E "^ *${TODOTXT_PARTIALDONE_PATTERN} *$"; then
-    die "TODO: That part is already done: $part"
-fi
-
-
-
-now=$(date '+%Y-%m-%d')
-if [ "$*" ]; then
-    comment=${*#${TODOTXT_COMMENT_SYMBOL# }}
-    donePart=$(printf "$TODOTXT_PARTIALDONE_TEMPLATE_WITH_COMMENT" "$part" "$now" "$comment")
-else
-    donePart=$(printf "$TODOTXT_PARTIALDONE_TEMPLATE" "$part" "$now")
-fi
-input=$donePart
-literalPart=$(echo "$part" | sed -e 's/[][\$*.^|]/\\&/g')
-cleaninput "for sed"
-sed -i.bak "$item s|${literalPart}|${input}|" "$TODO_FILE"
-getNewtodo "$item"
-if [ $TODOTXT_VERBOSE -gt 0 ]; then
-    echo "$item $newtodo"
-    echo "TODO: part of $item marked as done: ${donePart}"
-fi
-
-
 
 splitTodo "$newtodo"
 remainder=$(echo "$text" | sed -E -e "s/${TODOTXT_PARTIALDONE_PATTERN}//g" -e 's/ and //g' -e 's/[ \t,.;:+-]//g')
