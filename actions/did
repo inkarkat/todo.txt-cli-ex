@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -82,7 +82,7 @@ do
         doneDate=$(date -d "${addDate}${doneDateSpan:+ }${doneDateSpan}" +%F) || exit 1
     fi
 
-    if [ $# -gt 0 ]; then
+    if [ "$*" ]; then
         "$TODO_FULL_SH" command append $item "$@" || exit $?
     fi
 
