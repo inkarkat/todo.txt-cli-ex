@@ -37,7 +37,8 @@ shift
 }
 
 : ${TODOTXT_COMMENT_SYMBOL:= => }
-: ${TODOTXT_PARTIALDONE_PATTERN='\([^()]+ => [0-9]{4}-[0-9]{2}-[0-9]{2}( [^()]+)?\)'}
+: ${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN=',? +and +|[,;] +'}   # Note: This is in Extended regular expression format (ERE).
+: ${TODOTXT_PARTIALDONE_PATTERN='\([^()]+ => [0-9]{4}-[0-9]{2}-[0-9]{2}( [^()]+)?\)'}   # Note: This is in Extended regular expression format (ERE).
 : ${TODOTXT_PARTIALDONE_TEMPLATE="(%s${TODOTXT_COMMENT_SYMBOL}%s)"}
 : ${TODOTXT_PARTIALDONE_TEMPLATE_WITH_COMMENT="(%s${TODOTXT_COMMENT_SYMBOL}%s %s)"}
 shopt -s extglob
@@ -45,7 +46,7 @@ shopt -s extglob
 
 listParts()
 {
-    echo "$text" | sed -e "s/${partSeparatorPattern}/\\n/g" | sed = | sed -e 'N; s/\n/ /'
+    echo "$text" | sed -E -e "s/${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}/\\n/g" | sed = | sed -e 'N; s/\n/ /'
 }
 doParts()
 {
@@ -80,11 +81,11 @@ doParts()
     local isFirst=t
     for part in "${parts[@]}"
     do
-        [ "$isFirst" ] && isFirst= || partPattern="${partPattern}\\(${partSeparatorPattern}\\)"
-        partPattern="${partPattern}$(echo "$part" | sed -e 's/[][\$*.^#]/\\&/g')"
+        [ "$isFirst" ] && isFirst= || partPattern="${partPattern}\\(${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}\\)"
+        partPattern="${partPattern}$(echo "$part" | sed -e 's/[][\$*.^|+?(){}#]/\\&/g')"
     done
 
-    sed -i.bak "$item s#${partPattern}#${donePart}#" "$TODO_FILE"
+    sed -E -i.bak "$item s#${partPattern}#${donePart}#" "$TODO_FILE"
     getNewtodo "$item"
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
         echo "$item $newtodo"
@@ -92,7 +93,7 @@ doParts()
         # To get the actual text of the parts that were done (including the used
         # separators), substitute the original task again and this time extract
         # the part pattern.
-        changedPart=$(echo "$todo" | sed "s#^.*\(${partPattern}\).*\$#${donePart/&/\\1}#")
+        changedPart=$(echo "$todo" | sed -E "s#^.*\(${partPattern}\).*\$#${donePart/&/\\1}#")
         echo "TODO: part of $item marked as done: ${changedPart}"
     fi
 }
@@ -105,7 +106,6 @@ item=$1; shift
 getTodo "$item"
 
 splitTodo "$todo"
-readonly partSeparatorPattern=',\? \+and \+\|[,;] \+'
 
 if [[ "$1" =~ ^[,0-9]+$ ]]; then
     counts=
@@ -120,7 +120,7 @@ if [[ "$1" =~ ^[,0-9]+$ ]]; then
     while [ $countIdx -lt ${#countList[@]} ]
     do
         count=${countList[$countIdx]}
-        part=$(echo "$text" | sed -e "s/${partSeparatorPattern}/\\n/g" | sed -ne "${count}p")
+        part=$(echo "$text" | sed -E -e "s/${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}/\\n/g" | sed -ne "${count}p")
         if [ ! "$part" ]; then
             echo "TODO: No part ${count}; available parts:"
             listParts
