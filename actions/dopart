@@ -81,7 +81,7 @@ doParts()
     for part in "${parts[@]}"
     do
         [ "$isFirst" ] && isFirst= || partPattern="${partPattern}\\(${partSeparatorPattern}\\)"
-        partPattern="${partPattern}$(echo "$part" | sed -e 's/[][\$*.^|]/\\&/g')"
+        partPattern="${partPattern}$(echo "$part" | sed -e 's/[][\$*.^#]/\\&/g')"
     done
 
     sed -i.bak "$item s#${partPattern}#${donePart}#" "$TODO_FILE"
