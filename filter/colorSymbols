@@ -10,6 +10,14 @@
 # CONTENTS:
 #
 # REMARKS:
+#   - Make this the _last_ highlighting filter (simple text replacements are
+#     okay), especially when you use the (default) COLOR_TASKNUM highlighting;
+#     as it surrounds the leading task number with color markup, following
+#     filters won't be able to extract the line's color (via getLineColor()) any
+#     more.
+#     Also, because the previously single-colored line is now split into
+#     differing segments, that makes it much more difficult to apply different
+#     line coloring in the following filters.
 #
 # COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
