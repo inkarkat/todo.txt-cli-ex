@@ -15,7 +15,7 @@
 #   Based on the edit action by Matt Brubeck:
 #   https://github.com/mbrubeck/todo.txt-cli/blob/master/todo.actions.d/edit
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -90,7 +90,7 @@ else
     # do the complete replacement of the line here.
     input=$newtodo
     cleaninput "for sed"
-    sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE"
+    sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
         echo "$item $todo"
         echo "TODO: Replaced task with:"

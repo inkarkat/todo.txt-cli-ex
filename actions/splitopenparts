@@ -54,7 +54,7 @@ doneParts=$(echo "$text" | sed -E -e "s/${TODOTXT_PARTIALDONE_PATTERN}(${TODOTXT
 # replacement of the line here.
 input="${prepends}${doneParts}${appends}"
 cleaninput "for sed"
-sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE"
+sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
 if [ $TODOTXT_VERBOSE -gt 0 ]; then
     echo "$item $todo"
     echo "TODO: Replaced task with partially done parts:"

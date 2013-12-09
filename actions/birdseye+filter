@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -49,8 +49,8 @@ TMPTODO=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TE
 TMPDONE=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0")D.$$")
 
 export TODOTXT_VERBOSE=0
-"$TODO_FULL_SH" -f -p command list "$@" | sed -e 's/^[0-9]\+ //' > "$TMPTODO" || die
-"$TODO_FULL_SH" -f -p command listfile "$DONE_FILE" "$@" | sed -e 's/^[0-9]\+ //' > "$TMPDONE" || die
+"$TODO_FULL_SH" -f -p command list "$@" | sed -e 's/^[0-9]\+ //' > "$TMPTODO" || exit $?
+"$TODO_FULL_SH" -f -p command listfile "$DONE_FILE" "$@" | sed -e 's/^[0-9]\+ //' > "$TMPDONE" || exit $?
 export TODO_FILE=$TMPTODO
 export DONE_FILE=$TMPDONE
 

@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -30,13 +30,16 @@ shift
     exit
 }
 
+set -o pipefail
+
 : ${TODOTXT_DEFRAGMENT_MARKER_PATTERN:='^[[:graph:]]:[0-9]+$'}
 : ${TODOTXT_DEFRAGMENT_REFERENCE_PATTERN:='^task$'}
 
 # Defragment blank lines.
 # Note: Deletion of blank lines must proceed from end to begin to avoid adapting
 # remaining line numbers.
-for emptyLineNum in $(sed -n '/./!=' "$TODO_FILE" | tac)
+emptyLineNums=$(sed -n '/./!=' "$TODO_FILE" | tac) || exit $?
+for emptyLineNum in $emptyLineNums
 do
     awk -v "markerPattern=$TODOTXT_DEFRAGMENT_MARKER_PATTERN" -v "referencePattern=$TODOTXT_DEFRAGMENT_REFERENCE_PATTERN" -v "lineNum=$emptyLineNum" '
         function adapt(oldNum,     newNum) {

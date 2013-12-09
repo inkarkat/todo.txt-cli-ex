@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2012 Ingo Karkat
+# COPYRIGHT: (C) 2012-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -40,7 +40,7 @@ if [[ "$1" = +([0-9]) ]]; then
     shift
 else
     # Figure out the last line.
-    item=$(sed -n '$ =' "$TODO_FILE")
+    item=$(sed -n '$ =' "$TODO_FILE") || exit $?
 fi
 getTodo "$item"
 

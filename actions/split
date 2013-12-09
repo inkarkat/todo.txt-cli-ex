@@ -65,7 +65,7 @@ do
         # complete replacement of the line here.
         input=$newtodo
         cleaninput "for sed"
-        sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE"
+        sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             echo "$item $todo"
             echo "TODO: Replaced task with:"

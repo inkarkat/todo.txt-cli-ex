@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -93,7 +93,7 @@ generalWaitPattern=' w:\('$generalReasonPattern'\)\([ \t]\|$\)'
 if [ ! "$items" ]; then
     # No tasks have been specified; we must generate the list of (not yet done
     # or trashed) tasks that contain the waitPattern ourselves.
-    items=$(sed -n -e '/^[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE")
+    items=$(sed -n -e '/^[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE") || exit $?
 
     [ "$items" ] || die "TODO: No tasks that contain the ${waitDescription:?} found."
 fi
@@ -112,7 +112,7 @@ do
 :repeat
 s/${waitPattern}/\\2/g
 t repeat
-}" "$TODO_FILE"
+}" "$TODO_FILE" || exit $?
     getNewtodo "$item"
     if [ "$newtodo" = "$todo" ]; then
         die "TODO: $item not blocked"

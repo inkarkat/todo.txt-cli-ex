@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -71,7 +71,7 @@ else
     fi
 fi
 if [ "$pri" ]; then
-    items=$(sed -ne "/^(\\(${pri}\\)) /=" "$TODO_FILE")
+    items=$(sed -ne "/^(\\(${pri}\\)) /=" "$TODO_FILE") || exit $?
     [ "$items" ] || die "TODO: No ${what}."
 else
     while [[ "$1" =~ ^[,0-9]+$ ]]
@@ -104,16 +104,16 @@ do
 
         if [ "$endDate" = 'never' ]; then
             # Remove existing date-deprioritization.
-            newtodo=$(echo "$todo" | sed -e 's| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}||') || exit 1
+            newtodo=$(echo "$todo" | sed -e 's| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}||') || exit $?
         else
             # Replace existing date-deprioritization with the same deprioritization
             # in-place or append new date-deprioritization.
-            newtodo=$(echo "$todo" | sed -e 's| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| '"d:${endDate}|" -e t -e "s| *\$| d:${endDate}|") || exit 1
+            newtodo=$(echo "$todo" | sed -e 's| d:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| '"d:${endDate}|" -e t -e "s| *\$| d:${endDate}|") || exit $?
         fi
 
         input=$newtodo
         cleaninput "for sed"
-        sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE"
+        sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
 
         if [ "$newtodo" = "$todo" ]; then
             [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $newtodo"

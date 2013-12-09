@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2012 Ingo Karkat
+# COPYRIGHT: (C) 2012-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -47,7 +47,7 @@ addTask()
     "$TODO_FULL_SH" add "$@" || exit $?
     if [ -x "$TODO_ACTIONS_DIR/uncomment" ]; then
         # Figure out the line of what we just added, and "uncomment" it.
-        item=$(sed -n '$ =' "$TODO_FILE")
+        item=$(sed -n '$ =' "$TODO_FILE") || exit $?
         "$TODO_FULL_SH" uncomment -q "$item"
     fi
 }

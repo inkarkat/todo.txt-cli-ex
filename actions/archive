@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -93,8 +93,8 @@ processItems()
             echo "TODO: $moveCnt task(s) ${what}."
         fi
 
-        sed -ne "${moveItems//$'\n'/p;}p" "$TODO_FILE" >> "$FILE"
-        sed -i.bak -e "${moveItems//$'\n'/s#^.*##;}s#^.*##" "$TODO_FILE"
+        sed -ne "${moveItems//$'\n'/p;}p" "$TODO_FILE" >> "$FILE" || exit $?
+        sed -i.bak -e "${moveItems//$'\n'/s#^.*##;}s#^.*##" "$TODO_FILE" || exit $?
     else
         echo "TODO: No tasks have been ${what}."
     fi

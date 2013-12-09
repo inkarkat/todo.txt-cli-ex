@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -43,7 +43,7 @@ cleanup()
 {
     if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
         # Finally delete the marked lines.
-        sed -i.bak -e '/^!DELETED$/d' "$TODO_FILE"
+        sed -i.bak -e '/^!DELETED$/d' "$TODO_FILE" || exit $?
     fi
 }
 trap 'cleanup' EXIT
@@ -83,21 +83,21 @@ do
     else
         now=$(date '+%Y-%m-%d')
         # Remove priority once task is trashed.
-        sed -i.bak $item"s/^(.) //" "$TODO_FILE"
+        sed -i.bak $item"s/^(.) //" "$TODO_FILE" || exit $?
         # Add "X" trashed marker and timestamp like the 'do' command.
-        sed -i.bak $item's|^\(X \([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\?\)\?|'"X $now |" "$TODO_FILE"
+        sed -i.bak $item's|^\(X \([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\?\)\?|'"X $now |" "$TODO_FILE" || exit $?
 
         if [ "$isHard" ]; then
             # Immediately move task to trash.
-            sed -e "$item!d" "$TODO_FILE" >> "$TRASH_FILE"
+            sed -e "$item!d" "$TODO_FILE" >> "$TRASH_FILE" || exit $?
             if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
                 # Delete line (changes line numbers).
                 # Note: Cannot actually remove lines inside the loop, as this may
                 # make following task numbers invalid.
-                sed -i.bak -e $item"s/^.*/!DELETED/" "$TODO_FILE"
+                sed -i.bak -e $item"s/^.*/!DELETED/" "$TODO_FILE" || exit $?
             else
                 # leave blank line behind (preserves line numbers)
-                sed -i.bak -e $item"s/^.*//" "$TODO_FILE"
+                sed -i.bak -e $item"s/^.*//" "$TODO_FILE" || exit $?
             fi
 
             # Untrash from trash.txt via 'untrash'.
@@ -107,7 +107,7 @@ do
         fi
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             if [ "$isHard" ]; then
-                trashItem=$(sed -n '$ =' "$TRASH_FILE")
+                trashItem=$(sed -n '$ =' "$TRASH_FILE") || exit $?
                 getNewtodo "$trashItem" "$TRASH_FILE"
                 echo "$trashItem $newtodo"
                 echo "TODO: $item put into $(getPrefix "$TRASH_FILE") as ${trashItem}."

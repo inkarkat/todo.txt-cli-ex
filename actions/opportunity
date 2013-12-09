@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2012 Ingo Karkat
+# COPYRIGHT: (C) 2012-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -56,7 +56,7 @@ do
 
     input=$newtodo
     cleaninput "for sed"
-    sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE"
+    sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
 
     "$TODO_FULL_SH" pri "$item" O || exit $?
 done

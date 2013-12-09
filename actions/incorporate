@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -37,7 +37,7 @@ if [ $addTaskNum -eq 0 ]; then
     echo "TODO: No tasks to add."
     exit
 fi
-existingTaskNum=$(sed -n '$ =' "$TODO_FILE")
+existingTaskNum=$(sed -n '$ =' "$TODO_FILE") || exit $?
 
 # Note: We cannot just output the last $addTaskNum tasks via 'tail' to show the
 # added tasks, as the list may be sorted in a different way. Instead, we filter

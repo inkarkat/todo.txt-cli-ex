@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2012 Ingo Karkat
+# COPYRIGHT: (C) 2012-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -32,7 +32,7 @@ shift
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 
-TOTAL=$( sed -n '$ =' "$TODO_FILE" )
+TOTAL=$(sed -n '$ =' "$TODO_FILE") || exit $?
 PADDING=${#TOTAL}
 
 # To sort based on the entered date, add a dummy second column for tasks that
@@ -44,8 +44,8 @@ export TODOTXT_FILTER_FUTURE_TASKS=0
 cat "$TODO_FILE" "$DONE_FILE" "$TRASH_FILE" | TODOTXT_VERBOSE=0 _format '' "$PADDING" "$@"
 
 if [ $TODOTXT_VERBOSE -gt 0 ]; then
-    TDONE=$( sed -n '$ =' "$DONE_FILE" )
-    TTRASH=$( sed -n '$ =' "$TRASH_FILE" )
+    TDONE=$(sed -n '$ =' "$DONE_FILE") || exit $?
+    TTRASH=$(sed -n '$ =' "$TRASH_FILE") || exit $?
     TASKNUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$TODO_FILE" 1 "$@" | sed -n '$ =')
     DONENUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$DONE_FILE" 1 "$@" | sed -n '$ =')
     TRASHNUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$TRASH_FILE" 1 "$@" | sed -n '$ =')

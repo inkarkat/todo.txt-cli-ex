@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -59,7 +59,7 @@ if [ "$1" = 'for' -a $# -gt 1 ]; then
     done
     waitPattern=' w:\('${waitPattern}'\)\([ \t]\|$\)'
 
-    items=$(sed -n -e '/[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE")
+    items=$(sed -n -e '/[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE") || exit $?
     items=${items//$'\n'/ } # Flatten all collected task numbers into a space-delimited list.
     if [ "$TODOTXT_LSWAIT_SHOW_ITEMS" ]; then
         # Hidden functionality for other addons.

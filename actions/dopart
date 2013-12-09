@@ -85,7 +85,7 @@ doParts()
         partPattern="${partPattern}$(echo "$part" | sed -e 's/[][\$*.^|+?(){}#]/\\&/g')"
     done
 
-    sed -E -i.bak "$item s#${partPattern}#${donePart}#" "$TODO_FILE"
+    sed -E -i.bak "$item s#${partPattern}#${donePart}#" "$TODO_FILE" || exit $?
     getNewtodo "$item"
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
         echo "$item $newtodo"

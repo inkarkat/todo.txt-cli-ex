@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -30,6 +30,8 @@ shift
     echo ""
     exit
 }
+
+set -o pipefail
 
 errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ...] \"REASON for Waiting\"[, REASON, ...] | for DEPITEM#[, DEPITEM#, ...]"
 
