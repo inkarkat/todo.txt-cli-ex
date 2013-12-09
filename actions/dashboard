@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2013 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -65,6 +65,15 @@ if [ "$HOSTNAME" ]; then
                 echo "TODO: $allHereTaskNum local task(s) @${HOSTNAME}"
             fi
         fi
+    fi
+fi
+
+if [ -x "$TODO_ACTIONS_DIR/lsbumped" ]; then
+    mostBumpedTask=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" lsbumped | head -n 1)
+    if [ "$mostBumpedTask" ]; then
+        echo
+        echo "    Most bumped task:"
+        echo "$mostBumpedTask"
     fi
 fi
 
