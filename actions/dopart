@@ -81,7 +81,7 @@ doParts()
     local isFirst=t
     for part in "${parts[@]}"
     do
-        [ "$isFirst" ] && isFirst= || partPattern="${partPattern}\\(${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}\\)"
+        [ "$isFirst" ] && isFirst= || partPattern="${partPattern}(${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN})"
         partPattern="${partPattern}$(echo "$part" | sed -e 's/[][\$*.^|+?(){}#]/\\&/g')"
     done
 
@@ -93,7 +93,7 @@ doParts()
         # To get the actual text of the parts that were done (including the used
         # separators), substitute the original task again and this time extract
         # the part pattern.
-        changedPart=$(echo "$todo" | sed -E "s#^.*\(${partPattern}\).*\$#${donePart/&/\\1}#")
+        changedPart=$(echo "$todo" | sed -E "s#^.*(${partPattern}).*\$#${donePart/&/\\1}#")
         echo "TODO: part of $item marked as done: ${changedPart}"
     fi
 }
