@@ -66,11 +66,13 @@ activeNum=$(
 futureNum=$((listNum - activeNum - waitNum - doneNum - trashedNum))  # All tasks that will only come due in the future.
 # When the futureTasks filter isn't enabled, this will be 0.
 
+partDoneNum=$("$TODO_FULL_SH" -p lsdopart "$@" | wc -l)   # All partially done tasks.
+
 
 filter=
 [ $# -gt 0 ] && filter="$* "
 summaryOfPriorities="${listNum} ${filter}tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
-summaryOfStates="${activeNum} open, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${doneNum} done"
+summaryOfStates="${activeNum} open, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${partDoneNum} partially done, ${doneNum} done"
 echo "TODO: ${summaryOfPriorities}"
 echo "TODO: ${summaryOfStates}"
 
