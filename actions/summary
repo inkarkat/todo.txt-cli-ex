@@ -82,8 +82,11 @@ prioritizedProjects=$("$TODO_FULL_SH" lspriprj "$TODOTXT_SUMMARY_PRIORITIES" "$@
 
 filter=
 [ $# -gt 0 ] && filter="$* "
-echo "TODO: ${listNum} ${filter}tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
-echo "TODO: ${activeNum} open, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${doneNum} done"
+summaryOfPriorities="${listNum} ${filter}tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
+summaryOfStates="${activeNum} open, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${doneNum} done"
+
+echo "TODO: ${summaryOfPriorities}"
+echo "TODO: ${summaryOfStates}"
 
 inOutYesterday=$(inOutStat 'yesterday' "$@")
 inOutToday=$(inOutStat 'today' "$@")
