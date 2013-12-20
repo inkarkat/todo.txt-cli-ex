@@ -63,19 +63,23 @@ do
 done
 
 
-ANSWER=y
+answer=y
 if  [ $TODOTXT_FORCE = 0 ]; then
     affectedLines=$(cat "$TODO_FILE" | sed -n "${replacements[@]/%g/gp}")
     if [ "$affectedLines" ]; then
+        echo "TODO: Affected lines:"
         echo "$affectedLines"
-        echo "Make those replacements?  (y/n)"
-        read ANSWER
+        read -p "Make those replacements? (y/n) " answer
     else
         die "TODO: The pattern does not match in any line."
     fi
 fi
-if [ "$ANSWER" = 'y' ]; then
-    sed -i.bak "${replacements[@]}" "$TODO_FILE"
+if [ "$answer" = 'y' ]; then
+    sed -i.bak "${replacements[@]}" "$TODO_FILE" || die $?
+    if [ $TODOTXT_VERBOSE -gt 0 ]; then
+        lineCnt=$(echo "$affectedLines" | wc -l)
+        echo "TODO: $lineCnt tasks updated."
+    fi
 else
     exit 1
 fi
