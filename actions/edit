@@ -100,18 +100,16 @@ fi
 
 newLinesNum=$(sed '1d' "$TMPEDIT" | grep -cve '^\s*$')
 if [ $newLinesNum -ge 1 ]; then
+    answer=y
     if  [ $TODOTXT_FORCE = 0 ]; then
         echo
         if [ $newLinesNum -eq 1 ]; then
-            echo "There is one additional line. Add it as another task? (y/n)"
+            read -p "There is one additional line. Add it as another task? (y/n) " answer
         else
-            echo "There are $newLinesNum additional lines. Add them as individual tasks? (y/n)"
+            read -p "There are $newLinesNum additional lines. Add them as individual tasks? (y/n) " answer
         fi
-        read ANSWER
-    else
-        ANSWER="y"
     fi
-    if [ "$ANSWER" = "y" ]; then
+    if [ "$answer" = "y" ]; then
         IFS=$'\n'
         sed -e '1d' -e '/^[ \t]*$/d' "$TMPEDIT" | while IFS=$'\n' read newtask
         do
