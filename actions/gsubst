@@ -23,14 +23,14 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
+    echo "    $(basename $0) PATTERN REPLACEMENT [PATTERN REPLACEMENT ...] [SRC]"
     echo "      Replaces all instances of (sed-style) PATTERN with REPLACEMENT"
-    echo "      on ALL lines in todo.txt."
+    echo "      on ALL lines in todo.txt or SRC file."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
+errmsg="usage: $TODO_SH $(basename $0) PATTERN REPLACEMENT [PATTERN REPLACEMENT ...] [SRC]"
 
 typeset -a replacements=()
 buildReplacement()
@@ -45,6 +45,7 @@ buildReplacement()
     replacements+=(-e "s%${pattern//%/\\%}%${input}%g")
 }
 
+FILE="$TODO_FILE"
 pattern=
 input=
 if [[ $# -lt 2 && $TODOTXT_FORCE = 0 ]]; then
@@ -61,24 +62,29 @@ do
     shift; shift
     buildReplacement
 done
+if [ $# -eq 1 ]; then
+    FILE="$TODO_DIR/$1"
+    shift
+    [ -f "$FILE" ] || die "TODO: File $FILE does not exist."
+fi
 
 
 answer=y
 if  [ $TODOTXT_FORCE = 0 ]; then
-    affectedLines=$(cat "$TODO_FILE" | sed -n "${replacements[@]/%g/gp}")
+    affectedLines=$(cat "$FILE" | sed -n "${replacements[@]/%g/gp}")
     if [ "$affectedLines" ]; then
-        echo "TODO: Affected lines:"
+        echo "$(getPrefix "$FILE"): Affected lines:"
         echo "$affectedLines"
         read -p "Make those replacements? (y/n) " answer
     else
-        die "TODO: The pattern does not match in any line."
+        die "$(getPrefix "$FILE"): The pattern does not match in any line."
     fi
 fi
 if [ "$answer" = 'y' ]; then
-    sed -i.bak "${replacements[@]}" "$TODO_FILE" || die $?
+    sed -i.bak "${replacements[@]}" "$FILE" || die $?
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
         lineCnt=$(echo "$affectedLines" | wc -l)
-        echo "TODO: $lineCnt tasks updated."
+        echo "$(getPrefix "$FILE"): $lineCnt tasks updated."
     fi
 else
     exit 1
