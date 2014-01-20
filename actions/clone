@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2014 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -47,5 +47,13 @@ if [ "${todo:0:2}" = 'x ' -o "${todo:0:2}" = 'X ' ]; then
 fi
 
 "$TODO_FULL_SH" add "$todo"
+
+# Figure out the line of what we just added, "uncomment" it, and perform any
+# passed substitutions.
 clonedItem=$(sed -n '$ =' "$TODO_FILE") || exit $?
-"$TODO_FULL_SH" subst $clonedItem "$@"
+if [ -x "$TODO_ACTIONS_DIR/uncomment" ]; then
+    "$TODO_FULL_SH" uncomment -q "$clonedItem"
+fi
+if [ $# -gt 0 ]; then
+    "$TODO_FULL_SH" subst $clonedItem "$@"
+fi
