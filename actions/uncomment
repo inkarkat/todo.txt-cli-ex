@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2014 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -32,6 +32,7 @@ shift
 errmsg="usage: $TODO_SH $(basename $0) [-q] ITEM#"
 
 : ${TODOTXT_COMMENT_SYMBOL:= => }
+: ${TODOTXT_DISARMED_COMMENT_SYMBOL:=; }
 
 isSilentAndQuery=
 if [ "$1" = '-q' ]; then
@@ -46,12 +47,16 @@ if [ "$isSilentAndQuery" ]; then
     [ "$newtodo" = "$todo" ] && exit 0
     comment=${todo#*${TODOTXT_COMMENT_SYMBOL}}
     if [ "$comment" ]; then
-        read -p "Remove comment \"${comment}\"? (y/n) " answer
+        read -p "Remove comment \"${comment}\", or disarm it by replacing \"${TODOTXT_COMMENT_SYMBOL// /}\" with \"${TODOTXT_DISARMED_COMMENT_SYMBOL// /}\"? (y/n/d) " answer
     else
         read -p "Remove empty comment? (y/n) " answer
     fi
 
-    [ "$answer" = 'y' ] || exit 0
+    if [ "$answer" = 'd' ]; then
+        newtodo=${todo//${TODOTXT_COMMENT_SYMBOL}/${TODOTXT_DISARMED_COMMENT_SYMBOL}}
+    elif [ "$answer" != 'y' ]; then
+        exit 0
+    fi
 fi
 
 [ "$newtodo" ] || die "TODO: Removal of comment would create empty task."
