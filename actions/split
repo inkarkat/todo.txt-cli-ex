@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2012-2013 Ingo Karkat
+# COPYRIGHT: (C) 2012-2014 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -68,7 +68,7 @@ do
         sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             echo "$item $todo"
-            echo "TODO: Replaced task with:"
+            echo "TODO: Replaced task with first part:"
             echo "$item $newtodo"
         fi
         isFirst=
