@@ -58,7 +58,7 @@ fi
 isFirst=t
 while IFS=$'\n' read -r text
 do
-    newtodo="${prepends}${text}${appends}"
+    newtodo="${priAndAddDate}${prepends}${text}${appends}"
     if [ "$isFirst" ]; then
         # The 'replace' command doesn't handle done tasks, and may do surprising
         # things to existing priorities and dates. To avoid surprises, do the
