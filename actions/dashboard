@@ -72,10 +72,16 @@ if [ -x "$TODO_ACTIONS_DIR/lsbumped" ]; then
     mostBumpedTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" lsbumped | sed -e '1{ h; s/^.* \(!:[0-9]\+\).*$/\1/; x }' -e '1!{ G; / \(!:[0-9]\+\).*\n\1$/!{ s/.*//; q }; s/\n.*// }')
     if [ "$mostBumpedTasks" ]; then
         mostBumpedTasksNum=$(echo "$mostBumpedTasks" | sed -n '$ =')
-        let num=$(date '+%-j')%${mostBumpedTasksNum}+1
-        mostBumpedTask=$(echo "$mostBumpedTasks" | sed -n "${num}p")
+        if [ $mostBumpedTasksNum -gt 1 ]; then
+            let num=$(date '+%-j')%${mostBumpedTasksNum}+1
+            mostBumpedTask=$(echo "$mostBumpedTasks" | sed -n "${num}p")
+            mostBumpedAppendix=" (of ${mostBumpedTasksNum})"
+        else
+            mostBumpedTask=$mostBumpedTasks
+            mostBumpedAppendix=
+        fi
         echo
-        echo "    Most bumped task (of ${mostBumpedTasksNum}):"
+        echo "    Most bumped task${mostBumpedAppendix}:"
         echo "$mostBumpedTask"
     fi
 fi
