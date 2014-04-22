@@ -69,7 +69,7 @@ if [ "$HOSTNAME" ]; then
 fi
 
 if [ -x "$TODO_ACTIONS_DIR/lsbumped" ]; then
-    mostBumpedTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" lsbumped | sed -e '1{ h; s/^.* \(!:[0-9]\+\).*$/\1/; x }' -e '1!{ G; / \(!:[0-9]\+\).*\n\1$/!{ s/.*//; q }; s/\n.*// }')
+    mostBumpedTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" lsbumped "$@" | sed -e '1{ h; s/^.* \(!:[0-9]\+\).*$/\1/; x }' -e '1!{ G; / \(!:[0-9]\+\).*\n\1$/!{ s/.*//; q }; s/\n.*// }')
     if [ "$mostBumpedTasks" ]; then
         mostBumpedTasksNum=$(echo "$mostBumpedTasks" | sed -n '$ =')
         if [ $mostBumpedTasksNum -gt 1 ]; then
@@ -81,7 +81,7 @@ if [ -x "$TODO_ACTIONS_DIR/lsbumped" ]; then
             mostBumpedAppendix=
         fi
         echo
-        echo "    Most bumped task${mostBumpedAppendix}:"
+        echo "    Most bumped ${filter}task${mostBumpedAppendix}:"
         echo "$mostBumpedTask"
     fi
 fi
