@@ -32,6 +32,8 @@
 ::				filtering, these are added to the record, so
 ::				when there's a change in them, the cache is
 ::				invalidated.
+::				Avoid the use of type command via usebackq
+::				option.
 ::	012	13-Nov-2013	Show the previous cache (with a warning) when
 ::				the todo.sh command yields no output at all.
 ::				XXX: Capturing stderr has the strange side
@@ -98,7 +100,7 @@ if not exist "%recordStore%" (goto:run)
 if not exist "%cacheFile%" (goto:run)
 
 :: Read recorded data file modification date from cache and the cache's age.
-for /F "delims=" %%o in ('type "%recordStore%"') do set oldCacheRecord=%%o
+for /F "delims= usebackq" %%o in ("%recordStore%") do set oldCacheRecord=%%o
 
 :: Refresh the cache when a new day has started, to avoid showing stale data.
 :: (New tasks may have been scheduled on a new day.)
