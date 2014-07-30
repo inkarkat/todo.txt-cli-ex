@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2014 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -38,7 +38,10 @@ set -o pipefail
 export TODOTXT_VERBOSE=0    # Turn off the list footer.
 
 totalNum=$(sed -ne '$ =' "$TODO_FILE") || exit $?   # Total task number, not just the ones matching TERM.
-if [ $# -eq 0 ]; then
+if [ ! "$totalNum" ] || [ $totalNum -eq 0 ]; then
+    listNum=0
+    totalMessage=
+elif [ $# -eq 0 ]; then
     listNum=$totalNum
     totalMessage=
 else

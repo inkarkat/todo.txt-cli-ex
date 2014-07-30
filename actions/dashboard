@@ -55,7 +55,7 @@ if [ "$HOSTNAME" ]; then
         # When filter TERM(s) are given, still include information about any
         # other local tasks.
         allHereTaskNum=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here | sed -n '$ =')
-        if [ $allHereTaskNum -gt 0 ]; then
+        if [ "$allHereTaskNum" ] && [ $allHereTaskNum -gt 0 ]; then
             if [ $hereTaskNum -gt 0 ]; then
                 moreHereTaskNum=$((allHereTaskNum - hereTaskNum))
                 if [ $moreHereTaskNum -gt 0 ]; then
