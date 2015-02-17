@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2015 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -48,7 +48,7 @@ tasksOnDependentTask=
 
 # Find all wait markers and sort.
 IFS=$'\n'
-for waitMarker in $(sed -e '/^[xX] /d' -e '/ w:/!d' -e 's/ w:[^ ]/\n&/g' "$TODO_FILE" | sed -n -e 's/^.* \(w:([^)]*)\).*$/\1/p;t' -e 's/^.* \(w:[^ ]*\).*$/\1/p' | sort -u )
+for waitMarker in $(sed -e '/^[xX] /d' -e '/ w:/!d' -e 's/ w:[^ ]/\n&/g' "$TODO_FILE" | sed -n -e 's/^.* \(w:([^)]\+)\).*$/\1/p;t' -e 's/^.* \(w:[^ ]\+\).*$/\1/p' | sort -u )
 do
     blocker=$(echo "$waitMarker" | sed -e 's/w:(\([^)]*\))/\1/' -e 's/w:\([^ ]*\)/\1/')
 
