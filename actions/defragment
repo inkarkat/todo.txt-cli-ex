@@ -39,11 +39,24 @@ set -o pipefail
 # Note: Deletion of blank lines must proceed from end to begin to avoid adapting
 # remaining line numbers.
 emptyLineNums=$(sed -n '/./!=' "$TODO_FILE" | tac) || exit $?
+finalLineNumber=$(echo "$emptyLineNums" | sed -ne '$p')
 for emptyLineNum in $emptyLineNums
 do
-    awk -v "markerPattern=$TODOTXT_DEFRAGMENT_MARKER_PATTERN" -v "referencePattern=$TODOTXT_DEFRAGMENT_REFERENCE_PATTERN" -v "lineNum=$emptyLineNum" '
-        function adapt(oldNum) {
+    # As each empty line is processed separately, the self-reference warning
+    # would appear on each iteration again. Only do this on the last one, when
+    # the script is able to print the final line number.
+    [ "$emptyLineNum" = "$finalLineNumber" ] && isSelfReferenceWarning=1 || isSelfReferenceWarning=0
+
+    awk -v "markerPattern=$TODOTXT_DEFRAGMENT_MARKER_PATTERN" -v "referencePattern=$TODOTXT_DEFRAGMENT_REFERENCE_PATTERN" -v "lineNum=$emptyLineNum" -v "isSelfReferenceWarning=$isSelfReferenceWarning" '
+        function adapt(oldNum,     todo) {
             if (oldNum > lineNum) {
+                if (isSelfReferenceWarning && oldNum == NR) {
+                    todo = $0
+                    gsub(NR, NR - 1, todo)  # The pattern is not very strict; let us hope there is no other occurrence of that particular number in the line.
+                    print NR - 1 " " todo > "/dev/stderr"
+
+                    print "TODO: Self-referential task " NR - 1 > "/dev/stderr"
+                }
                 return oldNum - 1
             } else if (oldNum == lineNum) {
                 print NR " " $0 > "/dev/stderr"
