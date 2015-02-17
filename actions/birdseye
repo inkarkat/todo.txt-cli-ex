@@ -49,23 +49,23 @@ __history__ = """
 """
 
 def usage():
-	print "    %s [(open|completed|all)-(projects|contexts) [...]]"% (os.path.basename(sys.argv[0]), )
-	print "      Show a textual report of open and completed tasks"
-	print "      for all projects and contexts"
-	print "      Works on the unfiltered tasks of TODO_FILE and DONE_FILE."
-	print ""
+	print("    %s [(open|completed|all)-(projects|contexts) [...]]" % (os.path.basename(sys.argv[0]), ))
+	print("      Show a textual report of open and completed tasks")
+	print("      for all projects and contexts")
+	print("      Works on the unfiltered tasks of TODO_FILE and DONE_FILE.")
+	print("")
 
 def printTaskGroups(title, taskDict, priorityList, percentages, taskNum):
-	print ""
-	print "%s"% (title,)
+	print("")
+	print("%s"% (title,))
 	if not taskDict:
-		print "No items to list."
+		print("No items to list.")
 	else:
 		itemMaxLength = len(max(taskDict, key=len))
 
 		# sort the dictionary by value
 		# http://python.fyxm.net/peps/pep-0265.html
-		items = [(v, k) for k, v in taskDict.items()]
+		items = [(v, k) for k, v in list(taskDict.items())]
 		items.sort()
 		items.reverse()             # so largest is first
 		items = [(k, v) for v, k in items]
@@ -92,7 +92,7 @@ def printTaskGroup(p, pMaxLen, pctage, star, taskNum):
 	taskWidth = int(math.ceil(math.log(taskNum,10)))
 	if pctage > -1:
 		progressBar = ""
-		numStars = (pctage/10)
+		numStars = int(pctage//10)
 		progressBar = "=" * numStars
 		numSpaces = 10 - numStars
 		for n in range(numSpaces):
@@ -102,9 +102,9 @@ def printTaskGroup(p, pMaxLen, pctage, star, taskNum):
 			displayTotal = " %d%%"% (pctage, );
 		else:
 			displayTotal = "  %d%%"% (pctage, );
-		print "%s %s [%s] %*s (%*d task%s)"% (star, displayTotal, progressBar, (-1 * pMaxLen), p[0], taskWidth, p[1], (" " if p[1] == 1 else "s"), )
+		print("%s %s [%s] %*s (%*d task%s)"% (star, displayTotal, progressBar, (-1 * pMaxLen), p[0], taskWidth, p[1], (" " if p[1] == 1 else "s"), ))
 	else:
-		print "%s %*s (%*d task%s)"% (star, (-1 * pMaxLen), p[0], taskWidth, p[1], (" " if p[1] == 1 else "s"), )
+		print("%s %*s (%*d task%s)"% (star, (-1 * pMaxLen), p[0], taskWidth, p[1], (" " if p[1] == 1 else "s"), ))
 
 global sepWidth
 sepWidth = 0
@@ -113,7 +113,7 @@ def separator(c, width):
 	sepWidth = max([width, sepWidth])
 	sep = ""
 	sep = c * sepWidth
-	print sep
+	print(sep)
 
 
 def process(filespec, prefix, tasks, completed, priority):
@@ -149,7 +149,7 @@ def process(filespec, prefix, tasks, completed, priority):
 		f.close()
 		return taskNum
 	except IOError:
-		print "ERROR:  The file named %s could not be read."% (filespec, )
+		print("ERROR:  The file named %s could not be read."% (filespec, ))
 		usage()
 		sys.exit(2)
 
@@ -214,7 +214,7 @@ def main(argv):
 			else:
 				raise Exception("Invalid item: " + item)
 	except Exception, e:
-		print e
+		print(e)
 		sys.exit(1)
 
 if __name__ == "__main__":
