@@ -46,6 +46,8 @@ do
             if (oldNum > lineNum) {
                 return oldNum - 1
             } else if (oldNum == lineNum) {
+                print NR " " $0 > "/dev/stderr"
+                print "TODO: Invalidate reference to cleared task " lineNum > "/dev/stderr"
                 return "???"
             } else {
                 return oldNum
