@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2015 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -72,6 +72,27 @@ listItems()
     fi
 }
 
+confirmVirtualItems()
+{
+    local confirmedItems
+    local IFS=$'\n'
+    for item in $moveItems
+    do
+        getTodo "$item"
+        if [ "${todo:0:2}" != "$mark " ]; then
+            echo "$todo"
+            read -p "Should this task really be $what? (y/n) " answer
+            if [ "$answer" != "y" ]; then
+                continue
+            fi
+        fi
+        confirmedItems="${confirmedItems}${confirmedItems:+
+}${item}"
+    done
+
+    moveItems=$confirmedItems
+}
+
 processItems()
 {
     mark=$1
@@ -84,6 +105,10 @@ processItems()
     shift
 
     moveItems=$(listItems "$mark" "$items" "$@")
+
+    if [ "$moveItems" -a $TODOTXT_VERBOSE -gt 0 ]; then
+        confirmVirtualItems
+    fi
 
     if [ "$moveItems" ]; then
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
