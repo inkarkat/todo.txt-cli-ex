@@ -50,6 +50,8 @@ TODO: 11 of 11 tasks shown
 --
 TODO: 1 of 11 tasks archived
 TODO: No tasks have been trashed.
+16 2012-03-18 go jogging w:18
+TODO: Invalidate reference to cleared task 18
 
 >>> todo.sh -p -x command ls
 01 2011-01-01 find a building site +house

@@ -177,6 +177,10 @@ test_todo_session 'defragment nonexisting task numbers' <<EOF
 TODO: 4 of 4 tasks shown
 
 >>> todo.sh defragment
+5 2012-02-03 buy the site +house w:2 w:3 w:4
+TODO: Invalidate reference to cleared task 3
+2 2011-01-01 find a building site w:1 +house
+TODO: Invalidate reference to cleared task 1
 
 >>> todo.sh -p command ls
 1 2011-01-01 find a building site w:??? +house
