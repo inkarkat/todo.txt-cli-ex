@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2014 Ingo Karkat
+# COPYRIGHT: (C) 2010-2015 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -41,7 +41,7 @@ echo "    Pending ${filter}tasks:"
 modDate=$([ ${TODOTXT_RELTIME:-1} -ne 0 ] && reldate "$TODO_FILE" 2>/dev/null || date -d "$(stat -c %y "$TODO_FILE")" '+%F %R')
 echo "TODO: last modified ${modDate}"
 
-if [ "$HOSTNAME" ]; then
+if [ "$HOSTNAME" -a "$*" != "@$HOSTNAME" ]; then
     hereTaskNum=0
     hereTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here "$@")
     if [ "$hereTasks" ]; then
