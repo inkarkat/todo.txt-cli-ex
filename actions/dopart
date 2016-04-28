@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2013-2014 Ingo Karkat
+# COPYRIGHT: (C) 2013-2016 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -85,7 +85,7 @@ doParts()
         partPattern="${partPattern}$(echo "$part" | sed -e 's/[][\$*.^|+?(){}#]/\\&/g')"
     done
 
-    sed -E -i.bak "$item s#${partPattern}#${donePart}#" "$TODO_FILE" || exit $?
+    sed -E -i.bak "$item s#${partPattern}#${donePart//#/\\#}#" "$TODO_FILE" || exit $?
     getNewtodo "$item"
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
         echo "$item $newtodo"
@@ -147,12 +147,12 @@ elif [ "$1" ]; then
         *\.\*)  after='$';;
         *)      after='.*$';;
     esac
-    part=$(echo "$text" | sed -ne "s/${before}\(${pattern}\)${after}/\1/gp")
+    part=$(echo "$text" | sed -ne "s/${before}\(${pattern//\//\\/}\)${after}/\1/gp")
     if [ ! "$part" ]; then
         # The pattern did not match in the main task text, try in the prepends
         # and appends; maybe the user wants to mark a particular +project or
         # @context done.
-        part=$(echo "$prepends $appends" | sed -ne "s/${before}\(${pattern}\)${after}/\1/gp")
+        part=$(echo "$prepends $appends" | sed -ne "s/${before}\(${pattern//\//\\/}\)${after}/\1/gp")
     fi
     [ "$part" ] || die "TODO: pattern \"${pattern}\" does not match"
     [ "$part" = "$text" ] && die "TODO: pattern \"${pattern}\" matches the entire task"
