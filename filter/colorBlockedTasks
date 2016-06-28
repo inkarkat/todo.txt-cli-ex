@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2016 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -66,7 +66,7 @@ function highlightBlocker(      i) {
             # its highlighting of task numbers. (Assuming it comes after us in
             # the filter pipeline.)
             if ($i !~ /^w:[0-9]+$/ && $i !~ /^w:\([^)]+/) {
-                $i = gensub(/(w:)([^( ][^ ]*)/, "\\1" highlight("COLOR_BLOCKER") "\\2" highlightend("COLOR_BLOCKER", lineColor), "", $i)
+                $i = gensub(/(w:)([^( ][^ ]*)/, "\\1" highlight("COLOR_BLOCKER") "\\2" highlightend("COLOR_BLOCKER", lineColor), 1, $i)
             }
         }
         # Remove the brackets in the w:(wait reason) marker; the highlighting

@@ -15,7 +15,7 @@
 #   This filter is to be used in post_filter_command, before formatting and
 #   coloring of priorities. It won't work as a TODOTXT_FINAL_FILTER!
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2016 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -30,7 +30,7 @@ function getThreshold(date) {
     if (date == "") {
         return mktime(strftime("%Y %m %d 00 00 00", systime()))
     } else {
-        return mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", "", date))
+        return mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", 1, date))
     }
 }
 BEGIN {
@@ -43,7 +43,7 @@ BEGIN {
     next
 }
 / [uz]:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
-    date = mktime(gensub(/^.* [uz]:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", ""))
+    date = mktime(gensub(/^.* [uz]:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", 1))
     if (date - span > threshold) {
         next
     }
