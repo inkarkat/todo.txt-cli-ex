@@ -29,7 +29,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2016 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -51,6 +51,15 @@ function getThreshold(date) {
         return mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", 1, date))
     }
 }
+function renderDaySpan(daySpan) {
+    if (daySpan == 7) return "one week"
+    else if (daySpan == 14) return "two weeks"
+    else if (daySpan == 21) return "three weeks"
+    else if (daySpan >= 2*365) return int(daySpan / 365) " years"
+    else if (daySpan >= 91) return int(daySpan / 30) " months"
+    else if (daySpan >= 35) return int(daySpan / 7) " weeks"
+    else return daySpan " days"
+}
 function relativeDate(date,      secondsSpan, daySpan, isInFuture) {
     if (date > threshold) {
         secondsSpan = date - threshold
@@ -64,15 +73,12 @@ function relativeDate(date,      secondsSpan, daySpan, isInFuture) {
     if (daySpan > dayRange) return ""
     else if (daySpan == 0) return "today"
     else if (daySpan == 1) return (isInFuture ? "tomorrow" : "yesterday")
-    else if (daySpan == 7) return "(" (isInFuture ? "in " : "") "one week" (isInFuture ? "" : " ago") ")"
-    else if (daySpan == 14) return "(" (isInFuture ? "in " : "") "two weeks" (isInFuture ? "" : " ago") ")"
-    else if (daySpan == 21) return "(" (isInFuture ? "in " : "") "three weeks" (isInFuture ? "" : " ago") ")"
-    else return "(" (isInFuture ? "in " : "") daySpan " days" (isInFuture ? "" : " ago") ")"
+    else return "(" (isInFuture ? "in " : "") renderDaySpan(daySpan) (isInFuture ? "" : " ago") ")"
 }
 function afterSpan(daySpan) {
     if (daySpan == 0) return "from same day"
     else if (daySpan == 1) return "from day before"
-    else return sprintf("after %s days", daySpan)
+    else return "after " renderDaySpan(daySpan)
 }
 BEGIN {
     threshold = getThreshold(date)
