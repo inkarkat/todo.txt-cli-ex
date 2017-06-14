@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2017 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -44,12 +44,22 @@ elif [ "$action" = "list" ]; then
         export HIDE_CUSTOM_SUBSTITUTION=$TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION
     fi
 
+    # XXX: If _list isn't defined any longer, recreate based on the export into
+    # a normal shell variable.
+    type -t _list >/dev/null || eval "$original_TODOTXT_functions"
+
     _list "$TODO_FILE"
     exit
 elif [ "$action" = "filter" ]; then
     echo "$filterTasks"
     exit
 fi
+
+# XXX: Need to export todo.sh API functions into a normal shell variable (as a
+# transfer vehicle for the recursive invocation of this script), as exported
+# functions may get lost when there's a non-Bash process in between (like AWK
+# here). This first occurred on Ubuntu 16.04 LTS.
+export original_TODOTXT_functions=$(export -f)
 
 original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 if [ $# -gt 0 ]; then
