@@ -20,14 +20,14 @@ test-pre-clean:
 aggregate-results: $(TESTS)
 
 $(TESTS): test-pre-clean test-copy-deps
-	-cd tests && ./$(notdir $@) $(TEST_OPTIONS)
+	-cd ./tests && ./$(notdir $@) $(TEST_OPTIONS)
 
 test: aggregate-results
 	tests/aggregate-results.sh tests/test-results/t*-*
 	rm -rf tests/test-results
 
 ci:
-	cd tests && onchange -exec ./{} -i \; t[0-9][0-9][0-9][0-9]-*.sh
+	cd ./tests && onchange -exec ./{} -i \; t[0-9][0-9][0-9][0-9]-*.sh
 
 # Force tests to get run every time
 .PHONY: test aggregate-results $(TESTS)
