@@ -171,7 +171,7 @@ EOF
 test_todo_session 'relativeDates done date translation' <<EOF
 >>> todo.sh -p command ls
 5 x (3 days ago, after 29 days) watch tv @home
-4 x (yesterday, after 7 days) water the lawn +garden
+4 x (yesterday, after one week) water the lawn +garden
 3 x (yesterday, from day before) plant a tree +garden
 1 x (today, after 3 days) get a bank loan
 2 x (today, from same day) mow the lawn +garden m:2009-04-01 @outside
