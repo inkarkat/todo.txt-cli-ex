@@ -32,7 +32,7 @@ shift
 }
 
 : ${TODOTXT_BROWSER_URL_SCHEMES:='\(http\|https\|file\|ftp\)://'}
-: ${TODOTXT_BROWSER_URL_CHARACTERS:='[^ ()<>"]\+'}
+: ${TODOTXT_BROWSER_URL_CHARACTERS:='[^][ ()<>",;]\+'}
 
 if [[ ! "$1" =~ ^[0-9]+$ ]]; then
     post_filter_command="grep -e '${TODOTXT_BROWSER_URL_SCHEMES}${TODOTXT_BROWSER_URL_CHARACTERS}'"
