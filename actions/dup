@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2017 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -24,7 +24,7 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) ITEM# del|trash [--hard] DUPITEM#[, DUPITEM#, ...]"
-    echo "      Trash the tasks on line(s) DUPITEM# with a comment of"
+    echo "      Delete / trash the tasks on line(s) DUPITEM# with a comment of"
     echo "      \"dup of ITEM#\". Use this when the tasks are identical and."
     echo "      were added without knowledge of the existing task."
     echo "    $(basename $0) goal GOAL ITEM#[, ITEM#, ...]"
@@ -41,7 +41,7 @@ shift
 
 shopt -s extglob
 
-errmsg="usage: $TODO_SH $(basename $0) (ITEM# (del|trash) [--hard])|(goal GOAL)|link ITEM#[, ITEM#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) (ITEM# (del|trash [--hard]))|(goal GOAL)|link ITEM#[, ITEM#, ...]"
 
 isHard=
 case "$1" in
@@ -49,10 +49,10 @@ case "$1" in
         case "$2" in
             del|trash)
                 item=$1
+                subaction="$2"
                 shift
-                subaction='trash'
                 shift
-                if [ "$1" = '--hard' ]; then
+                if [ "$subaction" = 'trash' -a "$1" = '--hard' ]; then
                     isHard='true'
                     shift
                 fi
@@ -89,6 +89,10 @@ esac
 for dupItem in ${dupItems//,/ }
 do
     case $subaction in
+        del)
+            "$TODO_FULL_SH" comment $dupItem "dup of $item" || exit $?
+            "$TODO_FULL_SH" del $dupItem || exit $?
+            ;;
         trash)
             "$TODO_FULL_SH" comment $dupItem "dup of $item" || exit $?
             eval 'RECURSIVE_DO=true "$TODO_FULL_SH" trash' ${isHard:+--hard} '$dupItem' || exit $?
