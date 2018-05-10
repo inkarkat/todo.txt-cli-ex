@@ -1,0 +1,40 @@
+#!/bin/bash
+###############################################################################
+##
+# FILE:         gedit
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 10-May-2018
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# SOURCE:
+#
+# COPYRIGHT: (C) 2010-2018 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)gedit	$Id$	todo.txt-cli-ex
+###############################################################################
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [ITEM#] [SRC]"
+    echo "      Open ITEM# in \$TODO_DIR/SRC in \$GUI_EDITOR for editing in a GUI editor."
+    echo "      If ITEM# is omitted, the entire file is edited."
+    echo "      If BASENAME is not given, defaults to 'todo'."
+    echo "      ITEM# can be removed by deleting the line."
+    echo "      Additional tasks can be added by appending more lines."
+    echo ""
+    exit
+}
+
+[ "$GUI_EDITOR" ] && EDITOR=$GUI_EDITOR
+export EDITOR
+exec "$TODO_FULL_SH" edit "$@"
