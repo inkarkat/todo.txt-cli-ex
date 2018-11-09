@@ -15,7 +15,7 @@
 #   Based on the edit action by Matt Brubeck:
 #   https://github.com/mbrubeck/todo.txt-cli/blob/master/todo.actions.d/edit
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2018 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -30,7 +30,7 @@ shift
     echo "    $(basename $0) [ITEM#] [SRC]"
     echo "      Open ITEM# in \$TODO_DIR/SRC in \$EDITOR for editing."
     echo "      If ITEM# is omitted, the entire file is edited."
-    echo "      If BASENAME is not given, defaults to 'todo'."
+    echo "      If SRC is not given, defaults to 'todo'."
     echo "      ITEM# can be removed by deleting the line."
     echo "      Additional tasks can be added by appending more lines."
     echo ""
