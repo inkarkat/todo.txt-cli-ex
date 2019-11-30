@@ -1,0 +1,15 @@
+Extensions for the TODO.TXT Command Line Interface
+==================================================
+
+The [Command Line Interface](http://github.com/ginatrapani/todo.txt-cli/) of
+the [Todo.txt](http://todotxt.com/) task tracking system allows extension via
+add-ons (which supply customized or additional actions) and filters (which
+influence the output of tasks).
+
+This is my personal set of extensions (some taken from other authors, but most
+implemented by myself) that tailors Todo.txt for my own workflow.
+
+If you find any of these useful, feel free to take them. All code is published
+under the [GPL](http://www.gnu.org/copyleft/gpl.txt), like Todo.txt itself.
+Discussions and questions around the Todo.txt workflow is best directed to the
+[Todo.txt Mailing List](http://groups.yahoo.com/group/todotxt/).
