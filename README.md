@@ -12,4 +12,4 @@ implemented by myself) that tailors Todo.txt for my own workflow.
 If you find any of these useful, feel free to take them. All code is published
 under the [GPL](https://www.gnu.org/copyleft/gpl.txt), like Todo.txt itself.
 Discussions and questions around the Todo.txt workflow is best directed to the
-[Todo.txt Mailing List](https://groups.yahoo.com/group/todotxt/).
+[Todo.txt Gitter chat](https://gitter.im/todotxt/todo.txt-cli).
