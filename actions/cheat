@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2012 Ingo Karkat
+# COPYRIGHT: (C) 2012-2020 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -30,7 +30,7 @@ shift
     exit
 }
 
-: ${COLOR_CHEATSHEET_HEADER=[1;47m}
+: ${COLOR_CHEATSHEET_HEADER='\\033[1;47m'}
 
 priorityHelp()
 {
@@ -110,15 +110,13 @@ EOF
 }
 
 if [ $# -eq 0 ]; then
-    echo "${COLOR_CHEATSHEET_HEADER}PRIORITIES${COLOR_DEFAULT}"
+    echo -e "${COLOR_CHEATSHEET_HEADER//\\\\/\\}PRIORITIES${DEFAULT//\\\\/\\}"
     priorityHelp
 
-    echo
-    echo "${COLOR_CHEATSHEET_HEADER}MARKERS${COLOR_DEFAULT}"
+    echo -e "\\n${COLOR_CHEATSHEET_HEADER//\\\\/\\}MARKERS${DEFAULT//\\\\/\\}"
     markerHelp
 
-    echo
-    echo "${COLOR_CHEATSHEET_HEADER}SYNTAX${COLOR_DEFAULT}"
+    echo -e "\\n${COLOR_CHEATSHEET_HEADER//\\\\/\\}SYNTAX${DEFAULT//\\\\/\\}"
     syntaxHelp
 else
     for topic
