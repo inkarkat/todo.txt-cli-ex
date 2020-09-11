@@ -1,0 +1,142 @@
+#!/bin/bash
+###############################################################################
+##
+# FILE:         repri
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 16-Dec-2011
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2020 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)repri	$Id$	todo.txt-cli-ex
+###############################################################################
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]|all|[PRIORITIES] [on DATE|DATE-] NEW-PRIORITY [COMMENT]"
+    echo "    $(basename $0) [on DATE|DATE-] ITEM#[, ITEM#, ITEM#, ...]|all|[PRIORITIES] NEW-PRIORITY [COMMENT]"
+    echo "      Changes the priority from the task(s) on line ITEM# in todo.txt, or all"
+    echo "      (currently) prioritized tasks, or all (currently) having PRIORITIES"
+    echo "      (a single one (A) or range (A-C))."
+    echo "      With DATE-, the task will be reprioritized on DATE (via A:DATE)."
+    echo "    $(basename $0) [never|on none] ITEM#[, ITEM#, ITEM#, ...]|all|[PRIORITIES] [COMMENT]"
+    echo "      Removes the A:DATE reprioritization on a date."
+    echo ""
+    exit
+}
+
+errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...]|all|[PRIORITIES] [never|on none|on DATE|DATE-] NEW-PRIORITY [COMMENT]"
+[ $# -eq 0 ] && die "$errmsg"
+
+makeDate()
+{
+    date -d "$1" +%F
+}
+
+items=
+endDate=
+
+while [ $# -gt 0 ]
+do
+    case "$1" in
+        never)  endDate='never'; shift;;
+        on)     if [ "$2" = 'none' -o "$2" = 'never' ]; then
+                    endDate='never'; shift; shift
+                else
+                    endDate=$(makeDate "$2") || exit 1; shift; shift
+                fi
+                ;;
+        [^-]*-) endDate=$(makeDate "${1%-}") || exit 1; shift;;
+        *)      break;;
+    esac
+done
+if [ "$1" = 'all' ]; then
+    what='prioritized tasks'
+    pri='.'
+else
+    if pri=$(printf '%s' "$1" | tr 'a-z' 'A-Z' | grep -e '^[A-Z]$' -e '^[A-Z]-[A-Z]$'); then
+        shift
+        what="tasks prioritized ${pri}"
+        pri="[${pri}]"
+    fi
+fi
+if [ "$pri" ]; then
+    items=$(sed -ne "/^(\\(${pri}\\)) /=" "$TODO_FILE") || exit $?
+    [ "$items" ] || die "TODO: No ${what}."
+else
+    while [[ "$1" =~ ^[,0-9]+$ ]]
+    do
+        items="$items $1"
+        shift
+    done
+fi
+while [ $# -gt 0 ]
+do
+    case "$1" in
+        never)  endDate='never'; shift;;
+        on)     if [ "$2" = 'none' -o "$2" = 'never' ]; then
+                    endDate='never'; shift; shift
+                else
+                    endDate=$(makeDate "$2") || exit 1; shift; shift
+                fi
+                ;;
+        [^-]*-) endDate=$(makeDate "${1%-}") || exit 1; shift;;
+        *)      break;;
+    esac
+done
+
+[ "$items" ] || die "$errmsg"
+
+if [ "$endDate" != 'never' ]; then
+    newPri=$(printf '%s' "$1" | tr 'a-z' 'A-Z' | grep -e '^[A-Z]$') && shift || die "$errmsg"
+fi
+
+for item in ${items//,/ }
+do
+    if [ "$endDate" ]; then
+        getTodo "$item"
+
+        if [ "$endDate" = 'never' ]; then
+            # Remove existing date-reprioritization.
+            newtodo=$(echo "$todo" | sed -e 's| [A-Z]:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}||') || exit $?
+        else
+            # Replace existing date-reprioritization with the same reprioritization
+            # in-place or append new date-reprioritization.
+            newtodo=$(echo "$todo" | sed -e 's| [A-Z]:\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}| '"${newPri}:${endDate}|" -e t -e "s| *\$| ${newPri}:${endDate}|") || exit $?
+        fi
+
+        input=$newtodo
+        cleaninput "for sed"
+        sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
+
+        if [ "$newtodo" = "$todo" ]; then
+            [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $newtodo"
+            die "TODO: Prioritization didn't change."
+        fi
+        if [ $TODOTXT_VERBOSE -gt 0 ]; then
+            echo "$item $newtodo"
+            if [ "$endDate" = 'never' ]; then
+                echo "TODO: $item will never be reprioritized."
+            else
+                echo "TODO: $item will be reprioritized to (${newPri}) on ${endDate}."
+            fi
+        fi
+    else
+        "$TODO_FULL_SH" command pri $item $newPri || exit $?
+    fi
+
+    if [ $# -gt 0 ]; then
+        # Append optional COMMENT.
+        "$TODO_FULL_SH" command append $item "$@" || exit $?
+    fi
+done
