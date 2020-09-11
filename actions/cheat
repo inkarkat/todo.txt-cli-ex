@@ -39,7 +39,7 @@ priorityHelp()
 (B) must priority: important and work-related tasks, to be done soon
 (C) want priority: private or side tasks, to be done if time permits
 (O) opportunity:   optional, stretch goals that may be done opportunistically
-(P) pending:       tasks currently in progress, only a step away from completion${TODOTXT_CHEAT_CUSTOM_PRIORITIES:+
+(P) progressing:   started tasks, only a step away from completion${TODOTXT_CHEAT_CUSTOM_PRIORITIES:+
 }${TODOTXT_CHEAT_CUSTOM_PRIORITIES}
 EOF
 if [ "$TODOTXT_WHAT_PRIORITIES" ]; then
