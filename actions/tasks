@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2020 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -33,6 +33,7 @@ shift
     echo "      and passes each to todo.sh ACTION ITEM# [ACTION_ARGUMENTS]"
     echo "      Example: Re-prioritize all tasks with priority c to priority z:"
     echo "        todo.sh listpri c | todo.sh tasks pri z"
+    echo "      (But you can also use the dedicated action: todo.sh repri c z.)"
     echo ""
     exit
 }
