@@ -61,6 +61,7 @@ do
     esac
 done
 if [ "$1" = 'all' ]; then
+    shift
     what='prioritized tasks'
     pri='.'
 else
