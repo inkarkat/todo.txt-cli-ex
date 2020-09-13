@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2016 Ingo Karkat
+# COPYRIGHT: (C) 2010-2020 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -50,6 +50,8 @@ BEGIN {
         if (dateString == $i) continue
 
         date = mktime(dateString)
+        if (date == -1) continue
+
         if (date > threshold) {
             # Not yet applicable.
             continue
@@ -67,13 +69,13 @@ BEGIN {
 }
 / d:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* d:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", 1))
-    if (date <= threshold) {
+    if (date != -1 && date <= threshold) {
         $0 = gensub(/^( *[0-9]+ )\(.\) /, "\\1", 1)
     }
 }
 / x:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* x:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", 1))
-    if (date <= threshold) {
+    if (date != -1 && date <= threshold) {
         dateString = gensub(/^.* x:([0-9]{4}-[0-9]{2}-[0-9]{2})([^0-9].*)?$/, "\\1", 1)
         $0 = gensub(/^( *[0-9]+ )(\(.\) )?/, "\\1X " dateString " ", 1)
     }
@@ -81,7 +83,7 @@ BEGIN {
 / z:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* z:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", 1))
     # do-until-then-trash tasks only get trashed on the day _after_ the do-until date.
-    if (date < threshold) {
+    if (date != -1 && date < threshold) {
         dateString = gensub(/^.* z:([0-9]{4}-[0-9]{2}-[0-9]{2})([^0-9].*)?$/, "\\1", 1)
         $0 = gensub(/^( *[0-9]+ )(\(.\) )?/, "\\1X " dateString " ", 1)
     }
