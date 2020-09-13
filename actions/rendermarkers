@@ -1,0 +1,40 @@
+#!/bin/bash
+###############################################################################
+##
+# FILE:         rendermarkers
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 13-Sep-2020
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2020 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)rendermarkers	$Id$	todo.txt-cli-ex
+###############################################################################
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0)"
+    echo "      Convert (de-)prioritization and trashing on a date (once it's been due)"
+    echo "      into the actual (removal of) (A) and x symbols, and remove the marker"
+    echo "      itself."
+    echo ""
+    exit
+}
+
+set -o pipefail
+
+readonly scriptDir="$([ "${BASH_SOURCE[0]}" ] && dirname -- "${BASH_SOURCE[0]}" || exit 3)"
+[ -d "$scriptDir" ] || { echo >&2 "ERROR: Cannot determine script directory!"; exit 3; }
+
+< "$TODO_FILE" TODOTXT_SCHEDULED_FILTER_ON_RAW_DATA=t "${scriptDir}/../filter/scheduledFilter" > "${TODO_FILE}.bak" && \
+    mv "${TODO_FILE}.bak" "${TODO_FILE}" || die "Fatal Error: Unable to render markers in tasks."
