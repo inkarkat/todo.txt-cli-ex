@@ -44,7 +44,7 @@ BEGIN {
     bestDate = ""
     bestPrio = ""
     for (i = 1; i <= NF; i++) {
-        dateString = gensub(/^[[:upper:]]:([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", 1, $i)
+        dateString = gensub(/^[[:upper:]]:([0-9]{4})-([0-9]{2})-([0-9]{2})$/, "\\1 \\2 \\3 00 00 00", 1, $i)
         if (dateString == $i) continue
 
         date = mktime(dateString)
