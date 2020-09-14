@@ -51,6 +51,9 @@ BEGIN {
     bestDate = ""
     bestPrio = ""
     bestMarker = ""
+    obsoleteMarkerCnt = 0
+    delete obsoleteMarkers
+
     for (i = 1; i <= NF; i++) {
         dateString = gensub(/^[[:upper:]]:([0-9]{4})-([0-9]{2})-([0-9]{2})$/, "\\1 \\2 \\3 00 00 00", 1, $i)
         if (dateString == $i) continue
@@ -63,17 +66,20 @@ BEGIN {
             continue
         }
 
+        obsoleteMarkers[++obsoleteMarkerCnt] = $i
+
         if (date >= bestDate) {
             bestDate = date
             bestPrio = substr($i, 1, 1)
-            bestMarker = $i
         }
     }
 
     if (bestPrio != "") {
         if (isOnRaw) {
             $0 = gensub(/^(\(.\) )?/, "(" bestPrio ") ", 1)
-            $0 = gensub(" " bestMarker, "", 1)
+            for (c = 1; c <= obsoleteMarkerCnt; ++c) {
+                $0 = gensub(" " obsoleteMarkers[c], "", 1)
+            }
         } else {
             $0 = gensub(/^( *[0-9]+ )(\(.\) )?/, "\\1(" bestPrio ") ", 1)
         }
