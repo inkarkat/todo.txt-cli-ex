@@ -36,5 +36,5 @@ set -o pipefail
 readonly scriptDir="$([ "${BASH_SOURCE[0]}" ] && dirname -- "${BASH_SOURCE[0]}" || exit 3)"
 [ -d "$scriptDir" ] || { echo >&2 "ERROR: Cannot determine script directory!"; exit 3; }
 
-< "$TODO_FILE" TODOTXT_SCHEDULED_FILTER_ON_RAW_DATA=t "${scriptDir}/../filter/scheduledFilter" > "${TODO_FILE}.bak" && \
+< "$TODO_FILE" TODOTXT_SCHEDULED_FILTER_ON_RAW_DATA=t "${scriptDir}/../filter/scheduledFilter" "$@" > "${TODO_FILE}.bak" && \
     mv "${TODO_FILE}.bak" "${TODO_FILE}" || die "Fatal Error: Unable to render markers in tasks."
