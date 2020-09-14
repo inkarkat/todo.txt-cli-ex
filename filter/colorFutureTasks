@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2016 Ingo Karkat
+# COPYRIGHT: (C) 2010-2020 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -127,18 +127,19 @@ BEGIN {
 # Highlight tasks with a do-until date. This has precedence over a due date.
 / [uz]:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* [uz]:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", 1))
-
-    # Highlight tasks with a do-until date, depending on how long until the date.
-    daySpan = int((date - threshold) / 86400)
-    untilClass = getSpanClass(daySpan, "UNTIL")
-    if (hasHighlight(untilClass)) {
-        if (lineColor == "") {
-            # No existing line color, apply to entire line.
-            lineColor = highlight(untilClass)
-            $0 = highlight(untilClass) $0 highlightend(untilClass, "")
-        } else {
-            # The line is already colored, only highlight the do-until date itself.
-            $0 = gensub(/ ([uz]:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(untilClass) "\\1" highlightend(untilClass, lineColor), 1)
+    if (date != -1 && threshold != -1) {
+        # Highlight tasks with a do-until date, depending on how long until the date.
+        daySpan = int((date - threshold) / 86400)
+        untilClass = getSpanClass(daySpan, "UNTIL")
+        if (hasHighlight(untilClass)) {
+            if (lineColor == "") {
+                # No existing line color, apply to entire line.
+                lineColor = highlight(untilClass)
+                $0 = highlight(untilClass) $0 highlightend(untilClass, "")
+            } else {
+                # The line is already colored, only highlight the do-until date itself.
+                $0 = gensub(/ ([uz]:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(untilClass) "\\1" highlightend(untilClass, lineColor), 1)
+            }
         }
     }
 }
@@ -146,25 +147,27 @@ BEGIN {
 # due.
 / t:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", 1))
-    if (ENVIRON["TODOTXT_FILTER_FUTURE_TASKS"] > 0 && date > threshold) {
-        # Suppress tasks that are scheduled in the future.
-        next
-    } else if (ENVIRON["TODOTXT_FILTER_FUTURE_TASKS"] < 0 && date <= threshold) {
-        # Suppress tasks that are have already been scheduled.
-        next
-    }
+    if (date != -1 && threshold != -1) {
+        if (ENVIRON["TODOTXT_FILTER_FUTURE_TASKS"] > 0 && date > threshold) {
+            # Suppress tasks that are scheduled in the future.
+            next
+        } else if (ENVIRON["TODOTXT_FILTER_FUTURE_TASKS"] < 0 && date <= threshold) {
+            # Suppress tasks that are have already been scheduled.
+            next
+        }
 
-    # Highlight scheduled tasks, depending on how long they are due now.
-    daySpan = int((threshold - date) / 86400)
-    dueClass = getSpanClass(daySpan, "DUE")
-    if (hasHighlight(dueClass)) {
-        if (lineColor == "") {
-            # No existing line color, apply to entire line.
-            lineColor = highlight(dueClass)
-            $0 = highlight(dueClass) $0 highlightend(dueClass, "")
-        } else {
-            # The line is already colored, only highlight the due date itself.
-            $0 = gensub(/ (t:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(dueClass) "\\1" highlightend(dueClass, lineColor), 1)
+        # Highlight scheduled tasks, depending on how long they are due now.
+        daySpan = int((threshold - date) / 86400)
+        dueClass = getSpanClass(daySpan, "DUE")
+        if (hasHighlight(dueClass)) {
+            if (lineColor == "") {
+                # No existing line color, apply to entire line.
+                lineColor = highlight(dueClass)
+                $0 = highlight(dueClass) $0 highlightend(dueClass, "")
+            } else {
+                # The line is already colored, only highlight the due date itself.
+                $0 = gensub(/ (t:[0-9]{4}-[0-9]{2}-[0-9]{2})/, " " highlight(dueClass) "\\1" highlightend(dueClass, lineColor), 1)
+            }
         }
     }
 }
@@ -189,7 +192,7 @@ BEGIN {
 }
 / t:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     date = mktime(gensub(/^.* t:([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$/, "\\1 \\2 \\3 00 00 00", 1))
-    if (date > threshold) {
+    if (date != -1 && threshold != -1 && date > threshold) {
         # Suppress tasks that are scheduled in the future.
         next
     }
