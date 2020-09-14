@@ -24,7 +24,7 @@ X 2009-02-12 2009-02-01 prioritized A but already trashed A:2009-02-09
 EOF
 
 test_todo_session 'rendering synthesized prioritization' <<EOF
->>> todo.sh rendermarkers 2009-02-13
+>>> TODOTXT_VERBOSE=0 todo.sh rendermarkers 2009-02-13
 
 >>> todo.sh list prioritized
 [1;33m[7m12[1;33m (A) (12 days ago) first not yet prioritized A task A:(in 9 days)[0m
@@ -60,7 +60,7 @@ X (A) 2009-02-12 2009-02-01 depri of prioritized A but already trashed d:2009-02
 EOF
 
 test_todo_session 'rendering synthesized deprioritization' <<EOF
->>> todo.sh rendermarkers 2009-02-13
+>>> TODOTXT_VERBOSE=0 todo.sh rendermarkers 2009-02-13
 
 >>> todo.sh list depri
 [1;33m[7m12[1;33m (A) (12 days ago) last not yet depri of prioritized A task d:(4 days ago) d:(in 9 days)[0m
@@ -91,7 +91,7 @@ X 2009-02-12 2009-02-01 trashed and already trashed x:2009-02-09
 EOF
 
 test_todo_session 'rendering synthesized trashing' <<EOF
->>> todo.sh rendermarkers 2009-02-13
+>>> TODOTXT_VERBOSE=0 todo.sh rendermarkers 2009-02-13
 
 >>> todo.sh list trashed
 [7m6[0m (12 days ago) invalid trashed x:2009-02-0911
@@ -120,7 +120,7 @@ X 2009-02-12 2009-02-01 do-until-then-trash and already trashed z:2009-02-09
 EOF
 
 test_todo_session 'rendering synthesized do-until-then-trash' <<EOF
->>> todo.sh rendermarkers 2009-02-13
+>>> TODOTXT_VERBOSE=0 todo.sh rendermarkers 2009-02-13
 
 >>> todo.sh list do-until-then-trash
 [0m[48;5;202m[7m06[0m[48;5;202m (12 days ago) do-until-then-trash on the until day z:today[0m
