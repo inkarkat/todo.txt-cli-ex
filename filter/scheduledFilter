@@ -21,8 +21,11 @@
 
 # Attention: This filter is to be used in pre_filter_command, before formatting
 # and coloring of priorities. It won't work as a TODOTXT_FINAL_FILTER!
-if [ ${TODOTXT_FILTER_SCHEDULED:-1} -ne 0 ]; then
-    awk -v date="$1" '
+if [ ${TODOTXT_FILTER_SCHEDULED:-1} -ne 0 ] || [ "$TODOTXT_SCHEDULED_FILTER_ON_RAW_DATA" ]; then
+    awk \
+        -v date="$1" \
+        -v isOnRaw="$TODOTXT_SCHEDULED_FILTER_ON_RAW_DATA" \
+'
 function getThreshold(date) {
     if (date == "") {
         return mktime(strftime("%Y %m %d 00 00 00", systime()))
@@ -34,30 +37,45 @@ function parseDate(marker) {
     date = mktime(gensub("^.* " marker ":([0-9]{4})-([0-9]{2})-([0-9]{2})([^0-9].*)?$", "\\1 \\2 \\3 00 00 00", 1))
     dateString = gensub("^.* " marker ":([0-9]{4}-[0-9]{2}-[0-9]{2})([^0-9].*)?$", "\\1", 1)
 }
+function nextTask() {
+    print
+
+    if (isOnRaw && ENVIRON["TODOTXT_VERBOSE"] > 0) {
+        print (isTaskFiltered ? $0 : "") > "/dev/stderr"
+    }
+    isTaskFiltered = 0
+
+    next
+}
 BEGIN {
     threshold = getThreshold(date)
 }
-/ *[0-9]+ [xX] / {
+(isOnRaw && /^[xX] /) || (! isOnRaw && /^ *[0-9]+ [xX] /) {
     # Do not process done tasks.
-    print
-    next
+    nextTask()
 }
 / [[:upper:]]:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     # Later dates have precedence over earlier ones. If multiple priorities are
     # scheduled on the same date, the last one wins.
     bestDate = ""
     bestPrio = ""
+    bestMarker = ""
+    obsoleteMarkerCnt = 0
+    delete obsoleteMarkers
+
     for (i = 1; i <= NF; i++) {
         dateString = gensub(/^[[:upper:]]:([0-9]{4})-([0-9]{2})-([0-9]{2})$/, "\\1 \\2 \\3 00 00 00", 1, $i)
         if (dateString == $i) continue
 
         date = mktime(dateString)
-        if (date == -1) continue
+        if (date == -1 || threshold == -1) continue
 
         if (date > threshold) {
             # Not yet applicable.
             continue
         }
+
+        obsoleteMarkers[++obsoleteMarkerCnt] = $i
 
         if (date >= bestDate) {
             bestDate = date
@@ -66,29 +84,55 @@ BEGIN {
     }
 
     if (bestPrio != "") {
-        $0 = gensub(/^( *[0-9]+ )(\(.\) )?/, "\\1(" bestPrio ") ", 1)
+        if (isOnRaw) {
+            $0 = gensub(/^(\(.\) )?/, "(" bestPrio ") ", 1)
+            for (c = 1; c <= obsoleteMarkerCnt; ++c) {
+                $0 = gensub(" " obsoleteMarkers[c], "", 1)
+            }
+        } else {
+            $0 = gensub(/^( *[0-9]+ )(\(.\) )?/, "\\1(" bestPrio ") ", 1)
+        }
+        isTaskFiltered = 1
     }
 }
 / d:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     parseDate("d")
-    if (date != -1 && date <= threshold) {
-        $0 = gensub(/^( *[0-9]+ )\(.\) /, "\\1", 1)
+    if (date != -1 && threshold != -1 && date <= threshold) {
+        if (isOnRaw) {
+            $0 = gensub(/^\(.\) /, "", 1)
+            $0 = gensub(" d:" dateString, "", 1)
+        } else {
+            $0 = gensub(/^( *[0-9]+ )\(.\) /, "\\1", 1)
+        }
+        isTaskFiltered = 1
     }
 }
 / x:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     parseDate("x")
-    if (date != -1 && date <= threshold) {
-        $0 = gensub(/^( *[0-9]+ )(\(.\) )?/, "\\1X " dateString " ", 1)
+    if (date != -1 && threshold != -1 && date <= threshold) {
+        if (isOnRaw) {
+            $0 = gensub(/^(\(.\) )?/, "\\1X " dateString " ", 1)
+            $0 = gensub(" x:" dateString, "", 1)
+        } else {
+            $0 = gensub(/^( *[0-9]+ )(\(.\) )?/, "\\1X " dateString " ", 1)
+        }
+        isTaskFiltered = 1
     }
 }
 / z:[0-9]{4}-[0-9]{2}-[0-9]{2}/ {
     parseDate("z")
     # do-until-then-trash tasks only get trashed on the day _after_ the do-until date.
-    if (date != -1 && date < threshold) {
-        $0 = gensub(/^( *[0-9]+ )(\(.\) )?/, "\\1X " dateString " ", 1)
+    if (date != -1 && threshold != -1 && date < threshold) {
+        if (isOnRaw) {
+            $0 = gensub(/^(\(.\) )?/, "\\1X " dateString " ", 1)
+            $0 = gensub(" z:" dateString, "", 1)
+        } else {
+            $0 = gensub(/^( *[0-9]+ )(\(.\) )?/, "\\1X " dateString " ", 1)
+        }
+        isTaskFiltered = 1
     }
 }
-{ print }
+{ nextTask() }
 '
 else
     cat
