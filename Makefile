@@ -26,8 +26,15 @@ test: aggregate-results
 	tests/aggregate-results.sh tests/test-results/t*-*
 	rm -rf tests/test-results
 
+
 ci:
-	cd ./tests && onchange-singleton-invocation --event create --event change --exec ./{} -i \; t[0-9][0-9][0-9][0-9]-*.sh
+	cd ./tests && singleton --id todo.txt-cli-ex-ci -- onchange-singleton-invocation --event create --event change --exec ./{} -i \; t[0-9][0-9][0-9][0-9]-*.sh
+
+restart-ci:
+	cd ./tests && singleton --restart --id todo.txt-cli-ex-ci -- onchange-singleton-invocation --event create --event change --exec ./{} -i \; t[0-9][0-9][0-9][0-9]-*.sh
+
+stop-ci:
+	cd ./tests && singleton --kill --id todo.txt-cli-ex-ci
 
 # Force tests to get run every time
 .PHONY: test aggregate-results $(TESTS)
