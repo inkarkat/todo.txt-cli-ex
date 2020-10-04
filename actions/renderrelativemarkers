@@ -33,6 +33,7 @@ shift
 
 renderRelativeMarkers()
 {
+    local isMirrorChangedToStderr="$1"; shift
     local task="$1"; shift
     local originalTask="$task"
 
@@ -64,15 +65,28 @@ renderRelativeMarkers()
     done
 
     printf '%s\n' "$task"
-    [ "$task" != "$originalTask" ]
+
+    if [ "$isMirrorChangedToStderr" ]; then
+        [ "$task" = "$originalTask" ] && printf >&2 '\n' || printf >&2 '%s\n' "$task"
+    fi
 }
 if [ "$action" = --task ]; then
-    renderRelativeMarkers "$@"
+    renderRelativeMarkers '' "$@"
 else
-    while IFS=$'\n' read -r task
-    do
-        renderRelativeMarkers "$task"
-    done < "$TODO_FILE" > "${TODO_FILE}.bak"
+    if [ $TODOTXT_VERBOSE -gt 0 ]; then
+        TOTAL=$(sed -n '$ =' "$TODO_FILE") || exit $?
+        PADDING=${#TOTAL}
+
+        while IFS=$'\n' read -r task
+        do
+            renderRelativeMarkers t "$task"
+        done < "$TODO_FILE" 2>&1 > "${TODO_FILE}.bak" | TODOTXT_FILTER_FUTURE_TASKS=0 _format '' "$PADDING"
+    else
+        while IFS=$'\n' read -r task
+        do
+            renderRelativeMarkers '' "$task"
+        done < "$TODO_FILE" > "${TODO_FILE}.bak"
+    fi
 
     mv "${TODO_FILE}.bak" "${TODO_FILE}"
 fi
