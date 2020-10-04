@@ -31,16 +31,19 @@ shift
     exit
 }
 
-if [ "$action" = --task ]; then
-    task="$1"; shift
+renderRelativeMarkers()
+{
+    local task="$1"; shift
+    local originalTask="$task"
 
-    markers="$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\(([^)]\+)\|[^ ]\+\)' | grep '^[[:graph:]]:')"
-    IFS=$'\n'
+    local markers="$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\(([^)]\+)\|[^ ]\+\)' | grep '^[[:graph:]]:')"
+    local IFS=$'\n'
+    local marker
     for marker in $markers
     do
-        originalDateString="${marker#[[:graph:]]:}"
-        dateString="${originalDateString#(}"
-        dateString="${dateString%)}"
+        local originalDateString="${marker#[[:graph:]]:}"
+        local dateString="${originalDateString#(}"
+        local dateString="${dateString%)}"
 
         if [[ "$dateString" =~ ^[0-9]+$ ]]; then
             # 'date' also accepts numbers (and always interprets them as the current
@@ -48,7 +51,7 @@ if [ "$action" = --task ]; then
             continue
         fi
 
-        canonicalDate="$(date -d "$dateString" +%F 2>/dev/null)" || continue
+        local canonicalDate; canonicalDate="$(date -d "$dateString" +%F 2>/dev/null)" || continue
         [ "$canonicalDate" = "$originalDateString" ] && continue
 
         # Multiple human dates (e.g. "today", "now", and especially all time
@@ -61,4 +64,15 @@ if [ "$action" = --task ]; then
     done
 
     printf '%s\n' "$task"
+    [ "$task" != "$originalTask" ]
+}
+if [ "$action" = --task ]; then
+    renderRelativeMarkers "$@"
+else
+    while IFS=$'\n' read -r task
+    do
+        renderRelativeMarkers "$task"
+    done < "$TODO_FILE" > "${TODO_FILE}.bak"
+
+    mv "${TODO_FILE}.bak" "${TODO_FILE}"
 fi
