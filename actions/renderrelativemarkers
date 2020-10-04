@@ -1,0 +1,63 @@
+#!/bin/bash
+###############################################################################
+##
+# FILE:         renderrelativemarkers
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 04-Oct-2020
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2020 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)renderrelativemarkers	$Id$	todo.txt-cli-ex
+###############################################################################
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0)"
+    echo "      Convert dates in markers into the canonical YYYY-MM-DD form, to allow"
+    echo "      flexible entry, also in easy human dates like m:today."
+    echo ""
+    exit
+}
+
+if [ "$action" = --task ]; then
+    task="$1"; shift
+
+    markers=$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\(([^)]\+)\|[^ ]\+\)' | grep '^[[:graph:]]:')
+    IFS=$'\n'
+    for marker in $markers
+    do
+        originalDateString=${marker#[[:graph:]]:}
+        dateString=${originalDateString#(}
+        dateString=${dateString%)}
+
+        if [[ "$dateString" =~ ^[0-9]+$ ]]; then
+            # 'date' also accepts numbers (and always interprets them as the current
+            # day), but numbers should represent ITEM# for task references here.
+            continue
+        fi
+
+        canonicalDate=$(date -d "$dateString" +%F 2>/dev/null) || continue
+        [ "$canonicalDate" = "$originalDateString" ] && continue
+
+        # Multiple human dates (e.g. "today", "now", and especially all time
+        # specifications) resolve to the current day. Don't canonicalize them unless
+        # "today" is used.
+        [ "$originalDateString" != 'today' ] && [ "$canonicalDate" = "$(date +%F)" ] && continue
+
+
+        task=${task/${marker}/${marker:0:2}${canonicalDate}}
+    done
+
+    printf '%s\n' "$task"
+fi
