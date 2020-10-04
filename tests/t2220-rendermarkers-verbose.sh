@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 
-test_description='rendermarkers action
+test_description='rendermarkers verbose action
 
-This test covers rendering synthesized (de-)prioritization and done via markers to the actual todo.txt symbols.
+This test covers rendering synthesized (de-)prioritization and done via markers to the actual todo.txt symbols with verbose output.
 '
 . ./test-lib.sh
 
@@ -23,7 +23,7 @@ X 2009-02-12 2009-02-01 prioritized A but already trashed A:2009-02-09
 2009-02-01 last not yet prioritized A task A:2009-02-09 A:2009-02-22
 EOF
 
-test_todo_session 'rendering synthesized prioritization' <<EOF
+test_todo_session 'verbose rendering synthesized prioritization' <<EOF
 >>> todo.sh rendermarkers 2009-02-13
 [1;33m[7m12[1;33m (A) (12 days ago) first not yet prioritized A task A:(in 9 days)[0m
 [1;33m[7m13[1;33m (A) (12 days ago) last not yet prioritized A task A:(in 9 days)[0m
@@ -51,7 +51,7 @@ X (A) 2009-02-12 2009-02-01 depri of prioritized A but already trashed d:2009-02
 (A) 2009-02-01 last not yet depri of prioritized A task d:2009-02-09 d:2009-02-22
 EOF
 
-test_todo_session 'rendering synthesized deprioritization' <<EOF
+test_todo_session 'verbose rendering synthesized deprioritization' <<EOF
 >>> todo.sh rendermarkers 2009-02-13
 [1;34m[7m09[1;34m (C) (12 days ago) not yet depri of synthetically prioritized C task d:(in 9 days)[0m
 [7m05[0m (12 days ago) depri of prioritized A task
@@ -73,7 +73,7 @@ X 2009-02-12 2009-02-01 trashed and already trashed x:2009-02-09
 2009-02-01 last not yet trashed x:2009-02-09 x:2009-02-22
 EOF
 
-test_todo_session 'rendering synthesized trashing' <<EOF
+test_todo_session 'verbose rendering synthesized trashing' <<EOF
 >>> todo.sh rendermarkers 2009-02-13
 [1;30m7 X (4 days ago, after 8 days) first not yet trashed x:(in 9 days)[0m
 [1;30m5 X (4 days ago, after 8 days) trashed[0m
@@ -93,7 +93,7 @@ X 2009-02-12 2009-02-01 do-until-then-trash and already trashed z:2009-02-09
 2009-02-01 last not yet do-until-then-trash z:2009-02-09 z:2009-02-22
 EOF
 
-test_todo_session 'rendering synthesized do-until-then-trash' <<EOF
+test_todo_session 'verbose rendering synthesized do-until-then-trash' <<EOF
 >>> todo.sh rendermarkers 2009-02-13
 [1;30m05 X (4 days ago, after 8 days) do-until-then-trash[0m
 [1;30m09 X (4 days ago, after 8 days) first not yet do-until-then-trash z:(in 9 days)[0m
