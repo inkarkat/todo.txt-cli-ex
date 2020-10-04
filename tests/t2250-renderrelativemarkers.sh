@@ -28,4 +28,26 @@ test_todo_session 'rendering dates in marker' <<EOF
 TODO: 5 of 5 tasks shown
 EOF
 
+
+cat > todo.txt <<EOF
+2009-02-01 a simple task
+2009-02-01 already canonical task reference a:1
+2009-02-01 task reference to previous task a:.-1
+2009-02-01 task reference to previous tasks a:.-2 b:.-3 c:-1 d:.- e:.+
+2009-02-01 task reference to following (non-existing) task a:.+1
+EOF
+
+test_todo_session 'rendering relative task references in markers' <<EOF
+>>> TODOTXT_VERBOSE=0 todo.sh renderrelativemarkers
+
+>>> todo.sh -p -x list
+1 2009-02-01 a simple task
+2 2009-02-01 already canonical task reference a:1
+5 2009-02-01 task reference to following (non-existing) task a:6
+3 2009-02-01 task reference to previous task a:2
+4 2009-02-01 task reference to previous tasks a:2 b:1 c:-1 d:.- e:.+
+--
+TODO: 5 of 5 tasks shown
+EOF
+
 test_done

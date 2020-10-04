@@ -25,8 +25,12 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0)"
-    echo "      Convert dates in markers into the canonical YYYY-MM-DD form, to allow"
-    echo "      flexible entry, also in easy human dates like m:today."
+    echo "      Convert relative date and task references to allow flexible entry,"
+    echo "      especially from apps that don't have all the amenities to todo.sh."
+    echo "      Convert dates in markers into the canonical YYYY-MM-DD form, also in easy"
+    echo "      human dates like m:today."
+    echo "      Convert relative task references in the form .-2 and .+1 to absolute task"
+    echo "      numbers."
     echo ""
     exit
 }
@@ -34,34 +38,36 @@ shift
 renderRelativeMarkers()
 {
     local isMirrorChangedToStderr="$1"; shift
+    local currentTaskNum="${1:?}"; shift
     local task="$1"; shift
-    local originalTask="$task"
 
+    local originalTask="$task"
     local markers="$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\(([^)]\+)\|[^ ]\+\)' | grep '^[[:graph:]]:')"
     local IFS=$'\n'
     local marker
+
     for marker in $markers
     do
-        local originalDateString="${marker#[[:graph:]]:}"
-        local dateString="${originalDateString#(}"
-        local dateString="${dateString%)}"
+        local originalMarkerValue="${marker#[[:graph:]]:}"
+        local netMarkerValue="${originalMarkerValue#(}"
+        local netMarkerValue="${netMarkerValue%)}"
+        local canonicalMarkerValue="$netMarkerValue"
 
-        if [[ "$dateString" =~ ^[0-9]+$ ]]; then
+        if [[ "$netMarkerValue" =~ ^[0-9]+$ ]]; then
             # 'date' also accepts numbers (and always interprets them as the current
             # day), but numbers should represent ITEM# for task references here.
             continue
+        elif [[ "$netMarkerValue" =~ ^.[+-][0-9]+$ ]]; then
+            canonicalMarkerValue=$((${netMarkerValue/./$currentTaskNum}))
+        else
+            canonicalMarkerValue="$(date -d "$netMarkerValue" +%F 2>/dev/null)" || continue
+            # Multiple human dates (e.g. "today", "now", and especially all time
+            # specifications) resolve to the current day. Don't canonicalize
+            # them unless "today" is used.
+            [ "$originalMarkerValue" != 'today' ] && [ "$canonicalMarkerValue" = "$(date +%F)" ] && continue
         fi
 
-        local canonicalDate; canonicalDate="$(date -d "$dateString" +%F 2>/dev/null)" || continue
-        [ "$canonicalDate" = "$originalDateString" ] && continue
-
-        # Multiple human dates (e.g. "today", "now", and especially all time
-        # specifications) resolve to the current day. Don't canonicalize them unless
-        # "today" is used.
-        [ "$originalDateString" != 'today' ] && [ "$canonicalDate" = "$(date +%F)" ] && continue
-
-
-        task="${task/${marker}/${marker:0:2}${canonicalDate}}"
+        [ "$canonicalMarkerValue" = "$originalMarkerValue" ] || task="${task/${marker}/${marker:0:2}${canonicalMarkerValue}}"
     done
 
     printf '%s\n' "$task"
@@ -73,18 +79,21 @@ renderRelativeMarkers()
 if [ "$action" = --task ]; then
     renderRelativeMarkers '' "$@"
 else
+    taskCnt=0
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
         TOTAL=$(sed -n '$ =' "$TODO_FILE") || exit $?
         PADDING=${#TOTAL}
 
         while IFS=$'\n' read -r task
         do
-            renderRelativeMarkers t "$task"
+            let taskCnt+=1
+            renderRelativeMarkers t "$taskCnt" "$task"
         done < "$TODO_FILE" 2>&1 > "${TODO_FILE}.bak" | TODOTXT_FILTER_FUTURE_TASKS=0 _format '' "$PADDING"
     else
         while IFS=$'\n' read -r task
         do
-            renderRelativeMarkers '' "$task"
+            let taskCnt+=1
+            renderRelativeMarkers '' "$taskCnt" "$task"
         done < "$TODO_FILE" > "${TODO_FILE}.bak"
     fi
 

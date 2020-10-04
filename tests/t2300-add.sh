@@ -35,4 +35,22 @@ test_todo_session 'add with tomorrow in all-numbers format is not rendered' <<EO
 TODO: 1 added.
 EOF
 
+
+cat > todo.txt <<EOF
+2009-02-01 a simple task
+2009-02-01 another simple task
+EOF
+
+test_todo_session 'add with relative task reference to a previous task is rendered as absolute task' <<EOF
+>>> todo.sh add task reference to previous task a:.-2
+3 task reference to previous task a:1
+TODO: 3 added.
+EOF
+
+test_todo_session 'add with relative task reference to a following task is rendered as absolute task' <<EOF
+>>> todo.sh add task reference to following task a:.+1
+4 task reference to following task a:5
+TODO: 4 added.
+EOF
+
 test_done
