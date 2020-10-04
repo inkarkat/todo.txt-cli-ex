@@ -18,6 +18,7 @@
 #
 # @(#)renderrelativemarkers	$Id$	todo.txt-cli-ex
 ###############################################################################
+set -o noglob
 
 action=$1
 shift
@@ -33,13 +34,13 @@ shift
 if [ "$action" = --task ]; then
     task="$1"; shift
 
-    markers=$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\(([^)]\+)\|[^ ]\+\)' | grep '^[[:graph:]]:')
+    markers="$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\(([^)]\+)\|[^ ]\+\)' | grep '^[[:graph:]]:')"
     IFS=$'\n'
     for marker in $markers
     do
-        originalDateString=${marker#[[:graph:]]:}
-        dateString=${originalDateString#(}
-        dateString=${dateString%)}
+        originalDateString="${marker#[[:graph:]]:}"
+        dateString="${originalDateString#(}"
+        dateString="${dateString%)}"
 
         if [[ "$dateString" =~ ^[0-9]+$ ]]; then
             # 'date' also accepts numbers (and always interprets them as the current
@@ -47,7 +48,7 @@ if [ "$action" = --task ]; then
             continue
         fi
 
-        canonicalDate=$(date -d "$dateString" +%F 2>/dev/null) || continue
+        canonicalDate="$(date -d "$dateString" +%F 2>/dev/null)" || continue
         [ "$canonicalDate" = "$originalDateString" ] && continue
 
         # Multiple human dates (e.g. "today", "now", and especially all time
@@ -56,7 +57,7 @@ if [ "$action" = --task ]; then
         [ "$originalDateString" != 'today' ] && [ "$canonicalDate" = "$(date +%F)" ] && continue
 
 
-        task=${task/${marker}/${marker:0:2}${canonicalDate}}
+        task="${task/${marker}/${marker:0:2}${canonicalDate}}"
     done
 
     printf '%s\n' "$task"
