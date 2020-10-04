@@ -41,6 +41,12 @@ renderRelativeMarkers()
     local currentTaskNum="${1:?}"; shift
     local task="$1"; shift
 
+    if ! [[ "$task" =~ [^\ ]*[[:graph:]]: ]]; then
+        printf '%s\n' "$task"
+        [ "$isMirrorChangedToStderr" ] && printf >&2 '\n'
+        return 0
+    fi
+
     local originalTask="$task"
     local markers="$(echo "$task" | grep -o '[^ ]*[[:graph:]]:\(([^)]\+)\|[^ ]\+\)' | grep '^[[:graph:]]:')"
     local IFS=$'\n'
@@ -76,6 +82,7 @@ renderRelativeMarkers()
         [ "$task" = "$originalTask" ] && printf >&2 '\n' || printf >&2 '%s\n' "$task"
     fi
 }
+
 if [ "$action" = --task ]; then
     renderRelativeMarkers '' "$@"
 else
