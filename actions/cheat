@@ -77,6 +77,8 @@ x:42         trash as a duplicate of task 42; useful as an alternative to
 x:2011-12-01 trash on date.
 z:2011-12-01 do-until-then-trash, ultimate, latest due date; after it, the task
              is trashed.
+Relative task references in the form .-2 and .+1 are converted to absolute task
+numbers on add.
 
 {weekly} or {every two weeks} recurrences
 
