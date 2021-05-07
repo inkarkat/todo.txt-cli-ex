@@ -30,4 +30,7 @@ shift
     exit
 }
 
-eval "$(filtercommand 'cat "$TODO_FILE"' '' "$@")" | sed -e '/^[xX] /d' -e '/ w:/!d' -e 's/ w:[^ ]/\n&/g' | sed -n -e 's/^.* w:(\([^)]*\)).*$/\1/p;t' -e '/ w:[0-9]\+$/d' -e 's/^.* w:\([^ ]\+\) *$/\1/p' | sort -u
+eval "$(filtercommand 'cat "$TODO_FILE"' '' "$@")" | \
+    sed -e '/^[xX] /d' -e '/ w:/!d' -e 's/ w:[^ ]/\n&/g' | \
+    sed -n -e 's/^.* w:(\([^)]*\)).*$/\1/p;t' -e '/ w:[0-9]\+$/d' -e 's/^.* w:\([^ ]\+\) *$/\1/p' | \
+    sort -u
