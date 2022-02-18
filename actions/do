@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -70,7 +70,7 @@ do
 
     if [ "$isTrashInstead" ]; then
         if [ "${todo:0:2}" != 'X ' ]; then
-            # The task may have already been done by another recursion level.
+            # The task may have already been trashed by another recursion level.
             # Prevent the trash error message in such a case.
             RECURSIVE_DO='true' "$TODO_FULL_SH" trash $item || exit $?
         fi
