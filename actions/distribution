@@ -46,7 +46,8 @@ do
         --all)          shift; listAction='listall';;
         --date|-d)      shift; dateGlobs+=(-e "${1%\*}*");;    # De-anchor at the end.
 
-        --@(no-footer|final-footer-only|footer-only-on-change|weekly|force-legends))
+        -[S])           distributionArgs+=("$1"); shift;;
+        --@(no-footer|final-footer-only|footer-only-on-change|no-splitting|weekly|force-legends))
                         distributionArgs+=("$1"); shift;;
         --@(footer-every|graph-legend|footer-legend|as|over))
                         distributionArgs+=("$1" "$2"); shift; shift;;
