@@ -168,7 +168,7 @@ do
     # action, but recursively invoke ourself with the hidden "do trash"
     # subaction.
     if [ "$referencedItems" ]; then
-        [ "${referencedItems//$'\n'/}" = "$referencedItems" ] && howManyReferences='it' || howManyReferences='others'
+        [ "${referencedItems//$'\n'/}" = "$referencedItems" ] && howManyReferences='the latter' || howManyReferences='those others'
         echo "TODO: $item is contradependent on ${referencedItems//$'\n'/,}; trashing ${howManyReferences}."
         eval 'RECURSIVE_DO=true "$TODO_FULL_SH" do trash' ${referencedItems//$'\n'/ } '"$@"'
     fi
