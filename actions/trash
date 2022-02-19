@@ -122,7 +122,7 @@ do
             # Check for tasks that depended on the trashed task.
             depitems=$(TODOTXT_LSWAIT_SHOW_ITEMS=1 "$TODO_FULL_SH" lswait 'for' "$item")
             if [ "$depitems" ]; then
-                [[ "$depitems" =~ \  ]] && depTaskPlural='s' || depTaskPlural=
+                [[ "$depitems" =~ [\ ,] ]] && depTaskPlural='s' || depTaskPlural=
                 echo "TODO: Task$depTaskPlural ${depitems// /,} depended on $item."
                 read -p "      Keep, Trash, or Unwait the dependent task$depTaskPlural (k/t/u) " answer
 
