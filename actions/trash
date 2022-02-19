@@ -131,7 +131,7 @@ do
                 if [ "$answer" = 't' ]; then
                     eval 'RECURSIVE_DO=true "$TODO_FULL_SH" trash' ${isHard:+--hard} '$depitems'
                 elif [ "$answer" = 'u' ]; then
-                    "$TODO_FULL_SH" unwait 'for' $depitems
+                    "$TODO_FULL_SH" unwait $depitems 'for' $item
                 fi
             fi
         fi
