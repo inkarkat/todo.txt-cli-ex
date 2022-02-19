@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -122,14 +122,16 @@ do
             # Check for tasks that depended on the trashed task.
             depitems=$(TODOTXT_LSWAIT_SHOW_ITEMS=1 "$TODO_FULL_SH" lswait 'for' "$item")
             if [ "$depitems" ]; then
-                [[ "$1" =~ \  ]] && depTaskPlural='s' || depTaskPlural=
+                TODOTXT_VERBOSE=0 "$TODO_FULL_SH" lswait 'for' "$item"
+                [[ "$depitems" =~ [\ ,] ]] && depTaskPlural='s' || depTaskPlural=
+                echo '--'
                 echo "TODO: Task$depTaskPlural ${depitems// /,} depended on $item."
                 read -p "      Keep, Trash, or Unwait the dependent task$depTaskPlural (k/t/u) " answer
 
                 if [ "$answer" = 't' ]; then
                     eval 'RECURSIVE_DO=true "$TODO_FULL_SH" trash' ${isHard:+--hard} '$depitems'
                 elif [ "$answer" = 'u' ]; then
-                    "$TODO_FULL_SH" unwait 'for' $depitems
+                    "$TODO_FULL_SH" unwait $depitems 'for' $item
                 fi
             fi
         fi
