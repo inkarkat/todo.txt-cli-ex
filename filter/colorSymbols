@@ -19,7 +19,7 @@
 #     differing segments, that makes it much more difficult to apply different
 #     line coloring in the following filters.
 #
-# COPYRIGHT: (C) 2010-2016 Ingo Karkat
+# COPYRIGHT: (C) 2010-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -59,7 +59,10 @@ function getLineColor() {
 {
     lineColor = getLineColor()
     lineEndColor = ""
-    if (lineColor != "") {
+    if (lineColor == "") {
+        netTask = $0
+    } else {
+        netTask = substr($0, length(lineColor) + 1)
         # Some matches here (for contexts and projects) are not cleanly
         # delimited at the end (unlike the match for date, whose format and
         # length is fix), and match as much non-whitespace as possible.
@@ -88,7 +91,6 @@ function getLineColor() {
     }
 
     if (hasHighlight("COLOR_TASKNUM")) {
-        netTask = substr($0, length(lineColor) + 1)
         if (! match(netTask, /^[0-9]+ [xX] /)) {
             # Lazy-initialize task number width.
             if (taskNumWidth <= 0) {
