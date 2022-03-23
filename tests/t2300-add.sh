@@ -53,4 +53,21 @@ test_todo_session 'add with relative task reference to a following task is rende
 TODO: 4 added.
 EOF
 
+
+test_todo_session 'add with @here reference at the start is rendered as @hostname' <<EOF
+>>> TODOTXT_HOSTNAME=testhost todo.sh add @here clean up the temp dir
+5 @testhost clean up the temp dir
+TODO: 5 added.
+EOF
+test_todo_session 'add with @here reference in the middle is rendered as @hostname' <<EOF
+>>> TODOTXT_HOSTNAME=testhost todo.sh add '+maint @here clean up my home dir'
+6 +maint @testhost clean up my home dir
+TODO: 6 added.
+EOF
+test_todo_session 'add without @here is rendered as-is' <<EOF
+>>> TODOTXT_HOSTNAME=testhost todo.sh add 'not@here or @HERE' or '@hereafter or (@here) is kept as-is'
+7 not@here or @HERE or @hereafter or (@here) is kept as-is
+TODO: 7 added.
+EOF
+
 test_done

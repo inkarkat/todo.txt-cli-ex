@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2020 Ingo Karkat
+# COPYRIGHT: (C) 2010-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -38,7 +38,19 @@ readonly scriptDir="$([ "${BASH_SOURCE[0]}" ] && dirname -- "${BASH_SOURCE[0]}" 
 # on add, but not for all other actions that modify tasks (e.g. append, replace,
 # etc.) This is meant as a convenient shortcut when adding new tasks; existing
 # task markers should be modified through dedicated actions (e.g. schedule).
+task="$*"
+
 TOTAL=$(sed -n '$ =' "$TODO_FILE") || exit $?
-task="$("${scriptDir}/renderrelativemarkers" --task "$((TOTAL+1))" "$*")" || exit $?
+task="$("${scriptDir}/renderrelativemarkers" --task "$((TOTAL+1))" "$task")" || exit $?
+
+# Translate @here to the actual lowercased hostname.
+hostname="$TODOTXT_HOSTNAME"
+[ -n "$hostname" ] || hostname="$(readableHostname)"
+if [ -n "$hostname" ]; then
+    literalHostname="${hostname,,}"
+    literalHostname="${literalHostname//\\/\\\\}"
+    literalHostname="${literalHostname//&/\\&}"
+    task="$(printf %s "$task" | sed -e 's#\(^\|[[:space:]]\)@here\([[:space:]]\|$\)#'\\1"@${literalHostname//#/\\#}\\2#g")"
+fi
 
 "$TODO_FULL_SH" command ${ADDACTION:-add} "$task"
