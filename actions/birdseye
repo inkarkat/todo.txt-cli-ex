@@ -173,7 +173,7 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
 			else:
 				closedTasks = 0
 			totalTasks = openTasks + closedTasks
-			percentages[task] = (closedTasks*100) / totalTasks
+			percentages[task] = int((closedTasks*100) / totalTasks)
 
 		printTaskGroups("%s with open tasks (* = prioritized)"% (prefixDescription, ), tasks, priority, percentages, taskNum)
 
@@ -183,7 +183,7 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
 			if task not in tasks:
 				tasksWithNoIncompletes[task] = completed[task]
 
-		printTaskGroups("completed %s (no open tasks)"% (prefixDescription, ), tasksWithNoIncompletes, [], {}, doneNum)
+		printTaskGroups("completed %s (no open tasks)"% (prefixDescription, ), tasksWithNoIncompletes, [], {}, taskNum + doneNum)
 
 def main(argv):
 	if len(argv) == 0 or argv[0] == 'usage':
@@ -213,7 +213,7 @@ def main(argv):
 				run('@', item, isPrintOpen, isPrintCompleted)
 			else:
 				raise Exception("Invalid item: " + item)
-	except Exception, e:
+	except Exception as e:
 		print(e)
 		sys.exit(1)
 
