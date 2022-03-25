@@ -183,7 +183,7 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
 			if task not in tasks:
 				tasksWithNoIncompletes[task] = completed[task]
 
-		printTaskGroups("completed %s (no open tasks)"% (prefixDescription, ), tasksWithNoIncompletes, [], {}, doneNum)
+		printTaskGroups("completed %s (no open tasks)"% (prefixDescription, ), tasksWithNoIncompletes, [], {}, taskNum + doneNum)
 
 def main(argv):
 	if len(argv) == 0 or argv[0] == 'usage':
