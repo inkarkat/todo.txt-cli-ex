@@ -173,7 +173,7 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
 			else:
 				closedTasks = 0
 			totalTasks = openTasks + closedTasks
-			percentages[task] = (closedTasks*100) / totalTasks
+			percentages[task] = int((closedTasks*100) / totalTasks)
 
 		printTaskGroups("%s with open tasks (* = prioritized)"% (prefixDescription, ), tasks, priority, percentages, taskNum)
 
