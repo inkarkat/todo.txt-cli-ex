@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2014 Ingo Karkat
+# COPYRIGHT: (C) 2014-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -88,12 +88,12 @@ do
         die "$errmsg"
     fi
 
-    items="${items}${items:+ }$item"
+    items+="${items:+ }$item"
     getTodo "$item"
     splitTodo "$todo"
 
     if [ "$text" ]; then
-        targetText="${targetText}${delim}${text}"
+        targetText+="${delim}${text}"
         isJoined=t
     fi
     for p in $prepends

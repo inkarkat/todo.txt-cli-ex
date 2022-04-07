@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -40,8 +40,7 @@ errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ...] \"REASON for Waiting\
 items=
 while [[ "$1" =~ ^[,0-9]+$ ]]
 do
-    items="$items $1"
-    shift
+    items+=" $1"; shift
 done
 [ "$items" -a $# -gt 0 ] || die "$errmsg"
 

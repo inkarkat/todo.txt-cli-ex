@@ -57,8 +57,7 @@ fi
 items=
 while [[ "$1" =~ ^[,0-9]+$ ]]
 do
-    items="$items $1"
-    shift
+    items+=" $1"; shift
 done
 [ "$items" ] || die "$errmsg"
 

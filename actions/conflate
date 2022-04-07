@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2013 Ingo Karkat
+# COPYRIGHT: (C) 2013-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -41,8 +41,7 @@ items=
 while [[ "$1" =~ ^[,0-9]+$ ]]
 do
     [ "$1" = ',' ] && break # Don't swallow a single comma, it's likely the CONJUNCTION.
-    items="$items $1"
-    shift
+    items+=" $1"; shift
 done
 [ "$items" ] || die "$errmsg"
 
@@ -65,7 +64,7 @@ for item in ${items//,/ }
 do
     getTodo "$item"
     prunedTodo=$(echo "$todo" | sed -e "s/${pruneExpr}//")
-    combinedTodo="${combinedTodo}${conjunction}${prunedTodo}"
+    combinedTodo+="${conjunction}${prunedTodo}"
 done
 
 # Filter duplicate +project and @context occurrences.

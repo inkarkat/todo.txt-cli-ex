@@ -53,8 +53,7 @@ fi
 items=
 while [[ "$1" =~ ^[,0-9]+$ ]]
 do
-    items="$items $1"
-    shift
+    items+=" $1"; shift
 done
 [ "$items" ] || die "$errmsg"
 
@@ -148,8 +147,7 @@ do
     # Find other tasks referencing either the current ITEM# or any of the GOALs
     # found in the current task.
     referencingPattern=$(echo "$joinMarkers" | grep -v -e '^j:[0-9]\+$')
-    referencingPattern="${referencingPattern}${referencingPattern:+
-}j:${item}"
+    referencingPattern+="${referencingPattern:+$'\n'}j:${item}"
     referencingPattern="\\(^\\| \\)\\(${referencingPattern//$'\n'/\\|}\\)"
     referencedItems=$(sed -n -e '/^[xX] /b' -e "/${referencingPattern}/=" "$TODO_FILE") || exit $?
 

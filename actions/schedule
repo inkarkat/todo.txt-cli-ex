@@ -150,7 +150,7 @@ replace()
 
 
 if [ $# -eq 0 -o "$1" = 'all' -o "$1" = 'now' -o "$1" = 'on' -o "$1" = 'for' -o "$1" = 'future' ]; then
-    what=$1
+    what="$1"
     shift
     case $what in
         now)    listOpen "$@";;
@@ -166,21 +166,19 @@ fi
 items=
 while [[ "$1" =~ ^[,0-9]+$ ]]
 do
-    items="$items $1"
-    shift
+    items+=" $1"; shift
 done
 if [ "$items" ]; then
     date=$*
 else
-    date=$1
-    shift
-    items=$*
+    date="$1"; shift
+    items="$*"
 fi
-[ "$items" ] || die "$errmsg"
+[ -n "$items" ] || die "$errmsg"
 
 for item in ${items//,/ }
 do
-    case $date in
+    case "$date" in
         '')                     die "$errmsg";;
         none|never|off|del|rm)  remove "$item";;
         *)                      replace "$item" "$date";;

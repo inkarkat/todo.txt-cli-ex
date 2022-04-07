@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -44,8 +44,7 @@ errmsg="usage: $TODO_SH $(basename $0) [ITEM#, ...] \"REASON for Waiting\"[, REA
 items=
 while [[ "$1" =~ ^[,0-9]+$ ]]
 do
-    items="$items $1"
-    shift
+    items+=" $1"; shift
 done
 
 pri=
@@ -57,8 +56,7 @@ waitPattern=$generalReasonPattern
 if [ $# -eq 0 ]; then
     [ "$items" ] || die "$errmsg"
 elif [[ "$1" = [a-zA-Z] ]]; then
-    pri=$1
-    shift
+    pri="$1"; shift
 elif [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
     # We have dependent tasks: DEPITEM#.
     waitDescription="dependent tasks"

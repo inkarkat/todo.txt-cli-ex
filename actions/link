@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -49,8 +49,8 @@ linkMarkers=
 # Split multiple dep's, if comma separated change to whitespace separated.
 for targetItem in ${*//,/ }
 do
-    links="${links}${links:+, }${targetItem}"
-    linkMarkers="${linkMarkers}${linkMarkers:+ }l:${targetItem}"
+    links+="${links:+, }${targetItem}"
+    linkMarkers+="${linkMarkers:+ }l:${targetItem}"
 done
 
 if [ "$links" ]; then

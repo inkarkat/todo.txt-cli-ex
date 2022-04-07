@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -115,7 +115,7 @@ do
         datePri "$newpri" "$beginDate"
 
         if [ "$endDate" ]; then
-            whenwhat="${whenwhat}, until $endDate"
+            whenwhat+=", until $endDate"
             datePri "d" "$endDate"
         fi
     else

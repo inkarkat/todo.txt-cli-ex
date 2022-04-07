@@ -15,7 +15,7 @@
 # SOURCE:
 #   https://github.com/the1ts/todo.txt-plugins/tree/master/actions/projectview
 #
-# COPYRIGHT: (C) 2009 Paul Mansfield
+# COPYRIGHT: (C) 2009-2022 Paul Mansfield
 #            (C) 2010-2012 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
@@ -109,8 +109,7 @@ for project in $projects; do
 
         if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
             let projectCnt+=1
-            tasks="${tasks}${tasks:+
-}$projectList"
+            tasks+="${tasks:+$'\n'}$projectList"
         fi
     fi
 done

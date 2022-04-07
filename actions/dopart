@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2013-2016 Ingo Karkat
+# COPYRIGHT: (C) 2013-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -81,8 +81,8 @@ doParts()
     local isFirst=t
     for part in "${parts[@]}"
     do
-        [ "$isFirst" ] && isFirst= || partPattern="${partPattern}(${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN})"
-        partPattern="${partPattern}$(echo "$part" | sed -e 's/[][\$*.^|+?(){}#]/\\&/g')"
+        [ "$isFirst" ] && isFirst= || partPattern+="(${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN})"
+        partPattern+="$(echo "$part" | sed -e 's/[][\$*.^|+?(){}#]/\\&/g')"
     done
 
     sed -E -i.bak "$item s#${partPattern}#${donePart//#/\\#}#" "$TODO_FILE" || exit $?
@@ -111,7 +111,7 @@ if [[ "$1" =~ ^[,0-9]+$ ]]; then
     counts=
     while [[ "$1" =~ ^[,0-9]+$ ]]
     do
-        counts="${counts}${counts:+ }$1"
+        counts+="${counts:+ }$1"
         shift
     done
     typeset -a countList=(${counts//,/ })

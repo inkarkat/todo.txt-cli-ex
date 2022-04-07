@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2013 Ingo Karkat
+# COPYRIGHT: (C) 2013-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -36,7 +36,7 @@ errmsg="usage: $TODO_SH $(basename $0) [TERM...]"
 post_filter_command="grep '^ *[0-9]\+ ([A-Z]) '"
 _list "$TODO_FILE" "$@" | sed -e '/^TODO:/s/of [0-9]\+ tasks shown/prioritized \0/'
 
-TODOTXT_SORT_COMMAND="$TODOTXT_SORT_COMMAND -r"
+TODOTXT_SORT_COMMAND+=" -r"
 # Consider only unprioritized tasks that are not yet done.
 post_filter_command="grep -v -e '^ *[0-9]\+ [xX] ' -e '^ *[0-9]\+ ([A-Z]) '"
 _list "$TODO_FILE" "$@"
