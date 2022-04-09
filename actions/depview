@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2017 Ingo Karkat
+# COPYRIGHT: (C) 2010-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -69,12 +69,11 @@ if [ $# -gt 0 ]; then
     # printed. We need to obtain the task numbers and pass them to the AWK
     # script.
     TODOTXT_VERBOSE=0
-    TODOTXT_PLAIN=1
     post_filter_command="sed -ne 's/^ *\([0-9]\+\) .*$/\1/p'"
     # It's difficult to store "$@" in a variable and keep the quoting. Thus, we
     # generate the list already here and store the result for the AWK to fetch
     # it later by re-invoking this script with the "filter" action argument.
-    export filterTasks=$(_list "$TODO_FILE" "$@")
+    export filterTasks=$(TODOTXT_PLAIN=1 _list "$TODO_FILE" "$@")
 else
     isFilter=0
 fi
