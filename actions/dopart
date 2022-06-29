@@ -76,7 +76,7 @@ doParts()
     fi
 
     # Concatenate the literally matched parts with the pattern for the part
-    # spearator.
+    # separator.
     local partPattern=
     local isFirst=t
     for part in "${parts[@]}"
