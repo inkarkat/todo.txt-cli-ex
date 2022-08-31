@@ -15,7 +15,7 @@
 #   Based on the edit action by Matt Brubeck:
 #   https://github.com/mbrubeck/todo.txt-cli/blob/master/todo.actions.d/edit
 #
-# COPYRIGHT: (C) 2010-2018 Ingo Karkat
+# COPYRIGHT: (C) 2010-2022 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -69,7 +69,7 @@ getTodo "$item"
 echo "$todo" > "$TMPEDIT"
 
 TMPMODTIME=$(stat -c %Y "$TMPEDIT")
-"$EDITOR" "$TMPEDIT" || { status=$?; echo 2>&1 "Unclean exit of editor; aborting!"; exit $status; }
+"$EDITOR" "$TMPEDIT" || { status=$?; echo >&2 "Unclean exit of editor; aborting!"; exit $status; }
 NEWMODTIME=$(stat -c %Y "$TMPEDIT")
 
 if [ $NEWMODTIME -eq $TMPMODTIME ]; then
