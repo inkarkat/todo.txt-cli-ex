@@ -47,18 +47,14 @@ do
     shift
     getTodo "$item"
 
-    taskUrls=$(echo "$todo" | grep -o "${TODOTXT_BROWSER_URL_SCHEMES}${TODOTXT_BROWSER_URL_CHARACTERS}")
-    if [ -z "$taskUrls" ]; then
+    readarray -t taskUrls < <(echo "$todo" | grep -o "${TODOTXT_BROWSER_URL_SCHEMES}${TODOTXT_BROWSER_URL_CHARACTERS}")
+    if [ ${#taskUrls[@]} -eq 0 ]; then
         [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
         echo "TODO: No web resource URL found in task $item."
     fi
 
-    IFS=$'\n'
-    for url in $taskUrls
-    do
-        urls+=("$url")
-        echo "$url"
-    done
+    urls+=("${taskUrls[@]}")
+    printf '%s\n' "${taskUrls[@]}"
 done
 [ ${#urls} -gt 0 ] || exit 1
 
