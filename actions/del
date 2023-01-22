@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2023 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -47,7 +47,7 @@ do
 
     if [ $# -eq 0 -a -x "$TODO_ACTIONS_DIR/unwait" ]; then
         # Unblock tasks that depended on the deleted task.
-        "$TODO_FULL_SH" unwait 'for' $item | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
+        "$TODO_FULL_SH" unwait 'for' $item 2>&1 | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
         : # Always exit with a successful exit code even when the command complained.
     fi
 done

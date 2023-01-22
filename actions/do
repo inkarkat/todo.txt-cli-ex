@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2023 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -84,7 +84,7 @@ do
 
     # Unblock tasks that depended on the now done task.
     if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
-        "$TODO_FULL_SH" unwait 'for' $item | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
+        "$TODO_FULL_SH" unwait 'for' $item 2>&1 | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
     fi
 
     # Handle potential recurrence of the now done task.
