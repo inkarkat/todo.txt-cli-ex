@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2023 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -152,11 +152,11 @@ awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -
 
         # Print additional information and cycle errors at the end.
         if (verbose > 0) {
-            printf("--\nTODO: %d block(s) of %d dependent tasks.\n", rcnt, nodecnt)
+            printf("--\nTODO: %d block%s of %d dependent tasks.\n", rcnt, (rcnt == 1 ? "" : "s"), nodecnt)
             for (o in omitted)
                 ++omittedcnt
             if (omittedcnt > 0)
-                printf("TODO: %s task(s) have been filtered out.\n", omittedcnt)
+                printf("TODO: %s task%s have been filtered out.\n", omittedcnt, (omittedcnt == 1 ? "" : "s"))
         }
         for (errmsg in errmsgs)
             print errmsgs[errmsg]

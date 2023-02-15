@@ -15,8 +15,8 @@
 # SOURCE:
 #   https://github.com/the1ts/todo.txt-plugins/tree/master/actions/contextview
 #
-# COPYRIGHT: (C) 2009-2022 Paul Mansfield
-#            (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2023 Ingo Karkat
+#            (C) 2009-2010 Paul Mansfield
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -129,16 +129,19 @@ if [ "$contextList" ]; then
 fi
 
 if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
-    let taskCnt=$(echo "$tasks" | sort -u | sed -n '$ =')
+    let tasksCnt=$(echo "$tasks" | sort -u | sed -n '$ =')
 
     echo "--"
     if [ $contextCnt -gt 0 ]; then
-        echo "TODO: $taskCnt task(s) with $contextCnt contexts."
+        tasksCntPlural=s; [ $tasksCnt -eq 1 ] && tasksCntPlural=
+        contextCntPlural=s; [ $contextCnt -eq 1 ] && contextCntPlural=
+        printf 'TODO: %d task%s with $contextCnt context%s.\n' $tasksCnt "$tasksCntPlural" $contextCnt "$contextCntPlural"
     else
         echo "TODO: No contexts found."
     fi
 
     if [ $unassociatedCnt -gt $TODOTXT_CONTEXTVIEW_UNASSOCIATED_THRESHOLD ]; then
-        echo "TODO: $unassociatedCounts task(s) without context."
+        unassociatedCountsPlural=s; [ $unassociatedCounts -eq 1 ] && unassociatedCountsPlural=
+        printf 'TODO: %d task%s without context.\n' $unassociatedCounts "$unassociatedCountsPlural"
     fi
 fi
