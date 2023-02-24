@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2023 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -45,8 +45,8 @@ fi
 
 # birdseye does not duplicate the todo.sh filtering functionality, therefore
 # need to process the task and done lists ourselves.
-TMPTODO=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0")T.$$")
-TMPDONE=$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0")D.$$")
+TMPTODO="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TMPDIR:-/tmp}/$(basename -- "$0")T.$$")"
+TMPDONE="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TMPDIR:-/tmp}/$(basename -- "$0")D.$$")"
 
 export TODOTXT_VERBOSE=0
 "$TODO_FULL_SH" -f -p command list "$@" | sed -e 's/^[0-9]\+ //' > "$TMPTODO" || exit $?
