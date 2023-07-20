@@ -45,6 +45,10 @@ for item in ${items//,/ }
 do
     "$TODO_FULL_SH" command del $item "$@" || exit $?
 
+    # added by JCD to accomodate for notes
+    [ $? -eq 0 ] && [ -z "$3" ] && "$TODO_SH" note __rmfromtext "DDDD$item"
+    # end of added by JCD to accomodate for notes
+
     if [ $# -eq 0 -a -x "$TODO_ACTIONS_DIR/unwait" ]; then
         # Unblock tasks that depended on the deleted task.
         "$TODO_FULL_SH" unwait 'for' $item 2>&1 | grep -v '^TODO: No tasks that contain the dependent tasks found.$'

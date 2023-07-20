@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)archive	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -110,6 +109,16 @@ processItems()
     fi
 
     if [ "$moveItems" ]; then
+
+    # added by JCD to accomodate notes
+        if [ $TODOTXT_VERBOSE -gt 0 ]; then
+	    echo "TODO: scanning and archiving (trashing?) notes"
+        fi
+	for item in ${moveItems}; do
+	    "$TODO_SH" note __archive "${item}"
+	done
+    # end of added by JCD to accomodate notes
+    
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             _list "$TODO_FILE" "^ *\\(${moveItems//$'\n'/\\|}\\) " | "${GNU_PREFIX}"sed -e "\$s/tasks shown/tasks ${what}/"
         else
