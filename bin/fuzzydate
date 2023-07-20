@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+
+require 'chronic'
+require 'optparse'
+
+def iso_date_from_string(date_string)
+  Chronic.parse(date_string)
+end
+
+class ArgParser
+  def self.parse
+    params = {}
+
+    OptionParser.new do |opt|
+      opt.banner = format(%(
+fuzzydate
+
+takes a human date, and turns it into iso standard
+
+Note:
+  this requires that you have the ruby library 'chronic'
+
+  gem install chronic
+
+Usage: fuzzydate <WHATEVER HUMAN DATE REFERENCE YOU WANT>))
+    end.parse!
+
+    params[:date_string] = ARGV.join(' ')
+    params
+  end
+end
+
+begin
+  options = ArgParser.parse
+
+  if options.keys.empty?
+    # no args passed, so we will
+    # reset ARGV to pass in --help
+
+    Object.send(:remove_const, :ARGV)
+
+    # rubocop:disable Style/MutableConstant
+    ARGV = %w[_ --help]
+    # rubocop:enable Style/MutableConstant
+
+    pp ArgParser.parse
+  else
+    puts iso_date_from_string(options[:date_string])
+  end
+rescue ArgumentError, SocketError, OptionParser::MissingArgument => e
+  puts e.message.red
+rescue OptionParser::InvalidArgument => e
+  puts e.message.red
+  puts "must be one of [#{ENVS.join('|')}]".red if e.message.include?('--env')
+end
