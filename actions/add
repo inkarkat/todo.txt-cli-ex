@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)add	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -45,9 +44,8 @@ task="$("${scriptDir}/renderrelativemarkers" --task "$((TOTAL+1))" "$task")" || 
 
 # Translate @here to the actual lowercased hostname.
 hostname="$TODOTXT_HOSTNAME"
-[ -n "$hostname" ] || hostname="$(readableHostname)"
 if [ -n "$hostname" ]; then
-    literalHostname="${hostname,,}"
+    literalHostname="$(echo "$hostname" | tr '[:upper:]' '[:lower:]')"
     literalHostname="${literalHostname//\\/\\\\}"
     literalHostname="${literalHostname//&/\\&}"
     task="$(printf %s "$task" | "${GNU_PREFIX}"sed -e 's#\(^\|[[:space:]]\)@here\([[:space:]]\|$\)#'\\1"@${literalHostname//#/\\#}\\2#g")"
