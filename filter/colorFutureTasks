@@ -51,7 +51,8 @@ if [ $TODOTXT_PLAIN -eq 0 ]; then
         export COLOR_UNTIL_3DAY=${COLOR_UNTIL_3DAY-$DEFAULT'\\033[43m'}
     fi
 
-    ${GNU_PREFIX}awk -v date=$1 -v date_cmd="${GNU_PREFIX}date" '
+    "${GNU_PREFIX}awk" -v date=$1 -v date_cmd="${GNU_PREFIX}date" '
+
 function getThreshold(date) {
     if (date == "") {
         return mktime(strftime("%Y %m %d 00 00 00", systime()))
@@ -173,7 +174,8 @@ BEGIN {
 { print }
 '
 elif [ $TODOTXT_FILTER_FUTURE_TASKS -ne 0 ]; then
-    ${GNU_PREFIX}awk -v date=$1 -v date_cmd="${GNU_PREFIX}date" '
+    "${GNU_PREFIX}awk" -v date=$1 -v date_cmd="${GNU_PREFIX}date" '
+
 function getThreshold(date) {
     if (date == "") {
         return mktime(strftime("%Y %m %d 00 00 00", systime()))

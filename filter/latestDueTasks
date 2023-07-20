@@ -24,7 +24,8 @@
 
 export TODOTXT_FILTER_UNTIL_DUE_DAYSPAN=${TODOTXT_FILTER_UNTIL_DUE_DAYSPAN:-3}
 
-${GNU_PREFIX}awk -v date=$1 -v date_cmd="${GNU_PREFIX}date" '
+"${GNU_PREFIX}awk" -v date=$1 -v date_cmd="${GNU_PREFIX}date" '
+
 function getThreshold(date) {
     if (date == "") {
         return mktime(strftime("%Y %m %d 00 00 00", systime()))

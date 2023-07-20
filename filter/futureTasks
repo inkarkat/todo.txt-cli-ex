@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 ###############################################################################
 ##
 # FILE:         futureTasks
@@ -27,7 +27,8 @@ export TODOTXT_FILTER_FUTURE_TASKS=${TODOTXT_FILTER_FUTURE_TASKS:-1}
 #   0: Disable the futureTasks filter.
 
 if [ $TODOTXT_FILTER_FUTURE_TASKS -ne 0 ]; then
-    ${GNU_PREFIX}awk -v date=$1 -v date_cmd="${GNU_PREFIX}date" '
+    "${GNU_PREFIX}awk" -v date=$1 -v date_cmd="${GNU_PREFIX}date" '
+
 function highlight(colorVar,      color) {
     color = ENVIRON[colorVar]
     gsub(/\\+033/, "\033", color)

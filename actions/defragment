@@ -37,7 +37,7 @@ set -o pipefail
 # Defragment blank lines.
 # Note: Deletion of blank lines must proceed from end to begin to avoid adapting
 # remaining line numbers.
-emptyLineNums=$("${GNU_PREFIX}"sed -n '/./!=' "$TODO_FILE" | tac) || exit $?
+emptyLineNums=$("${GNU_PREFIX}sed" -n '/./!=' "$TODO_FILE" | tac) || exit $?
 finalLineNumber=$(echo "$emptyLineNums" | ${GNU_PREFIX}sed -ne '$p')
 for emptyLineNum in $emptyLineNums
 do
