@@ -32,23 +32,23 @@ shift
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 
-TOTAL=$(sed -n '$ =' "$TODO_FILE") || exit $?
+TOTAL=$(${GNU_PREFIX}sed -n '$ =' "$TODO_FILE") || exit $?
 PADDING=${#TOTAL}
 
 # To sort based on the entered date, add a dummy second column for tasks that
 # are not prioritized, done or trashed, do the sort on field 3, and finally
 # remove the dummy column again.
-post_filter_command="${post_filter_command:-}${post_filter_command:+ | }awk -v TOTAL=$TOTAL -v PADDING=$PADDING '{ \$1 = sprintf(\"%\" PADDING \"d\", (\$1 > TOTAL ? 0 : \$1)); print }' | sed -e '/^ *[0-9]\\+ \\([xX]\\|(.)\\) /!s/^ *[0-9]\\+ /&(.) /'"
-TODOTXT_SORT_COMMAND="env LC_COLLATE=C sort -f -k3,3 | sed -e 's/^\( *[0-9]\\+ \)(\.) /\\1/'"
+post_filter_command="${post_filter_command:-}${post_filter_command:+ | }${GNU_PREFIX}awk -v TOTAL=$TOTAL -v PADDING=$PADDING '{ \$1 = sprintf(\"%\" PADDING \"d\", (\$1 > TOTAL ? 0 : \$1)); print }' | ${GNU_PREFIX}sed -e '/^ *[0-9]\\+ \\([xX]\\|(.)\\) /!s/^ *[0-9]\\+ /&(.) /'"
+TODOTXT_SORT_COMMAND="env LC_COLLATE=C sort -f -k3,3 | ${GNU_PREFIX}sed -e 's/^\( *[0-9]\\+ \)(\.) /\\1/'"
 export TODOTXT_FILTER_FUTURE_TASKS=0
 cat "$TODO_FILE" "$DONE_FILE" "$TRASH_FILE" | TODOTXT_VERBOSE=0 _format '' "$PADDING" "$@"
 
 if [ $TODOTXT_VERBOSE -gt 0 ]; then
-    TDONE=$(sed -n '$ =' "$DONE_FILE") || exit $?
-    TTRASH=$(sed -n '$ =' "$TRASH_FILE") || exit $?
-    TASKNUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$TODO_FILE" 1 "$@" | sed -n '$ =')
-    DONENUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$DONE_FILE" 1 "$@" | sed -n '$ =')
-    TRASHNUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$TRASH_FILE" 1 "$@" | sed -n '$ =')
+    TDONE=$(${GNU_PREFIX}sed -n '$ =' "$DONE_FILE") || exit $?
+    TTRASH=$(${GNU_PREFIX}sed -n '$ =' "$TRASH_FILE") || exit $?
+    TASKNUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$TODO_FILE" 1 "$@" | ${GNU_PREFIX}sed -n '$ =')
+    DONENUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$DONE_FILE" 1 "$@" | ${GNU_PREFIX}sed -n '$ =')
+    TRASHNUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$TRASH_FILE" 1 "$@" | ${GNU_PREFIX}sed -n '$ =')
     echo "--"
     echo "$(getPrefix "$TODO_FILE"): ${TASKNUM:-0} of ${TOTAL:-0} tasks shown"
     echo "$(getPrefix "$DONE_FILE"): ${DONENUM:-0} of ${TDONE:-0} tasks shown"

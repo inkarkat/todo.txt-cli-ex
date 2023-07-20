@@ -36,7 +36,7 @@ export COLOR_DATE_EXT=${COLOR_DATE_EXT-$CYAN}
 export COLOR_ALTERNATING=${COLOR_ALTERNATING-$DEFAULT'\\033[47m'}
 
 if [ $TODOTXT_PLAIN -eq 0 ]; then
-awk '
+${GNU_PREFIX}awk '
 function hasHighlight(colorVar) {
     return (ENVIRON[colorVar] != "")
 }

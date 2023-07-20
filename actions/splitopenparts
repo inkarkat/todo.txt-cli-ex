@@ -42,10 +42,10 @@ item=$1; shift
 getTodo "$item"
 
 splitTodo "$todo"
-openParts=$(echo "$text" | sed -E -e "s/${TODOTXT_PARTIALDONE_PATTERN}//g" -e "s/(${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN})+/\1/g" -e "s/^ *${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}//" -e "s/${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN} *$//")
+openParts=$(echo "$text" | "${GNU_PREFIX}"sed -E -e "s/${TODOTXT_PARTIALDONE_PATTERN}//g" -e "s/(${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN})+/\1/g" -e "s/^ *${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}//" -e "s/${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN} *$//")
 [ "$openParts" ] || die "TODO: No open parts found."
 
-doneParts=$(echo "$text" | sed -E -e "s/${TODOTXT_PARTIALDONE_PATTERN}(${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN})?/\n&\n/g" | grep -E "${TODOTXT_PARTIALDONE_PATTERN}" | tr -d "\n" | sed -E -e "s/${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}$//")
+doneParts=$(echo "$text" | "${GNU_PREFIX}"sed -E -e "s/${TODOTXT_PARTIALDONE_PATTERN}(${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN})?/\n&\n/g" | grep -E "${TODOTXT_PARTIALDONE_PATTERN}" | tr -d "\n" | "${GNU_PREFIX}"sed -E -e "s/${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}$//")
 [ "$doneParts" ] || die "TODO: No partially done parts found."
 
 
@@ -54,7 +54,7 @@ doneParts=$(echo "$text" | sed -E -e "s/${TODOTXT_PARTIALDONE_PATTERN}(${TODOTXT
 # replacement of the line here.
 input="${priAndAddDate}${prepends}${doneParts}${appends}"
 cleaninput "for sed"
-sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
+"${GNU_PREFIX}"sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
 if [ $TODOTXT_VERBOSE -gt 0 ]; then
     echo "$item $todo"
     echo "TODO: Replaced task with partially done parts:"

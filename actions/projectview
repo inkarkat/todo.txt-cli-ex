@@ -41,9 +41,9 @@ makeTaskCounts()
 {
     if [ "$additional_filter_command" ]; then
         # Just count them; done tasks have already been filtered away.
-        sed -n '$ ='
+        "${GNU_PREFIX}"sed -n '$ ='
     else
-        awk '
+       "${GNU_PREFIX}"awk  '
 function highlight(colorVar,      color) {
     color = ENVIRON[colorVar]
     gsub(/\\+033/, "\033", color)
@@ -119,7 +119,7 @@ unassociatedCnt=0
 post_filter_command="${additional_filter_command}grep -ve '[[:space:]]+[[:graph:]]'"
 projectList=$(_list "$TODO_FILE" "$@")
 if [ "${projectList}" ]; then
-    unassociatedCnt=$(echo "$projectList" | sed -n '$ =')
+    unassociatedCnt=$(echo "$projectList" | "${GNU_PREFIX}"sed -n '$ =')
     unassociatedCounts=$(echo "${projectList}" | makeTaskCounts)
     if [ $unassociatedCnt -le $TODOTXT_PROJECTVIEW_UNASSOCIATED_THRESHOLD ]; then
         [ $projectCnt -gt 0 ] && echo ""
@@ -129,7 +129,7 @@ if [ "${projectList}" ]; then
 fi
 
 if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
-    let taskCnt=$(echo "$tasks" | sort -u | sed -n '$ =')
+    let taskCnt=$(echo "$tasks" | sort -u | "${GNU_PREFIX}"sed -n '$ =')
 
     echo "--"
     if [ $projectCnt -gt 0 ]; then

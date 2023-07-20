@@ -40,7 +40,7 @@ if [[ "$1" = +([0-9]) ]]; then
     shift
 else
     # Figure out the last line.
-    item=$(sed -n '$ =' "$TODO_FILE") || exit $?
+    item=$("${GNU_PREFIX}"sed -n '$ =' "$TODO_FILE") || exit $?
 fi
 getTodo "$item"
 

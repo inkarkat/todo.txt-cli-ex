@@ -50,7 +50,7 @@ getTodo "$item"
 
 splitTodo "$todo"
 
-splitText=$(echo "$text" | sed -e "s/${pattern}/\\n/g")
+splitText=$(echo "$text" | "${GNU_PREFIX}"sed -e "s/${pattern}/\\n/g")
 if [ "$splitText" = "$text" ]; then
     die "TODO: No split on \"${pattern}\" possible."
 fi
@@ -65,7 +65,7 @@ do
         # complete replacement of the line here.
         input=$newtodo
         cleaninput "for sed"
-        sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
+        "${GNU_PREFIX}"sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             echo "$item $todo"
             echo "TODO: Replaced task with first part:"

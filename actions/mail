@@ -111,8 +111,8 @@ fi
 
 recipients=$(
     (
-        echo "$tasks" | grep -o '[^ ]*@[^ ]\+' | sed -ne '/^@\([[:upper:]]\|.\+@.\+\)/s/^.//p'
-        echo "$tasks" | grep -o '[^ ]\+' | sed -ne "/${TODOTXT_MAIL_MARKER_PATTERN}/s/^[^:]\\+://p"
+        echo "$tasks" | grep -o '[^ ]*@[^ ]\+' | "${GNU_PREFIX}"sed -ne '/^@\([[:upper:]]\|.\+@.\+\)/s/^.//p'
+        echo "$tasks" | grep -o '[^ ]\+' | "${GNU_PREFIX}"sed -ne "/${TODOTXT_MAIL_MARKER_PATTERN}/s/^[^:]\\+://p"
     ) | sort -u
 )
 [ "$recipients" ] || recipients=$TODOTXT_MAIL_DEFAULT_RECIPIENTS
@@ -162,11 +162,11 @@ if [ "$isEdit" ]; then
     TMPEDIT="$(mktemp --tmpdir "todo-mail-XXXXXX.eml" 2>/dev/null || echo "${TMPDIR:-/tmp}/todo-mail-$$.eml")"
     printEmail true > "$TMPEDIT"
     "$EDITOR" "$TMPEDIT" || { echo 2>&1 "Unclean exit of editor; aborting!"; exit $?; }
-    subject=$(sed -ne '/^Subject:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
-    recipients=$(sed -ne '/^To:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
-    cc=$(sed -ne '/^Cc:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
-    bcc=$(sed -ne '/^Bcc:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
-    body=$(sed -e "1,/^-=-=-=-=-=-=-=-=-=# Don't remove this line #=-=-=-=-=-=-=-=-=-\$/d" "$TMPEDIT")
+    subject=$("${GNU_PREFIX}"sed -ne '/^Subject:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
+    recipients=$("${GNU_PREFIX}"sed -ne '/^To:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
+    cc=$("${GNU_PREFIX}"sed -ne '/^Cc:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
+    bcc=$("${GNU_PREFIX}"sed -ne '/^Bcc:/{ s/^[^ ]\+: *\(.*\)$/\1/p; q }' "$TMPEDIT")
+    body=$("${GNU_PREFIX}"sed -e "1,/^-=-=-=-=-=-=-=-=-=# Don't remove this line #=-=-=-=-=-=-=-=-=-\$/d" "$TMPEDIT")
 fi
 
 if [ "$isTest" ]; then

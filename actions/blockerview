@@ -48,9 +48,9 @@ tasksOnDependentTask=
 
 # Find all wait markers and sort.
 IFS=$'\n'
-for waitMarker in $(sed -e '/^[xX] /d' -e '/ w:/!d' -e 's/ w:[^ ]/\n&/g' "$TODO_FILE" | sed -n -e 's/^.* \(w:([^)]\+)\).*$/\1/p;t' -e 's/^.* \(w:[^ ]\+\).*$/\1/p' | sort -u )
+for waitMarker in $("${GNU_PREFIX}"sed -e '/^[xX] /d' -e '/ w:/!d' -e 's/ w:[^ ]/\n&/g' "$TODO_FILE" | "${GNU_PREFIX}"sed -n -e 's/^.* \(w:([^)]\+)\).*$/\1/p;t' -e 's/^.* \(w:[^ ]\+\).*$/\1/p' | sort -u )
 do
-    blocker=$(echo "$waitMarker" | sed -e 's/w:(\([^)]*\))/\1/' -e 's/w:\([^ ]*\)/\1/')
+    blocker=$(echo "$waitMarker" | "${GNU_PREFIX}"sed -e 's/w:(\([^)]*\))/\1/' -e 's/w:\([^ ]*\)/\1/')
 
     if [[ "$blocker" =~ ^[0-9]+$ ]]; then
         # Translate dependent task number into a fully rendered, but shortened task description.
@@ -67,7 +67,7 @@ do
 
     # Extract all tasks that contain the waitMarker and remove the marker itself
     # before any final filter performs highlighting.
-    post_filter_command="sed -e '\| ${waitMarker//|/\\|}|!d' -e 's| ${waitMarker//|/\\|}||g'"
+    post_filter_command="${GNU_PREFIX}sed -e '\| ${waitMarker//|/\\|}|!d' -e 's| ${waitMarker//|/\\|}||g'"
     waitList=$(_list "$TODO_FILE" "$@")
     if [[ -n "$waitList" ]]; then
         echo "--- $blocker ---"
@@ -87,8 +87,8 @@ do
 done
 
 if [ "$original_TODOTXT_VERBOSE" -gt 0 ]; then
-    let taskOnBlockerCnt=$(echo "$tasksOnBlocker" | sort -u | sed -n '$ =')
-    let taskOnDependentTaskCnt=$(echo "$tasksOnDependentTask" | sort -u | sed -n '$ =')
+    let taskOnBlockerCnt=$(echo "$tasksOnBlocker" | sort -u | "${GNU_PREFIX}"sed -n '$ =')
+    let taskOnDependentTaskCnt=$(echo "$tasksOnDependentTask" | sort -u | "${GNU_PREFIX}"sed -n '$ =')
 
     echo "--"
     if [ $blockerCnt -gt 0 ]; then

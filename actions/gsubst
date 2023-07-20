@@ -71,7 +71,7 @@ fi
 
 answer=y
 if  [ $TODOTXT_FORCE = 0 ]; then
-    affectedLines=$(cat "$FILE" | sed -n "${replacements[@]/%g/gp}")
+    affectedLines=$(cat "$FILE" | "${GNU_PREFIX}"sed -n "${replacements[@]/%g/gp}")
     if [ "$affectedLines" ]; then
         echo "$(getPrefix "$FILE"): Affected lines:"
         echo "$affectedLines"

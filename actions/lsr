@@ -34,7 +34,7 @@ shift
 errmsg="usage: $TODO_SH $(basename $0) [TERM...]"
 
 post_filter_command="grep '^ *[0-9]\+ ([A-Z]) '"
-_list "$TODO_FILE" "$@" | sed -e '/^TODO:/s/of [0-9]\+ tasks shown/prioritized \0/'
+_list "$TODO_FILE" "$@" | ${GNU_PREFIX}sed -e '/^TODO:/s/of [0-9]\+ tasks shown/prioritized \0/'
 
 TODOTXT_SORT_COMMAND+=" -r"
 # Consider only unprioritized tasks that are not yet done.

@@ -42,7 +42,7 @@ renderViaScheduledFilter()
     mv "${TODO_FILE}.bak" "${TODO_FILE}"
 }
 if [ $TODOTXT_VERBOSE -gt 0 ]; then
-    TOTAL=$(sed -n '$ =' "$TODO_FILE") || exit $?
+    TOTAL=$("${GNU_PREFIX}"sed -n '$ =' "$TODO_FILE") || exit $?
     PADDING=${#TOTAL}
     { renderViaScheduledFilter "$@" 2>&1 | TODOTXT_FILTER_FUTURE_TASKS=0 _format '' "$PADDING"; } || die 'Fatal Error: Unable to render markers in tasks.'
 else

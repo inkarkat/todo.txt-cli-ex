@@ -46,7 +46,7 @@ fi
 "$TODO_FULL_SH" add "$@" || exit $?
 
 # Figure out the line of what we just added, and prioritize it.
-item=$(sed -n '$ =' "$TODO_FILE") || exit $?
+item=$("${GNU_PREFIX}"sed -n '$ =' "$TODO_FILE") || exit $?
 "$TODO_FULL_SH" pri "$item" C || exit $?
 "$TODO_FULL_SH" pri "$item" B on "$priBDate" || exit $?
 "$TODO_FULL_SH" pri "$item" A on "$priADate" || exit $?

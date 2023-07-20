@@ -54,12 +54,12 @@ if [ "$1" = 'for' -a $# -gt 1 ]; then
             done
         else
             # Enclose REASONs in parentheses if they consist of multiple words.
-            waitPattern=${waitPattern}${waitPattern:+\\|}$(echo "$waitDependence" | sed -e '/[ \t]/s/.*/(&)/')
+            waitPattern=${waitPattern}${waitPattern:+\\|}$(echo "$waitDependence" | "${GNU_PREFIX}"sed -e '/[ \t]/s/.*/(&)/')
         fi
     done
     waitPattern=' w:\('${waitPattern}'\)\([ \t]\|$\)'
 
-    items=$(sed -n -e '/[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE") || exit $?
+    items=$("${GNU_PREFIX}"sed -n -e '/[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE") || exit $?
     items=${items//$'\n'/ } # Flatten all collected task numbers into a space-delimited list.
     if [ "$TODOTXT_LSWAIT_SHOW_ITEMS" ]; then
         # Hidden functionality for other addons.
@@ -82,5 +82,5 @@ else
     # definitely is a space in front of the marker.
     post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e ' w:[^ ]'"
 
-    _list "$TODO_FILE" "$@" | sed -e '/^TODO:/s/of [0-9]\+ tasks shown/blocked \0/'
+    _list "$TODO_FILE" "$@" | "${GNU_PREFIX}"sed -e '/^TODO:/s/of [0-9]\+ tasks shown/blocked \0/'
 fi

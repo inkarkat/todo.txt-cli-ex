@@ -28,7 +28,7 @@
 
 : ${TODOTXT_COMMENT_SYMBOL:= => }
 
-awk -v commentSymbol="$TODOTXT_COMMENT_SYMBOL" '
+${GNU_PREFIX}awk -v commentSymbol="$TODOTXT_COMMENT_SYMBOL" '
 / *[0-9]+ [xX] / {
     # Do not process done tasks.
     print

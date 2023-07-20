@@ -49,7 +49,7 @@ shift $(( $OPTIND - 1 ))
 
 # apply prefix and suffix, if either are set
 if [ -n "$prefix" ] || [ -n "$suffix" ]; then
-  items=$( echo "$@" | sed -e "s/.*/$prefix&$suffix/" )
+  items=$( echo "$@" | "${GNU_PREFIX}"sed -e "s/.*/$prefix&$suffix/" )
 else
   items="$@"
 fi

@@ -68,10 +68,10 @@ else
     # far more frequent than multiple REASONs. Splitting on whitespace would
     # necessitate enclosing each REASON in double quotes.
     IFS=,
-    for waitReason in $(echo "$@" | sed -e 's/, \+/,/g')
+    for waitReason in $(echo "$@" | "${GNU_PREFIX}"sed -e 's/, \+/,/g')
     do
         # Enclose REASONs in parentheses if they consist of multiple words.
-        waitReasons=${waitReasons}${waitReasons:+ }w:$(echo "$waitReason" | sed -e '/[ \t]/s/.*/(&)/')
+        waitReasons=${waitReasons}${waitReasons:+ }w:$(echo "$waitReason" | "${GNU_PREFIX}"sed -e '/[ \t]/s/.*/(&)/')
     done
     unset IFS
     waitReasonText=$waitReasons
@@ -81,7 +81,7 @@ fi
 for item in ${items//,/ }
 do
     # Deprioritize in case it's currently prioritized.
-    if sed "$item!d" "$TODO_FILE" | grep -e '^(.) '; then
+    if "${GNU_PREFIX}"sed "$item!d" "$TODO_FILE" | grep -e '^(.) '; then
         "$TODO_FULL_SH" command depri $item || continue
     fi
 

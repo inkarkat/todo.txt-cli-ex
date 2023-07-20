@@ -75,11 +75,11 @@ else
     # necessitate enclosing each REASON in double quotes.
     waitPattern=
     IFS=,
-    for waitReason in $(echo "$@" | sed -e 's/, \+/,/g')
+    for waitReason in $(echo "$@" | "${GNU_PREFIX}"sed -e 's/, \+/,/g')
     do
         # Escape "/" within REASON because it is used in /-delimited regexps.
         # Enclose REASON in parentheses if it consists of multiple words.
-        waitPattern=${waitPattern}${waitPattern:+\\|}$(echo "$waitReason" | sed -e 's|/|\\&|g' -e '/[ \t]/s/.*/(&)/')
+        waitPattern=${waitPattern}${waitPattern:+\\|}$(echo "$waitReason" | "${GNU_PREFIX}"sed -e 's|/|\\&|g' -e '/[ \t]/s/.*/(&)/')
     done
     unset IFS
 fi
@@ -91,7 +91,7 @@ generalWaitPattern=' w:\('$generalReasonPattern'\)\([ \t]\|$\)'
 if [ ! "$items" ]; then
     # No tasks have been specified; we must generate the list of (not yet done
     # or trashed) tasks that contain the waitPattern ourselves.
-    items=$(sed -n -e '/^[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE") || exit $?
+    items=$("${GNU_PREFIX}"sed -n -e '/^[xX] /b' -e "/${waitPattern}/=" "$TODO_FILE") || exit $?
 
     [ "$items" ] || die "TODO: No tasks that contain the ${waitDescription:?} found."
 fi
@@ -106,7 +106,7 @@ do
     # overlap with a following blocker. Due to that, even a global sed
     # substitute will not remove all blockers in one pass. Thus, we repeat the
     # substitution until there's nothing left to substitute.
-    sed -i.bak -e "$item {
+    "${GNU_PREFIX}"sed -i.bak -e "$item {
 :repeat
 s/${waitPattern}/\\2/g
 t repeat
@@ -117,7 +117,7 @@ t repeat
         continue
     else
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
-            if [ "$(sed -e "$item!d" -e "/$generalWaitPattern/d" "$TODO_FILE")" = "" ]; then
+            if [ "$(${GNU_PREFIX}sed -e "$item!d" -e "/$generalWaitPattern/d" "$TODO_FILE")" = "" ]; then
                 newState="had blocker(s) removed; still blocked"
             else
                 newState="unblocked"

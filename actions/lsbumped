@@ -38,6 +38,6 @@ post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e ' ${TODOTXT_BUMP_MARK
 
 # To sort based on the number of bumps, temporarily add the bump count to the
 # front, do a numeric sort, then remove the count again.
-TODOTXT_SORT_COMMAND="sed -e 's/^.* ${TODOTXT_BUMP_MARKER}:\\([0-9]\\+\\).*\$/\\1 &/' | sort -nr | sed -e 's/^[0-9]\+ //'"
+TODOTXT_SORT_COMMAND="${GNU_PREFIX}sed -e 's/^.* ${TODOTXT_BUMP_MARKER}:\\([0-9]\\+\\).*\$/\\1 &/' | sort -nr | ${GNU_PREFIX}sed -e 's/^[0-9]\+ //'"
 
-_list "$TODO_FILE" "$@" | sed -e '/^TODO:/s/of [0-9]\+ tasks shown/bumped \0/'
+_list "$TODO_FILE" "$@" | ${GNU_PREFIX}sed -e '/^TODO:/s/of [0-9]\+ tasks shown/bumped \0/'

@@ -37,12 +37,12 @@ if [ $addTaskNum -eq 0 ]; then
     echo "TODO: No tasks to add."
     exit
 fi
-existingTaskNum=$(sed -n '$ =' "$TODO_FILE") || exit $?
+existingTaskNum=$("${GNU_PREFIX}"sed -n '$ =' "$TODO_FILE") || exit $?
 
 # Note: We cannot just output the last $addTaskNum tasks via 'tail' to show the
 # added tasks, as the list may be sorted in a different way. Instead, we filter
 # on the leading task numbers.
-addedTaskFilter=$(seq $((existingTaskNum + 1)) $((existingTaskNum + addTaskNum)) | sed -e '
+addedTaskFilter=$(seq $((existingTaskNum + 1)) $((existingTaskNum + addTaskNum)) | "${GNU_PREFIX}"sed -e '
 1h
 1!H
 $!d

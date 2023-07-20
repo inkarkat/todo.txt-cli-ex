@@ -46,7 +46,7 @@ shopt -s extglob
 
 listParts()
 {
-    echo "$text" | sed -E -e "s/${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}/\\n/g" | sed = | sed -e 'N; s/\n/ /'
+    echo "$text" | ${GNU_PREFIX}sed -E -e "s/${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}/\\n/g" | ${GNU_PREFIX}sed = | ${GNU_PREFIX}sed -e 'N; s/\n/ /'
 }
 doParts()
 {
@@ -82,10 +82,10 @@ doParts()
     for part in "${parts[@]}"
     do
         [ "$isFirst" ] && isFirst= || partPattern+="(${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN})"
-        partPattern+="$(echo "$part" | sed -e 's/[][\$*.^|+?(){}#]/\\&/g')"
+        partPattern+="$(echo "$part" | ${GNU_PREFIX}sed -e 's/[][\$*.^|+?(){}#]/\\&/g')"
     done
 
-    sed -E -i.bak "$item s#${partPattern}#${donePart//#/\\#}#" "$TODO_FILE" || exit $?
+    ${GNU_PREFIX}sed -E -i.bak "$item s#${partPattern}#${donePart//#/\\#}#" "$TODO_FILE" || exit $?
     getNewtodo "$item"
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
         echo "$item $newtodo"
@@ -93,7 +93,7 @@ doParts()
         # To get the actual text of the parts that were done (including the used
         # separators), substitute the original task again and this time extract
         # the part pattern.
-        changedPart=$(echo "$todo" | sed -E "s#^.*(${partPattern}).*\$#${donePart/&/\\1}#")
+        changedPart=$(echo "$todo" | ${GNU_PREFIX}sed -E "s#^.*(${partPattern}).*\$#${donePart/&/\\1}#")
         echo "TODO: part of $item marked as done: ${changedPart}"
     fi
 }
@@ -120,7 +120,7 @@ if [[ "$1" =~ ^[,0-9]+$ ]]; then
     while [ $countIdx -lt ${#countList[@]} ]
     do
         count=${countList[$countIdx]}
-        part=$(echo "$text" | sed -E -e "s/${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}/\\n/g" | sed -ne "${count}p")
+        part=$(echo "$text" | ${GNU_PREFIX}sed -E -e "s/${TODOTXT_PARTIALDONE_SEPARATOR_PATTERN}/\\n/g" | ${GNU_PREFIX}sed -ne "${count}p")
         if [ ! "$part" ]; then
             echo "TODO: No part ${count}; available parts:"
             listParts
@@ -147,12 +147,12 @@ elif [ "$1" ]; then
         *\.\*)  after='$';;
         *)      after='.*$';;
     esac
-    part=$(echo "$text" | sed -ne "s/${before}\(${pattern//\//\\/}\)${after}/\1/gp")
+    part=$(echo "$text" | ${GNU_PREFIX}sed -ne "s/${before}\(${pattern//\//\\/}\)${after}/\1/gp")
     if [ ! "$part" ]; then
         # The pattern did not match in the main task text, try in the prepends
         # and appends; maybe the user wants to mark a particular +project or
         # @context done.
-        part=$(echo "$prepends $appends" | sed -ne "s/${before}\(${pattern//\//\\/}\)${after}/\1/gp")
+        part=$(echo "$prepends $appends" | ${GNU_PREFIX}sed -ne "s/${before}\(${pattern//\//\\/}\)${after}/\1/gp")
     fi
     [ "$part" ] || die "TODO: pattern \"${pattern}\" does not match"
     [ "$part" = "$text" ] && die "TODO: pattern \"${pattern}\" matches the entire task"
@@ -166,7 +166,7 @@ else
 fi
 
 splitTodo "$newtodo"
-remainder=$(echo "$text" | sed -E -e "s/${TODOTXT_PARTIALDONE_PATTERN}//g" -e 's/ and //g' -e 's/[ \t,.;:+-]//g')
+remainder=$(echo "$text" | ${GNU_PREFIX}sed -E -e "s/${TODOTXT_PARTIALDONE_PATTERN}//g" -e 's/ and //g' -e 's/[ \t,.;:+-]//g')
 if [ ! "$remainder" ]; then
     echo "TODO: All parts are completely done now; marking entire task as done."
     "$TODO_FULL_SH" do $item

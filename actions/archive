@@ -61,7 +61,7 @@ listItems()
     # that are hidden by a filter.
     TODOTXT_VERBOSE=0
     TODOTXT_PLAIN=1
-    post_filter_command="grep -e '^ *[0-9]\+ $mark ' | sed -ne 's/^ *\([0-9]\+\) .*$/\1/p'"
+    post_filter_command="grep -e '^ *[0-9]\+ $mark ' | "${GNU_PREFIX}"sed -ne 's/^ *\([0-9]\+\) .*$/\1/p'"
     if [ "$items" ]; then
         # Listing of task numbers is unintuitive, because the search pattern is
         # applied in the middle of alignment, when the numbers have already been
@@ -111,14 +111,14 @@ processItems()
 
     if [ "$moveItems" ]; then
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
-            _list "$TODO_FILE" "^ *\\(${moveItems//$'\n'/\\|}\\) " | sed -e "\$s/tasks shown/tasks ${what}/"
+            _list "$TODO_FILE" "^ *\\(${moveItems//$'\n'/\\|}\\) " | "${GNU_PREFIX}"sed -e "\$s/tasks shown/tasks ${what}/"
         else
             moveCnt=$(echo "$moveItems" | wc -l)
             echo "TODO: $moveCnt task(s) ${what}."
         fi
 
-        sed -ne "${moveItems//$'\n'/p;}p" "$TODO_FILE" >> "$FILE" || exit $?
-        sed -i.bak -e "${moveItems//$'\n'/s#^.*##;}s#^.*##" "$TODO_FILE" || exit $?
+        "${GNU_PREFIX}"sed -ne "${moveItems//$'\n'/p;}p" "$TODO_FILE" >> "$FILE" || exit $?
+        "${GNU_PREFIX}"sed -i.bak -e "${moveItems//$'\n'/s#^.*##;}s#^.*##" "$TODO_FILE" || exit $?
     else
         echo "TODO: No tasks have been ${what}."
     fi
@@ -140,5 +140,5 @@ if [ -x "$TODO_ACTIONS_DIR/defragment" ]; then
     # lines, but also adapts cross-task references; use it.
     "$TODO_FULL_SH" defragment
 else
-    sed -i.bak -e '/./!d' "$TODO_FILE"
+    "${GNU_PREFIX}"sed -i.bak -e '/./!d' "$TODO_FILE"
 fi

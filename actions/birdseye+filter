@@ -49,8 +49,8 @@ TMPTODO="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${T
 TMPDONE="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TMPDIR:-/tmp}/$(basename -- "$0")D.$$")"
 
 export TODOTXT_VERBOSE=0
-"$TODO_FULL_SH" -f -p command list "$@" | sed -e 's/^[0-9]\+ //' > "$TMPTODO" || exit $?
-"$TODO_FULL_SH" -f -p command listfile "$DONE_FILE" "$@" | sed -e 's/^[0-9]\+ //' > "$TMPDONE" || exit $?
+"$TODO_FULL_SH" -f -p command list "$@" | ${GNU_PREFIX}sed -e 's/^[0-9]\+ //' > "$TMPTODO" || exit $?
+"$TODO_FULL_SH" -f -p command listfile "$DONE_FILE" "$@" | ${GNU_PREFIX}sed -e 's/^[0-9]\+ //' > "$TMPDONE" || exit $?
 export TODO_FILE=$TMPTODO
 export DONE_FILE=$TMPDONE
 

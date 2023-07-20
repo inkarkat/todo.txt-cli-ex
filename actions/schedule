@@ -76,7 +76,7 @@ listOpen()
 
     ensureFilter "$threshold"
     export TODOTXT_FILTER_FUTURE_TASKS=1    # Suppress tasks that are scheduled in the future.
-    post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
+    post_filter_command="${GNU_PREFIX}sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
 }
 listRange()
@@ -91,7 +91,7 @@ listRange()
     # And suppress tasks that are scheduled in the future of threshold.
     TODOTXT_FINAL_FILTER="TODOTXT_FILTER_FUTURE_TASKS=1 ${TODO_FILTER_DIR:?}/futureTasks $threshold ${TODOTXT_FINAL_FILTER:+|} ${TODOTXT_FINAL_FILTER}"
 
-    post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
+    post_filter_command="${GNU_PREFIX}sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
 }
 listFuture()
@@ -105,13 +105,13 @@ listFuture()
 
     ensureFilter "$threshold"
     export TODOTXT_FILTER_FUTURE_TASKS=-1   # Suppress tasks that have already been scheduled.
-    post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
+    post_filter_command="${GNU_PREFIX}sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
 }
 listAll()
 {
     export TODOTXT_FILTER_FUTURE_TASKS=0    # Disable the futureTasks filter.
-    post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
+    post_filter_command="${GNU_PREFIX}sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
 }
 
@@ -119,7 +119,7 @@ getUnscheduledTask()
 {
     getTodo "$1"
     # Remove threshold and priority.
-    unscheduledTodo=$(echo "$todo" | sed -e "s/${pattern}//g" -e "s/^([A-Z])* //")
+    unscheduledTodo=$(echo "$todo" | "${GNU_PREFIX}"sed -e "s/${pattern}//g" -e "s/^([A-Z])* //")
 }
 
 remove()

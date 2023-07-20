@@ -33,7 +33,7 @@ if [ "$action" = "usage" ]; then
     exit
 elif [ "$action" = "list" ]; then
     TODOTXT_VERBOSE=0
-    post_filter_command="grep -e '^ \\{0,\\}$1 ' | sed -e 's/ w:[0-9]\+//g'"
+    post_filter_command="grep -e '^ \\{0,\\}$1 ' | ${GNU_PREFIX}sed -e 's/ w:[0-9]\+//g'"
     # Note: Must use '^ \{0,\}', because '^ *$1' doesn't match for $1="1".
     # Remove the w:### markers from the output, as this information is already
     # included in the task indentation.
@@ -69,7 +69,7 @@ if [ $# -gt 0 ]; then
     # printed. We need to obtain the task numbers and pass them to the AWK
     # script.
     TODOTXT_VERBOSE=0
-    post_filter_command="sed -ne 's/^ *\([0-9]\+\) .*$/\1/p'"
+    post_filter_command="${GNU_PREFIX}sed -ne 's/^ *\([0-9]\+\) .*$/\1/p'"
     # It's difficult to store "$@" in a variable and keep the quoting. Thus, we
     # generate the list already here and store the result for the AWK to fetch
     # it later by re-invoking this script with the "filter" action argument.
@@ -79,7 +79,7 @@ else
 fi
 referencePattern='^w:[0-9]+$'
 
-awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -v verbose=$original_TODOTXT_VERBOSE '
+"${GNU_PREFIX}"awk -v isFilter=$isFilter -v referencePattern=$referencePattern -v callback=$0 -v verbose=$original_TODOTXT_VERBOSE '
     BEGIN {
         FS = "[ \t]"
 

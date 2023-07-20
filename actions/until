@@ -85,7 +85,7 @@ listDue()
     fi
 
     ensureFilter "$threshold"
-    post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
+    post_filter_command="${GNU_PREFIX}sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
 }
 listSpan()
@@ -97,12 +97,12 @@ listSpan()
 
     export TODOTXT_FILTER_UNTIL_DUE_DAYSPAN=$(((thresholdEpoch - todayEpoch) / 86400))
     ensureFilter
-    post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
+    post_filter_command="${GNU_PREFIX}sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
 }
 listAll()
 {
-    post_filter_command="sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
+    post_filter_command="${GNU_PREFIX}sed -e '/^ *[0-9]\+ [xX] /d' -e '/${pattern}/!d'"
     _list "$TODO_FILE" "$@"
 }
 
@@ -114,13 +114,13 @@ getUnscheduledTask()
         marker='z'
     else
         # Keep existing type of marker; either "u:" or "z:".
-        marker=$(echo "$todo" | sed -ne "s/^.*${pattern}.*\$/\\1/p")
+        marker=$(echo "$todo" | "${GNU_PREFIX}"sed -ne "s/^.*${pattern}.*\$/\\1/p")
         # And default to "u:".
         marker=${marker:-u}
     fi
 
     # Remove threshold and priority.
-    unscheduledTodo=$(echo "$todo" | sed -e "s/${pattern}//g" -e "s/^([A-Z])* //")
+    unscheduledTodo=$(echo "$todo" | "${GNU_PREFIX}"sed -e "s/${pattern}//g" -e "s/^([A-Z])* //")
 }
 
 remove()

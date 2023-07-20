@@ -49,7 +49,7 @@ replace()
     # Note: Use a substitution delimiter that has no special meaning as a regexp
     # symbol. For example, "|" causes problems when it is contained in pattern
     # (e.g. /\(^\| \)/), and then mistakenly double-escaped.
-    newtodo=$(echo "$newtodo" | sed "s%${pattern//%/\\%}%${input}%g") || exit 1
+    newtodo=$(echo "$newtodo" | ${GNU_PREFIX}sed "s%${pattern//%/\\%}%${input}%g") || exit 1
 }
 
 pattern=

@@ -38,8 +38,8 @@ set -o pipefail
 # Defragment blank lines.
 # Note: Deletion of blank lines must proceed from end to begin to avoid adapting
 # remaining line numbers.
-emptyLineNums=$(sed -n '/./!=' "$TODO_FILE" | tac) || exit $?
-finalLineNumber=$(echo "$emptyLineNums" | sed -ne '$p')
+emptyLineNums=$(${GNU_PREFIX}sed -n '/./!=' "$TODO_FILE" | tac) || exit $?
+finalLineNumber=$(echo "$emptyLineNums" | ${GNU_PREFIX}sed -ne '$p')
 for emptyLineNum in $emptyLineNums
 do
     # As each empty line is processed separately, the self-reference warning
@@ -47,7 +47,7 @@ do
     # the script is able to print the final line number.
     [ "$emptyLineNum" = "$finalLineNumber" ] && isSelfReferenceWarning=1 || isSelfReferenceWarning=0
 
-    awk -v "markerPattern=$TODOTXT_DEFRAGMENT_MARKER_PATTERN" -v "referencePattern=$TODOTXT_DEFRAGMENT_REFERENCE_PATTERN" -v "lineNum=$emptyLineNum" -v "isSelfReferenceWarning=$isSelfReferenceWarning" '
+    "${GNU_PREFIX}"awk -v "markerPattern=$TODOTXT_DEFRAGMENT_MARKER_PATTERN" -v "referencePattern=$TODOTXT_DEFRAGMENT_REFERENCE_PATTERN" -v "lineNum=$emptyLineNum" -v "isSelfReferenceWarning=$isSelfReferenceWarning" '
         function adapt(oldNum,     todo) {
             if (oldNum > lineNum) {
                 if (isSelfReferenceWarning && oldNum == NR) {

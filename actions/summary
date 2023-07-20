@@ -37,7 +37,7 @@ set -o pipefail
 
 export TODOTXT_VERBOSE=0    # Turn off the list footer.
 
-totalNum=$(sed -ne '$ =' "$TODO_FILE") || exit $?   # Total task number, not just the ones matching TERM.
+totalNum=$(${GNU_PREFIX}sed -ne '$ =' "$TODO_FILE") || exit $?   # Total task number, not just the ones matching TERM.
 if [ ! "$totalNum" ] || [ $totalNum -eq 0 ]; then
     listNum=0
     totalMessage=
@@ -90,7 +90,7 @@ inOutToday=$(inOutStat 'today' "$@")
 echo "TODO: ${inOutYesterday}; ${inOutToday}"
 
 
-prioritizedProjects=$("$TODO_FULL_SH" lspriprj "$TODOTXT_SUMMARY_PRIORITIES" "$@" | sed -n -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
+prioritizedProjects=$("$TODO_FULL_SH" lspriprj "$TODOTXT_SUMMARY_PRIORITIES" "$@" | ${GNU_PREFIX}sed -n -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
 if [ "$prioritizedProjects" ]; then
     echo "TODO: prioritized $prioritizedProjects"
 fi
@@ -98,7 +98,7 @@ fi
 
 waitReasons=
 if [ $waitNum -gt 0 ]; then
-    waitReasons=$("$TODO_FULL_SH" listblockers "$@" | sed -n -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
+    waitReasons=$("$TODO_FULL_SH" listblockers "$@" | ${GNU_PREFIX}sed -n -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
 fi
 if [ "$waitReasons" ]; then
     echo "TODO: waiting for $waitReasons"

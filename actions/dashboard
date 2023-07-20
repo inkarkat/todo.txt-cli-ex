@@ -38,14 +38,14 @@ echo "    Pending ${filter}tasks:"
 "$TODO_FULL_SH" what "$@"
 "$TODO_FULL_SH" summary "$@"
 
-modDate=$([ ${TODOTXT_RELTIME:-1} -ne 0 ] && reldate "$TODO_FILE" 2>/dev/null || date -d "$(stat -c %y "$TODO_FILE")" '+%F %R')
+modDate=$([ ${TODOTXT_RELTIME:-1} -ne 0 ] && reldate "$TODO_FILE" 2>/dev/null || date -d "$(${GNU_PREFIX}stat -c %y "$TODO_FILE")" '+%F %R')
 echo "TODO: last modified ${modDate}"
 
 if [ "$HOSTNAME" -a "$*" != "@$HOSTNAME" ]; then
     hereTaskNum=0
     hereTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here "$@")
     if [ "$hereTasks" ]; then
-        hereTaskNum=$(echo "$hereTasks" | sed -n '$ =')
+        hereTaskNum=$(echo "$hereTasks" | "${GNU_PREFIX}"sed -n '$ =')
         echo
         echo "    Local ${filter}tasks @${HOSTNAME}:"
         echo "$hereTasks"
@@ -54,7 +54,7 @@ if [ "$HOSTNAME" -a "$*" != "@$HOSTNAME" ]; then
     if [ $# -gt 0 ]; then
         # When filter TERM(s) are given, still include information about any
         # other local tasks.
-        allHereTaskNum=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here | sed -n '$ =')
+        allHereTaskNum=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here | "${GNU_PREFIX}"sed -n '$ =')
         if [ "$allHereTaskNum" ] && [ $allHereTaskNum -gt 0 ]; then
             if [ $hereTaskNum -gt 0 ]; then
                 moreHereTaskNum=$((allHereTaskNum - hereTaskNum))
@@ -69,12 +69,12 @@ if [ "$HOSTNAME" -a "$*" != "@$HOSTNAME" ]; then
 fi
 
 if [ -x "$TODO_ACTIONS_DIR/lsbumped" ]; then
-    mostBumpedTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" lsbumped "$@" | sed -e '1{ h; s/^.* \(!:[0-9]\+\).*$/\1/; x }' -e '1!{ G; / \(!:[0-9]\+\).*\n\1$/!{ s/.*//; q }; s/\n.*// }')
+    mostBumpedTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" lsbumped "$@" | "${GNU_PREFIX}"sed -e '1{ h; s/^.* \(!:[0-9]\+\).*$/\1/; x }' -e '1!{ G; / \(!:[0-9]\+\).*\n\1$/!{ s/.*//; q }; s/\n.*// }')
     if [ "$mostBumpedTasks" ]; then
-        mostBumpedTasksNum=$(echo "$mostBumpedTasks" | sed -n '$ =')
+        mostBumpedTasksNum=$(echo "$mostBumpedTasks" | "${GNU_PREFIX}"sed -n '$ =')
         if [ $mostBumpedTasksNum -gt 1 ]; then
             let num=$(date '+%-j')%${mostBumpedTasksNum}+1
-            mostBumpedTask=$(echo "$mostBumpedTasks" | sed -n "${num}p")
+            mostBumpedTask=$(echo "$mostBumpedTasks" | "${GNU_PREFIX}"sed -n "${num}p")
             mostBumpedAppendix=" (of ${mostBumpedTasksNum})"
         else
             mostBumpedTask=$mostBumpedTasks

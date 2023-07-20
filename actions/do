@@ -97,7 +97,7 @@ do
     # Cascade done to tasks linked from the now done task.
     linkMarkers=$(echo "$todo" | grep -o '[^ ]*l:[[:digit:]]\+' | grep '^l:')
     if [ "$linkMarkers" ]; then
-        links=$(echo "$linkMarkers" | sed -n -e 's/^l://' -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
+        links=$(echo "$linkMarkers" | "${GNU_PREFIX}"sed -n -e 's/^l://' -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
         echo "TODO: $item is linked to ${links}; cascading done marker."
         for link in $linkMarkers
         do
@@ -119,7 +119,7 @@ do
     if [ -x "$TODO_ACTIONS_DIR/trash" ]; then
         killMarkers=$(echo "$todo" | grep -o '[^ ]*k:[[:digit:]]\+' | grep '^k:')
         if [ "$killMarkers" ]; then
-            killedItems=$(echo "$killMarkers" | sed -n -e 's/^k://' -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
+            killedItems=$(echo "$killMarkers" | "${GNU_PREFIX}"sed -n -e 's/^k://' -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
             echo "TODO: $item trashes ${killedItems}."
             for killMarker in $killMarkers
             do
@@ -149,14 +149,14 @@ do
     referencingPattern=$(echo "$joinMarkers" | grep -v -e '^j:[0-9]\+$')
     referencingPattern+="${referencingPattern:+$'\n'}j:${item}"
     referencingPattern="\\(^\\| \\)\\(${referencingPattern//$'\n'/\\|}\\)"
-    referencedItems=$(sed -n -e '/^[xX] /b' -e "/${referencingPattern}/=" "$TODO_FILE") || exit $?
+    referencedItems=$("${GNU_PREFIX}"sed -n -e '/^[xX] /b' -e "/${referencingPattern}/=" "$TODO_FILE") || exit $?
 
     # Add the tasks referenced from the current task, unless they're already
     # done or trashed.
     referencedFromHere=$(echo "$joinMarkers" | grep -e '^j:[0-9]\+$')
     if [ "$referencedFromHere" ]; then
         referencedFromHere=${referencedFromHere//j:/}
-        referencedFromHereItems=$(sed -n -e "${referencedFromHere/$'\n'/b check}b check" -e 'b' -e ':check' -e '/^[xX] /!=' "$TODO_FILE") || exit $?
+        referencedFromHereItems=$("${GNU_PREFIX}"sed -n -e "${referencedFromHere/$'\n'/b check}b check" -e 'b' -e ':check' -e '/^[xX] /!=' "$TODO_FILE") || exit $?
         [ "$referencedFromHereItems" ] && referencedItems=$(echo "${referencedItems}${referencedItems:+
 }${referencedFromHereItems}" | sort)
     fi

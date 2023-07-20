@@ -117,7 +117,7 @@ newtodo="${targetDoneMarkerAndDate}${targetPriAndAddDate}${targetPrepends[*]}${t
 # replacement of the line here.
 input=$newtodo
 cleaninput "for sed"
-sed -i.bak "$target s|^.*|${input}|" "$TODO_FILE" || exit $?
+"${GNU_PREFIX}"sed -i.bak "$target s|^.*|${input}|" "$TODO_FILE" || exit $?
 if [ $TODOTXT_VERBOSE -gt 0 ]; then
     echo "$target $targetTodo"
 fi

@@ -36,7 +36,7 @@ if [ $TODOTXT_PLAIN -eq 0 ]; then
         export COLOR_BLOCKER=${COLOR_BLOCKER-'\\033[7;33m'}
     fi
 
-    awk -v date=$1 '
+    ${GNU_PREFIX}awk -v date=$1 '
 function hasHighlight(colorVar) {
     return (ENVIRON[colorVar] != "")
 }

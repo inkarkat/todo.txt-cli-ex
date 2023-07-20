@@ -37,20 +37,20 @@ item=$1; shift
 [ -z "$item" ] && die "$errmsg"
 [[ "$item" = +([0-9]) ]] || die "$errmsg"
 # Get task without potential priority and prepended date.
-todo=$(sed -e "$item!d" -e 's/^\((.) \)\{0,1\}\([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\{0,1\}//' "$TODO_FILE") || exit $?
+todo=$("${GNU_PREFIX}"sed -e "$item!d" -e 's/^\((.) \)\{0,1\}\([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\{0,1\}//' "$TODO_FILE") || exit $?
 [ -z "$todo" ] && die "TODO: No task $item."
 
 # Check whether this task is done or trashed.
 if [ "${todo:0:2}" = 'x ' -o "${todo:0:2}" = 'X ' ]; then
     # Remove "x" done / "X" trashed marker and timestamp.
-    todo=$(echo "$todo" | sed 's|^[xX] \([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\{1,2\}||')
+    todo=$(echo "$todo" | "${GNU_PREFIX}"sed 's|^[xX] \([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\{1,2\}||')
 fi
 
 "$TODO_FULL_SH" add "$todo"
 
 # Figure out the line of what we just added, "uncomment" it, and perform any
 # passed substitutions.
-clonedItem=$(sed -n '$ =' "$TODO_FILE") || exit $?
+clonedItem=$("${GNU_PREFIX}"sed -n '$ =' "$TODO_FILE") || exit $?
 if [ -x "$TODO_ACTIONS_DIR/uncomment" ]; then
     "$TODO_FULL_SH" uncomment -q "$clonedItem"
 fi

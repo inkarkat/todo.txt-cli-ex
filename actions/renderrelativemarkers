@@ -88,7 +88,7 @@ if [ "$action" = --task ]; then
 else
     taskCnt=0
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
-        TOTAL=$(sed -n '$ =' "$TODO_FILE") || exit $?
+        TOTAL=$("${GNU_PREFIX}"sed -n '$ =' "$TODO_FILE") || exit $?
         PADDING=${#TOTAL}
 
         while IFS=$'\n' read -r task
