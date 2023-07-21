@@ -37,7 +37,7 @@ echo "    Pending ${filter}tasks:"
 "$TODO_FULL_SH" what "$@"
 "$TODO_FULL_SH" summary "$@"
 
-modDate=$([ ${TODOTXT_RELTIME:-1} -ne 0 ] && reldate "$TODO_FILE" 2>/dev/null || date -d "$(${GNU_PREFIX}stat -c %y "$TODO_FILE")" '+%F %R')
+modDate=$([ ${TODOTXT_RELTIME:-1} -ne 0 ] && reldate "$TODO_FILE" 2>/dev/null || "${GNU_PREFIX}"date -d "$("${GNU_PREFIX}"stat -c %y "$TODO_FILE")" '+%F %R')
 echo "TODO: last modified ${modDate}"
 
 if [ "$HOSTNAME" -a "$*" != "@$HOSTNAME" ]; then
