@@ -20,12 +20,11 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)latestDueTasks	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 export TODOTXT_FILTER_UNTIL_DUE_DAYSPAN=${TODOTXT_FILTER_UNTIL_DUE_DAYSPAN:-3}
 
-${GNU_PREFIX}awk -v date=$1 '
+${GNU_PREFIX}awk -v date=$1 -v date_cmd="${GNU_PREFIX}date" '
 function getThreshold(date) {
     if (date == "") {
         return mktime(strftime("%Y %m %d 00 00 00", systime()))

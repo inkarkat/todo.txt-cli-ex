@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)summary	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -37,7 +36,7 @@ set -o pipefail
 
 export TODOTXT_VERBOSE=0    # Turn off the list footer.
 
-totalNum=$(${GNU_PREFIX}sed -ne '$ =' "$TODO_FILE") || exit $?   # Total task number, not just the ones matching TERM.
+totalNum=$("${GNU_PREFIX}"sed -ne '$ =' "$TODO_FILE") || exit $?   # Total task number, not just the ones matching TERM.
 if [ ! "$totalNum" ] || [ $totalNum -eq 0 ]; then
     listNum=0
     totalMessage=

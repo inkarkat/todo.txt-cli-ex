@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)dopart	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -64,7 +63,7 @@ doParts()
     fi
 
 
-    local now=$(date '+%Y-%m-%d')
+    local now=$("${GNU_PREFIX}"date '+%Y-%m-%d')
     if [ "$*" ]; then
         local comment=${*#${TODOTXT_COMMENT_SYMBOL# }}
         comment=${comment//\\/\\\\}

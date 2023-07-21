@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)addescalating	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -33,9 +32,9 @@ shift
 errmsg="usage: $TODO_SH $(basename $0) DATESPAN \"THING I NEED TO DO\""
 [ $# -ge 1 ] || die "$errmsg"
 
-priCDate=$(date -d 'today' +%F) || exit 1
-priBDate=$(date -d "$priCDate $1" +%F) || exit 1
-priADate=$(date -d "$priBDate $1" +%F) || exit 1
+priCDate=$("${GNU_PREFIX}"date -d 'today' +%F) || exit 1
+priBDate=$("${GNU_PREFIX}"date -d "$priCDate $1" +%F) || exit 1
+priADate=$("${GNU_PREFIX}"date -d "$priBDate $1" +%F) || exit 1
 shift
 
 if [ "$priCDate" = "$priBDate" -o "$priBDate" = "$priADate" ]; then

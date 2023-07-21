@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)unwait	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -117,7 +116,7 @@ t repeat
         continue
     else
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
-            if [ "$(${GNU_PREFIX}sed -e "$item!d" -e "/$generalWaitPattern/d" "$TODO_FILE")" = "" ]; then
+            if [ "$("${GNU_PREFIX}"sed -e "$item!d" -e "/$generalWaitPattern/d" "$TODO_FILE")" = "" ]; then
                 newState="had blocker(s) removed; still blocked"
             else
                 newState="unblocked"

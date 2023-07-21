@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)dashboard	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -73,7 +72,7 @@ if [ -x "$TODO_ACTIONS_DIR/lsbumped" ]; then
     if [ "$mostBumpedTasks" ]; then
         mostBumpedTasksNum=$(echo "$mostBumpedTasks" | "${GNU_PREFIX}"sed -n '$ =')
         if [ $mostBumpedTasksNum -gt 1 ]; then
-            let num=$(date '+%-j')%${mostBumpedTasksNum}+1
+            let num=$("${GNU_PREFIX}"date '+%-j')%${mostBumpedTasksNum}+1
             mostBumpedTask=$(echo "$mostBumpedTasks" | "${GNU_PREFIX}"sed -n "${num}p")
             mostBumpedAppendix=" (of ${mostBumpedTasksNum})"
         else

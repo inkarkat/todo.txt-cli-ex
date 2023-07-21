@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)addconsider	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -34,6 +33,6 @@ shift
 errmsg="usage: $TODO_SH $(basename $0) \"THING I MIGHT SOON DO\""
 [ $# -lt 1 ] && die "$errmsg"
 
-depriDate=$(date -d "2 days" +%F) || exit 1
+depriDate=$("${GNU_PREFIX}"date -d "2 days" +%F) || exit 1
 
 "$TODO_FULL_SH" addpri O "$@" "d:${depriDate}"

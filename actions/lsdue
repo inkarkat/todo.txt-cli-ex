@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)lsdue	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -35,7 +34,7 @@ threshold=
 summary='due \0'
 if [ $# -ge 1 ]; then
     # Check whether the first argument represents a date.
-    threshold=$(date -d "$1" +%F 2>/dev/null)
+    threshold=$("${GNU_PREFIX}"date -d "$1" +%F 2>/dev/null)
     [ "$threshold" ] && { shift; summary="tasks due on $threshold shown"; }
 fi
 

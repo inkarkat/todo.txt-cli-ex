@@ -15,7 +15,6 @@
 # SOURCE:
 #   https://github.com/FND/todo.txt-cli/blob/extensions/schedule
 #
-# @(#)schedule	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -69,7 +68,7 @@ listOpen()
 {
     threshold=''
     if [ "$1" = 'on' -a "$2" != '' ]; then
-        threshold=$(date -d "$2" +%F) || exit 1
+        threshold=$("${GNU_PREFIX}"date -d "$2" +%F) || exit 1
         shift
         shift
     fi
@@ -82,7 +81,7 @@ listOpen()
 listRange()
 {
     [ "$1" ] || die "$errmsg"
-    threshold=$(date -d "$1" +%F) || exit 1
+    threshold=$("${GNU_PREFIX}"date -d "$1" +%F) || exit 1
     shift
 
     ensureFilter
@@ -98,7 +97,7 @@ listFuture()
 {
     threshold=''
     if [ "$1" = 'on' -a "$2" != '' ]; then
-        threshold=$(date -d "$2" +%F) || exit 1
+        threshold=$("${GNU_PREFIX}"date -d "$2" +%F) || exit 1
         shift
         shift
     fi
@@ -137,7 +136,7 @@ replace()
     local item=$1
     local threshold=$2
     [ -z "$threshold" ] && die "$errmsg"
-    date=$(date -d "$threshold" +%F) || return 1
+    date=$("${GNU_PREFIX}"date -d "$threshold" +%F) || return 1
 
     getUnscheduledTask "$item"
     scheduledTodo="$unscheduledTodo t:$date"

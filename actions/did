@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)did	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -66,7 +65,7 @@ elif [ "$1" = 'the next day' ]; then
 else
     [ "$1" = 'on' ] && shift
     [ "$1" ] || die "$errmsg"
-    doneDate=$(date -d "$1" +%F) || exit 1
+    doneDate=$("${GNU_PREFIX}"date -d "$1" +%F) || exit 1
     shift
 fi
 
@@ -78,7 +77,7 @@ do
         if [ ! "$addDate" ]; then
             die "TODO: Cannot use date span; no date was included when $item was added."
         fi
-        doneDate=$(date -d "${addDate}${doneDateSpan:+ }${doneDateSpan}" +%F) || exit 1
+        doneDate=$("${GNU_PREFIX}"date -d "${addDate}${doneDateSpan:+ }${doneDateSpan}" +%F) || exit 1
     fi
 
     if [ "$*" ]; then

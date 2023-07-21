@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)opportunity	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -43,7 +42,7 @@ do
 done
 
 [ $# -eq 1 ] || die "$errmsg"
-depriDate=$(date -d "$1" +%F) || exit 1
+depriDate=$("${GNU_PREFIX}"date -d "$1" +%F) || exit 1
 shift
 
 for item in ${items[*]//,/ }

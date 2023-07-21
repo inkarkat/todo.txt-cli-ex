@@ -15,7 +15,6 @@
 #   Derived from the schedule action by FND:
 #   https://github.com/FND/todo.txt-cli/blob/extensions/schedule
 #
-# @(#)until	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -79,7 +78,7 @@ listDue()
 {
     threshold=''
     if [ "$1" = 'on' -a "$2" != '' ]; then
-        threshold=$(date -d "$2" +%F) || exit 1
+        threshold=$("${GNU_PREFIX}"date -d "$2" +%F) || exit 1
         shift
         shift
     fi
@@ -91,8 +90,8 @@ listDue()
 listSpan()
 {
     [ "$1" ] || die "$errmsg"
-    thresholdEpoch=$(date -d "$1" +%s) || exit 1
-    todayEpoch=$(date -d "$(date +%F)" +%s)
+    thresholdEpoch=$("${GNU_PREFIX}"date -d "$1" +%s) || exit 1
+    todayEpoch=$("${GNU_PREFIX}"date -d "$("${GNU_PREFIX}"date +%F)" +%s)
     shift
 
     export TODOTXT_FILTER_UNTIL_DUE_DAYSPAN=$(((thresholdEpoch - todayEpoch) / 86400))
@@ -138,7 +137,7 @@ replace()
     local item=$1
     local threshold=$2
     [ -z "$threshold" ] && die "$errmsg"
-    date=$(date -d "$threshold" +%F) || return 1
+    date=$("${GNU_PREFIX}"date -d "$threshold" +%F) || return 1
 
     getUnscheduledTask "$item"
     scheduledTodo="$unscheduledTodo ${marker}:$date"

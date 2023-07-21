@@ -52,8 +52,8 @@ filters=()
 # Omit the "done" highlighting in favor of the more readable alternating task
 # highlighting for readability; all tasks are done, anyway.
 # export HIDE_COLOR_DONE=1
-SINCE_DATE=$(${TODO_DIR}/bin/fuzzydate "${fuzzydate_params[@]}" | cut -c 1-10)
-DAY_OF_WEEK=$(date -j -f "%Y-%m-%d" "${SINCE_DATE}" "+%A")
+SINCE_DATE=$("${TODO_DIR}"/bin/fuzzydate "${fuzzydate_params[@]}" | cut -c 1-10)
+DAY_OF_WEEK=$("${GNU_PREFIX}"date -j -f "%Y-%m-%d" "${SINCE_DATE}" "+%A")
 
 echo
 echo '-----------------------------------------------------------'

@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)trash	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -80,7 +79,7 @@ do
     elif [ ! "$isHard" -a "${todo:0:2}" = 'X ' ]; then
         echo "TODO: $item is already marked as trashed."
     else
-        now=$(date '+%Y-%m-%d')
+        now=$("${GNU_PREFIX}"date '+%Y-%m-%d')
         # Remove priority once task is trashed.
         "${GNU_PREFIX}"sed -i.bak $item"s/^(.) //" "$TODO_FILE" || exit $?
         # Add "X" trashed marker and timestamp like the 'do' command.

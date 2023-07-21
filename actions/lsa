@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)lsa	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -32,7 +31,7 @@ shift
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 
-TOTAL=$(${GNU_PREFIX}sed -n '$ =' "$TODO_FILE") || exit $?
+TOTAL=$("${GNU_PREFIX}"sed -n '$ =' "$TODO_FILE") || exit $?
 PADDING=${#TOTAL}
 
 # To sort based on the entered date, add a dummy second column for tasks that
@@ -44,8 +43,8 @@ export TODOTXT_FILTER_FUTURE_TASKS=0
 cat "$TODO_FILE" "$DONE_FILE" "$TRASH_FILE" | TODOTXT_VERBOSE=0 _format '' "$PADDING" "$@"
 
 if [ $TODOTXT_VERBOSE -gt 0 ]; then
-    TDONE=$(${GNU_PREFIX}sed -n '$ =' "$DONE_FILE") || exit $?
-    TTRASH=$(${GNU_PREFIX}sed -n '$ =' "$TRASH_FILE") || exit $?
+    TDONE=$("${GNU_PREFIX}"sed -n '$ =' "$DONE_FILE") || exit $?
+    TTRASH=$("${GNU_PREFIX}"sed -n '$ =' "$TRASH_FILE") || exit $?
     TASKNUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$TODO_FILE" 1 "$@" | ${GNU_PREFIX}sed -n '$ =')
     DONENUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$DONE_FILE" 1 "$@" | ${GNU_PREFIX}sed -n '$ =')
     TRASHNUM=$(TODOTXT_PLAIN=1 TODOTXT_VERBOSE=0 _format "$TRASH_FILE" 1 "$@" | ${GNU_PREFIX}sed -n '$ =')

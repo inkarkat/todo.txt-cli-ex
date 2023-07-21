@@ -16,7 +16,6 @@
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)backup	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1
@@ -48,7 +47,7 @@ elif type -P "$TODOTXT_BACKUP_COMMAND" >/dev/null; then
         eval '"$TODOTXT_BACKUP_COMMAND" "${TODO_DIR}/"'${TODOTXT_BACKUP_FILES}
     fi
 else
-    readonly timestamp=$(date +%F_%H%M%S)
+    readonly timestamp=$("${GNU_PREFIX}"date +%F_%H%M%S)
     eval 'for todofile in "${TODO_DIR}/"'${TODOTXT_BACKUP_FILES}'
     do
         filename=$(basename -- "$todofile")
