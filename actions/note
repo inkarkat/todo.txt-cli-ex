@@ -2,17 +2,23 @@
 
 TODO_NOTES_DIR=${TODO_NOTES_DIR:-$TODO_DIR/notes}
 TODO_NOTE_TAG=${TODO_NOTE_TAG:-note}
-TODO_NOTE_TEMPLATE=${TODO_NOTE_TEMPLATE:-XXX}
+TODO_NOTE_NAME_TEMPLATE=${TODO_NOTE_NAME_TEMPLATE:-XXX}
 TODO_NOTE_EXT=${TODO_NOTE_EXT:-.txt}
-TODO_NOTE_ARCHIVE="$TODO_NOTES_DIR/archive$TODO_NOTE_EXT"
+TODO_NOTE_ARCHIVE="${TODO_NOTES_DIR}"/archive"${TODO_NOTE_EXT}"
 TODO_NOTE_PAGER=${TODO_NOTE_PAGER:-cat}
 
+# set TODO_NOTE_TEMPLATE
+#    to a path to a file to be used as a note template
+
+# set TODO_NOTE_EDIT_OR_ADD=true 
+#    in order to add and not fail if attempting to edit a non-existing note
+
 usage() {
-    echo "    $(basename $0) add|a ITEM#"
+    echo "    $(basename "${0}") add|a ITEM#"
     echo "      Adds a note to the task on line ITEM#."
-    echo "    $(basename $0) edit|e ITEM#|archive|a"
+    echo "    $(basename "${0}") edit|e ITEM#|archive|a"
     echo "      Opens in EDITOR the note related with the task on line ITEM# or the notes archive."
-    echo "    $(basename $0) show|s ITEM#|archive|a"
+    echo "    $(basename "${0}") show|s ITEM#|archive|a"
     echo "      Shows the note related with the task on line ITEM# or the notes archive."
 }
 
@@ -25,10 +31,10 @@ getnotenamefromnumber() {
     #     $notename contains note name, if task has note.
     #     $item contains the task name
 
-    item="$1"
+    item="${1}"
 
-    getTodo "$item"
-    getnotenamefromtext "$todo"
+    getTodo "${item}"
+    getnotenamefromtext "${todo}"
 }
 
 getnotenamefromtext() {
@@ -37,16 +43,27 @@ getnotenamefromtext() {
     # Postcondition:
     #     $notename contains note name, if task has note.
 
-    notename=$(echo "$1" | grep -o " $TODO_NOTE_TAG:[^ .]*${TODO_NOTE_EXT}" | grep -o "[^:]*${TODO_NOTE_EXT}")
+    notename=$(echo "${1}" | grep -o " ${TODO_NOTE_TAG}:[^ .]*${TODO_NOTE_EXT}" | grep -o "[^:]*${TODO_NOTE_EXT}")
 }
 
 editnote() {
     # Parameter:: $1: Path of the file to edit
     # Preconditions: none
     # Postcondition: none
-    if [ "$EDITOR" ]
+    if [ "${EDITOR}" ]
     then
-        $EDITOR "$1"
+	    if [ "${TODO_NOTE_EDIT_OR_ADD}" ]
+	    then
+		    if [ -f "${1}" ]
+		    then
+                  # $1 is a file so edit it
+                  "${EDITOR}" "${1}"
+		    else
+                  "${TODO_SH}" note add "${item}"
+		    fi
+	    else
+          "${EDITOR}" "${1}"
+	    fi
     else
         echo The EDITOR environment variable is not set.
     fi
@@ -58,24 +75,37 @@ getnotefilepath () {
     # Preconditions:
     # Postcondition: $notefilepath contains the path of the file to edit or show
 
-    item="$1"
+    item="${1}"
 
-    if [[ "$item" ]] && [[ archive =~ ^${item}.*$ ]]
+    if [[ "${item}" ]] && [[ archive =~ ^${item}.*$ ]]
     then
-        notefilepath=$TODO_NOTE_ARCHIVE
+        notefilepath=${TODO_NOTE_ARCHIVE}
     else
-        getnotenamefromnumber $1
+        getnotenamefromnumber "${1}"
 
-        if [ $notename ]
+        if [ "${notename}" ]
         then
-            notefilepath="$TODO_NOTES_DIR/${notename}"
+            notefilepath="${TODO_NOTES_DIR}/${notename}"
         else
-            die "TODO: Task $item has no note."
+	    if [ "${TODO_NOTE_EDIT_OR_ADD}" ] && [ "${EDITTING_NOTE}" ]
+	    then
+		# because we
+		#   * have the EDIT_OR_ADD flag set
+		#   * and we are edditing a note
+		# we set the notefilepath to just the
+		# number we were passed so that it can
+		# be used by edit, which will then 
+		# hand it off to add, which will then
+		# hand it back to edit
+		notefilepath="${item}"
+	    else
+		die "TODO: Task ${item} has no note."
+	    fi
         fi
     fi
 }
 
-if [ "$1" = "usage" ]
+if [ "${1}" = "usage" ]
 then
     usage
     exit 0
@@ -85,65 +115,88 @@ shift
 TODO_NOTE_ACTION=$1
 shift
 
-case "$TODO_NOTE_ACTION" in
+case "${TODO_NOTE_ACTION}" in
 "add" | "a")
-    errmsg="usage: $TODO_SH $(basename $0) $TODO_NOTE_ACTION ITEM#"
-    getnotenamefromnumber $1
+    EDITTING_NOTE=
 
-    [ $notename ] && die "TODO: Task $item already has a note."
+    errmsg="usage: ${TODO_SH} $(basename "${0}") ${TODO_NOTE_ACTION} ITEM#"
+
+    getnotenamefromnumber "${1}"
+
+    if [ "${notename}" ] && [ "${TODO_NOTE_EDIT_OR_ADD}" ]
+    then
+       getnotefilepath "${1}"
+       editnote "${notefilepath}"
+       exit
+    fi
+
+    [ "${notename}" ] && die "TODO: Task ${item} already has a note."
     
     # Create notes directory if doesn't exist
-    [ -d "$TODO_NOTES_DIR" ]  || mkdir -p "$TODO_NOTES_DIR" 2> /dev/null || die "Error: $TODO_NOTES_DIR is not a directory"
+    [ -d "${TODO_NOTES_DIR}" ]  || mkdir -p "${TODO_NOTES_DIR}" 2> /dev/null || die "Error: ${TODO_NOTES_DIR} is not a directory"
 
-    # Create file
-    filename=$(mktemp "$TODO_NOTES_DIR/${TODO_NOTE_TEMPLATE}")
-    notename=$(basename "$filename${TODO_NOTE_EXT}")
-    title=$(echo "$todo" | "${GNU_PREFIX}"sed -e "s/^\(x ....-..-.. \)\?//" -e "s/^(.) \?//")
-    echo \# $title > "$TODO_NOTES_DIR/${notename}"
+    # Create a temp file, whose name we will use for our note
+    filename=$(mktemp "${TODO_NOTES_DIR}"/"${TODO_NOTE_NAME_TEMPLATE}")
+
+    # set the name
+    notename=$(basename "${filename}${TODO_NOTE_EXT}")
+
+    # title is the todo line with:
+    #    'x' and completion date stripped if done
+    #    priority stripped if set
+    title=$(echo "${todo}" | "${GNU_PREFIX}"sed -e "s/^\(x ....-..-.. \)\?//" -e "s/^(.) \?//")
+
+    # add the title
+    echo \# "${title}" > "${TODO_NOTES_DIR}"/"${notename}"
+    
+    # add a blank line
+    echo >> "${TODO_NOTES_DIR}"/"${notename}"
+    
+    # add template contents if set
+    if [ "${TODO_NOTE_TEMPLATE}" ]
+    then
+	cat "${TODO_NOTE_TEMPLATE}" >> "${TODO_NOTES_DIR}"/"${notename}"
+    fi
+
     # remove temp file created
     rm -f "${filename}"
 
     # Append note tag to task
-    "$TODO_SH" command append "$item" "${TODO_NOTE_TAG}:$notename"
+    "${TODO_SH}" command append "${item}" "${TODO_NOTE_TAG}:${notename}"
 
-    getTodo "$item"
-    echo TODO: Note added to task $item.
-
-    echo "Edit note?  (y/n)"
-    read ANSWER
-    if [ "$ANSWER" = "y" ]
-    then
-        editnote "$TODO_NOTES_DIR/${notename}"
-    fi
+    # open the note in the editor
+    editnote "${TODO_NOTES_DIR}"/"${notename}"
     ;;
 
 "edit" | "e")
-    errmsg="usage: $TODO_SH $(basename $0) edit|e ITEM#|archive|a"
-    getnotefilepath $*
-    editnote "$notefilepath"
+    errmsg="usage: ${TODO_SH} $(basename "${0}") edit|e ITEM#|archive|a"
+    EDITTING_NOTE=true
+    getnotefilepath "${*}"
+    EDITTING_NOTE=
+    editnote "${notefilepath}"
     ;;
 
 "show" | "s")
-    errmsg="usage: $TODO_SH $(basename $0) show|s ITEM#|archive|a"
-    getnotefilepath $*
-    $TODO_NOTE_PAGER "$notefilepath"
+    errmsg="usage: ${TODO_SH} $(basename "${0}") show|s ITEM#|archive|a"
+    getnotefilepath "${*}"
+    "${TODO_NOTE_PAGER}" "${notefilepath}"
     ;;
 
 "__archive")
-    getnotenamefromtext "$*"
+    getnotenamefromtext "${*}"
 
-    if [ $notename ]
+    if [ "${notename}" ]
     then
-        cat "$TODO_NOTES_DIR/${notename}" >> "$TODO_NOTE_ARCHIVE"
-        echo >> "$TODO_NOTE_ARCHIVE" ## Add blank line
-        rm -f "$TODO_NOTES_DIR/${notename}"
+        cat "${TODO_NOTES_DIR}"/"${notename}" >> "${TODO_NOTE_ARCHIVE}"
+        echo >> "${TODO_NOTE_ARCHIVE}" ## Add blank line
+        rm -f "${TODO_NOTES_DIR}"/"${notename}"
     fi
     ;;
 
 "__rmfromtext")
-    getnotenamefromtext "$*"
-    if [ -n "$notename" ]; then
-      rm -f "$TODO_NOTES_DIR/$notename"
+    getnotenamefromtext "${*}"
+    if [ -n "${notename}" ]; then
+      rm -f "${TODO_NOTES_DIR}"/"${notename}"
     fi
     ;;
 
