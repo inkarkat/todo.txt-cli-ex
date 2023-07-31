@@ -1,0 +1,63 @@
+#!/bin/bash
+###############################################################################
+##
+# FILE:         datesince
+# AUTHOR:       Jonathan C. Dietrich (jcdietrich@gmail.com)
+# DATE CREATED: 2023-07-25
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2023 Jonathan C. Dietrich
+#   Base on the work of Ingo Karkat
+#
+# COPYRIGHT: (C) 2010-2016 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# SOURCE: Inspired by the Python implementation by FND
+#   https://github.com/FND/todo.txt-cli/blob/extensions/futureTasks
+#
+###############################################################################
+
+TODOTXT_FILTER_DATE_SINCE=${TODOTXT_FILTER_DATE_SINCE:-'false'}
+echo "in filter value: ${TODOTXT_FILTER_DATE_SINCE}"
+if [ ${TODOTXT_FILTER_DATE_SINCE} != 'false' ]; then
+    "${GNU_PREFIX}awk" -v date="${TODOTXT_FILTER_DATE_SINCE}" '
+function highlight(colorVar,      color) {
+    color = ENVIRON[colorVar]
+    gsub(/\\+033/, "\033", color)
+    return color
+}
+function getThreshold(date) {
+    if (date == "") {
+        return mktime(strftime("%Y %m %d 00 00 00", systime()))
+    } else {
+        return mktime(gensub(/([0-9]{4})-([0-9]{2})-([0-9]{2})/, "\\1 \\2 \\3 00 00 00", 1, date))
+    }
+}
+BEGIN {
+    threshold = getThreshold(date)
+}
+/[0-9]+ x / {
+    if (match($0, /^[0-9]+ +x +[0-9]{4}-[0-9]{2}-[0-9]{2}/)) {
+	matched_date = getThreshold(substr($0, RSTART + RLENGTH - 10, 10))
+	if (matched_date >= threshold) {
+		print "done!"
+          print
+	} else {
+	  next
+  	}
+    }
+}
+/^[0-9]+ [^xX]/ {
+  { print }
+}'
+
+else
+    echo 'no date'
+    cat
+fi
