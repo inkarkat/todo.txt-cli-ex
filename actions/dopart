@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2013-2022 Ingo Karkat
+# COPYRIGHT: (C) 2013-2023 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -67,7 +67,6 @@ doParts()
     if [ "$*" ]; then
         local comment=${*#${TODOTXT_COMMENT_SYMBOL# }}
         comment=${comment//\\/\\\\}
-        comment=${comment//#/\\#}
         comment=${comment//&/\\&}
         local donePart=$(printf "$TODOTXT_PARTIALDONE_TEMPLATE_WITH_COMMENT" "&" "$now" "$comment")
     else
@@ -92,7 +91,7 @@ doParts()
         # To get the actual text of the parts that were done (including the used
         # separators), substitute the original task again and this time extract
         # the part pattern.
-        changedPart=$(echo "$todo" | ${GNU_PREFIX}sed -E "s#^.*(${partPattern}).*\$#${donePart/&/\\1}#")
+        changedPart=$(echo "$todo" | ${GNU_PREFIX}sed -E "s#^.*(${partPattern}).*\$
         echo "TODO: part of $item marked as done: ${changedPart}"
     fi
 }
