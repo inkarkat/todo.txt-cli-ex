@@ -37,7 +37,7 @@ readonly scriptDir="$([ "${BASH_SOURCE[0]}" ] && dirname -- "${BASH_SOURCE[0]}" 
 # on add, but not for all other actions that modify tasks (e.g. append, replace,
 # etc.) This is meant as a convenient shortcut when adding new tasks; existing
 # task markers should be modified through dedicated actions (e.g. schedule).
-task="$*"
+task="${TODOTXT_ADD_PREFIX:-}${*}${TODOTXT_ADD_SUFFIX:-}"
 
 TOTAL=$("${GNU_PREFIX}"sed -n '$ =' "$TODO_FILE") || exit $?
 task="$("${scriptDir}/renderrelativemarkers" --task "$((TOTAL+1))" "$task")" || exit $?
