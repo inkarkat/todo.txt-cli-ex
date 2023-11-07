@@ -45,14 +45,13 @@ while getopts ":b:e:" opt; do
     'e') suffix=" $OPTARG"; echo $OPTARG ;;
   esac
 done
-shift $(( $OPTIND - 1 ))
+shift $((OPTIND - 1))
 
-# apply prefix and suffix, if either are set
-if [ -n "$prefix" ] || [ -n "$suffix" ]; then
-  items=$( echo "$@" | "${GNU_PREFIX}"sed -e "s/.*/$prefix&$suffix/" )
-else
-  items="$@"
-fi
+# Combine with configured prefixes and suffixes and render everything here, so
+# that those apply to each item, not just the first / last one, respectively.
+prefix="${TODOTXT_ADD_PREFIX}${prefix}"; TODOTXT_ADD_PREFIX=''
+suffix="${suffix}${TODOTXT_ADD_SUFFIX}"; TODOTXT_ADD_SUFFIX=''
+items="${prefix}${*//$'\n'/${suffix}$'\n'${prefix}}${suffix}"
 
 if [ -x "$TODO_ACTIONS_DIR/add" ]; then
   export TODOTXT_ADD_ACTION='addm'
