@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2023 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -51,4 +51,4 @@ if [ -n "$hostname" ]; then
     task="$(printf %s "$task" | "${GNU_PREFIX}"sed -e 's#\(^\|[[:space:]]\)@here\([[:space:]]\|$\)#'\\1"@${literalHostname//#/\\#}\\2#g")"
 fi
 
-"$TODO_FULL_SH" command ${ADDACTION:-add} "$task"
+"$TODO_FULL_SH" command ${TODOTXT_ADD_ACTION:-add} "$task"
