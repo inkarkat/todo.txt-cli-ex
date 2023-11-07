@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2023 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -35,7 +35,7 @@ errmsg="usage: $TODO_SH $(basename $0) \"THING I NEED TO DO +project @context\""
 [ $# -eq 0 ] && die "$errmsg"
 
 if [ -x "$TODO_ACTIONS_DIR/add" ]; then
-    export ADDACTION='addto add.txt'
+    export TODOTXT_ADD_ACTION='addto add.txt'
     "$TODO_ACTIONS_DIR/add" addendum "$@"
 else
     "$TODO_FULL_SH" addto add.txt "$@"
