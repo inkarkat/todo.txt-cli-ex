@@ -25,7 +25,7 @@ test_todo_session 'depview one-level dependency' <<'EOF'
   4 beer and tacos
   5 rent a good movie
 --
-TODO: 2 block(s) of 5 dependent tasks.
+TODO: 2 blocks of 5 dependent tasks.
 EOF
 
 cat > todo.txt <<EOF
@@ -49,7 +49,7 @@ test_todo_session 'depview two-level dependency' <<'EOF'
   6 rent a good movie
     5 a tv set
 --
-TODO: 2 block(s) of 7 dependent tasks.
+TODO: 2 blocks of 7 dependent tasks.
 EOF
 
 cat > todo.txt <<EOF
@@ -73,7 +73,7 @@ test_todo_session 'depview inverted two-level dependency' <<'EOF'
   7 rent a good movie
     5 a tv set
 --
-TODO: 2 block(s) of 7 dependent tasks.
+TODO: 2 blocks of 7 dependent tasks.
 EOF
 
 cat > todo.txt <<EOF
@@ -102,7 +102,7 @@ test_todo_session 'depview single block with duplicated low-level dependency' <<
         1 find a building site
         2 obtain a bank loan w:money
 --
-TODO: 1 block(s) of 8 dependent tasks.
+TODO: 1 block of 8 dependent tasks.
 EOF
 
 cat > todo.txt <<EOF
@@ -134,7 +134,7 @@ test_todo_session 'depview blocks with duplicated low-level dependency' <<'EOF'
     6 a color tv w:money
   6 a color tv w:money
 --
-TODO: 2 block(s) of 9 dependent tasks.
+TODO: 2 blocks of 9 dependent tasks.
 EOF
 
 cat > todo.txt <<EOF
@@ -158,7 +158,7 @@ test_todo_session 'depview direct circularity' <<'EOF'
   7 beer and tacos
   8 rent a good movie
 --
-TODO: 2 block(s) of 7 dependent tasks.
+TODO: 2 blocks of 7 dependent tasks.
 Note: Some task dependencies contain a cycle and are not shown.
 EOF
 
@@ -183,7 +183,7 @@ test_todo_session 'depview indirect circularity' <<'EOF'
   7 beer and tacos
   8 rent a good movie
 --
-TODO: 2 block(s) of 8 dependent tasks.
+TODO: 2 blocks of 8 dependent tasks.
 Note: Some task dependencies contain a cycle and are not shown.
 EOF
 
@@ -220,7 +220,7 @@ TODO: 3 prioritized (B).
     [0;33m[7m6[0;33m a color tv w:[7;33mmoney[0;33m[0m
   [0;33m[7m6[0;33m a color tv w:[7;33mmoney[0;33m[0m
 --
-TODO: 2 block(s) of 9 dependent tasks.
+TODO: 2 blocks of 9 dependent tasks.
 EOF
 
 test_done

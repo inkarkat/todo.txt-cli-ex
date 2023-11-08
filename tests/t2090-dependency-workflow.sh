@@ -84,7 +84,7 @@ TODO: 3 blocked task(s) waiting for 3 dependent task(s).
     1 find a building site
     2 obtain a bank loan w:money
 --
-TODO: 1 block(s) of 4 dependent tasks.
+TODO: 1 block of 4 dependent tasks.
 
 >>> todo.sh -p -x unwait money
 2 obtain a bank loan
