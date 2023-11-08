@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2023 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -135,3 +135,9 @@ do
         fi
     fi
 done
+
+# Extend the auto-archiving to mean "no fluff" and therefore also trigger after
+# tasks have been trashed.
+if [ $TODOTXT_AUTO_ARCHIVE = 1 ]; then
+    "$TODO_FULL_SH" archive
+fi

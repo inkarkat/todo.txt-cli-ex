@@ -55,3 +55,12 @@ do
         : # Always exit with a successful exit code even when the command complained.
     fi
 done
+
+# Extend the auto-archiving to mean "no fluff" and therefore also trigger on
+# deletions of entire tasks.
+# Note: We could just invoke the defragment action here, but archive is more
+# consistent and would also clean up tasks that have been done without
+# auto-archiving or via a manual edit.
+if [ -z "$*" -a $TODOTXT_AUTO_ARCHIVE = 1 ]; then
+    "$TODO_FULL_SH" archive
+fi
