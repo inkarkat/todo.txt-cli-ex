@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2023 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -33,5 +33,28 @@ shift
 # Configuration to limit the priorities that are considered.
 : ${TODOTXT_WHAT_PRIORITIES:=A-Z}
 
+# Fallback command when there are no prioritized or due tasks.
+: ${TODOTXT_WHAT_FALLBACK_COMMAND:=lt}
+
+hasNoTasks()
+{
+    local tasks="${1?}"; shift
+    [[ "$tasks" =~ ^--$'\n'TODO:\ 0\ of\ [0-9]+\ tasks\ shown$ ]]
+}
+
 export TODOTXT_LSDUE_TASKINCLUSION="-e '^ *[0-9]\+ ([${TODOTXT_WHAT_PRIORITIES}])'"
-exec "$TODO_FULL_SH" lsdue "$@"
+tasks="$("$TODO_FULL_SH" lsdue "$@")" || exit $?
+if hasNoTasks "$tasks"; then
+    if [ -n "$TODOTXT_WHAT_FALLBACK_COMMAND" ]; then
+        tasks="$("$TODO_FULL_SH" "$TODOTXT_WHAT_FALLBACK_COMMAND" "$@")" || exit $?
+        if hasNoTasks "$tasks"; then
+            echo "TODO: No${*:+ such} tasks."
+        else
+            printf '%s\n' "$tasks"
+        fi
+    else
+        echo "TODO: No${*:+ such} prioritized or due tasks."
+    fi
+else
+    printf '%s\n' "$tasks"
+fi
