@@ -58,6 +58,7 @@ done
 [ "$items" ] || die "$errmsg"
 
 [ "$RECURSIVE_DO" ] || > ~/.todo-lastdone
+originalAutoArchive=$TODOTXT_AUTO_ARCHIVE; TODOTXT_AUTO_ARCHIVE=0   # Don't immediately auto-archive; it would interfere with subsequent unblocking, recurrence, and the numbering of additional passed ITEM#, and also trigger multiple times.
 for item in ${items//,/ }
 do
     # Always append more even when the task is already done.
@@ -174,3 +175,10 @@ do
 
     : # Always exit with a successful exit code even when the command complained.
 done
+
+# Only perform the auto-archiving once at the end, after all ITEM# have been
+# done, and tasks have been unblocked, recurrence applied, and trashed.
+# tasks have been trashed.
+if [ $originalAutoArchive = 1 ]; then
+    "$TODO_FULL_SH" archive
+fi
