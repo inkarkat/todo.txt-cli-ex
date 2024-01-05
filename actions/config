@@ -1,0 +1,39 @@
+#!/bin/bash
+###############################################################################
+##
+# FILE:         config
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 05-Jan-2024
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2024 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)config	$Id$	todo.txt-cli-ex
+###############################################################################
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [CONFIGVAR ...]"
+    echo "      Print the value of CONFIGVAR / all todo.txt-cli configuration variables."
+    echo ""
+    exit
+}
+
+case $# in
+    0)  export -p | sed -ne 's/^\(declare -x\|export\) \(\(TODO[^=]\+\|TODO_FILE\|DONE_FILE\|REPORT_FILE\|PRI_[[:upper:]]\)=.*\)$/\2/p';;
+    1)  printf '%s\n' "${!1}";;
+    *)  for var in "$@"; do
+            printf '%s=%s\n' "$var" "${!var}"
+        done
+        ;;
+esac
