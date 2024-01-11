@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2023 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -34,7 +34,7 @@ shift
 : ${TODOTXT_WHAT_PRIORITIES:=A-Z}
 
 # Fallback command when there are no prioritized or due tasks.
-: ${TODOTXT_WHAT_FALLBACK_COMMAND:=lt}
+: ${TODOTXT_WHAT_FALLBACK_COMMAND:=latest}
 
 hasNoTasks()
 {
