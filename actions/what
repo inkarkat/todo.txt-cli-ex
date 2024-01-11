@@ -39,7 +39,11 @@ shift
 hasNoTasks()
 {
     local tasks="${1?}"; shift
-    [[ "$tasks" =~ ^--$'\n'TODO:\ 0\ of\ [0-9]+\ tasks\ shown$ ]]
+    if [ $TODOTXT_VERBOSE -gt 0 ]; then
+        [[ "$tasks" =~ ^--$'\n'TODO:\ 0\ of\ [0-9]+\ tasks\ shown$ ]]
+    else
+        [ -z "$tasks" ]
+    fi
 }
 
 export TODOTXT_LSDUE_TASKINCLUSION="-e '^ *[0-9]\+ ([${TODOTXT_WHAT_PRIORITIES}])'"
@@ -48,12 +52,12 @@ if hasNoTasks "$tasks"; then
     if [ -n "$TODOTXT_WHAT_FALLBACK_COMMAND" ]; then
         tasks="$("$TODO_FULL_SH" "$TODOTXT_WHAT_FALLBACK_COMMAND" "$@")" || exit $?
         if hasNoTasks "$tasks"; then
-            echo "TODO: No${*:+ such} tasks."
+            [ $TODOTXT_VERBOSE -gt 0 ] && echo "TODO: No${*:+ such} tasks."
         else
             printf '%s\n' "$tasks"
         fi
     else
-        echo "TODO: No${*:+ such} prioritized or due tasks."
+        [ $TODOTXT_VERBOSE -gt 0 ] && echo "TODO: No${*:+ such} prioritized or due tasks."
     fi
 else
     printf '%s\n' "$tasks"
