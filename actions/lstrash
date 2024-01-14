@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -32,6 +32,7 @@ shift
 errmsg="usage: $TODO_SH $(basename $0) [TERM...]"
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
+[ -f "$TRASH_FILE" ] || [ -c "$TRASH_FILE" ] || : > "$TRASH_FILE"
 # Omit the "trashed" highlighting in favor of the more readable alternating task
 # highlighting for readability; all tasks are trashed, anyway.
 export HIDE_COLOR_TRASH=1
