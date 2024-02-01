@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2023 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -42,9 +42,12 @@ if [ "$1" = '-s' ]; then
     shift
 fi
 
-[ "$HOSTNAME" ] || die "TODO: Cannot determine hostname!"
+if [ -z "$TODOTXT_HERE_DESIGNATOR" ]; then
+    [ -n "$HOSTNAME" ] || die "TODO: Cannot determine hostname!"
+    export TODOTXT_HERE_DESIGNATOR="@$(echo "$HOSTNAME" | tr 'A-Z' 'a-z')"
+fi
 
-post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e ' @$(echo "$HOSTNAME" | tr 'A-Z' 'a-z')\( \|$\)'"
+post_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | grep -e ' ${TODOTXT_HERE_DESIGNATOR}\( \|$\)'"
 if [ "$summaryNum" ]; then
     tasks=$(TODOTXT_VERBOSE=0 _list "$TODO_FILE" "$@")
     if [ "$tasks" ]; then
