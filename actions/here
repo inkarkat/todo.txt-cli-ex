@@ -19,12 +19,14 @@
 # @(#)here	$Id$	todo.txt-cli-ex
 ###############################################################################
 
+: ${TODOTXT_HERE_SCOPE_NAME:=system}
+
 action=$1
 shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [-s [NUM]] [TERM...]"
-    echo "      Displays all tasks with a context of the current host / location."
+    echo "      Displays all tasks with a context of the current ${TODOTXT_HERE_SCOPE_NAME}."
     echo "      If TERM specified, lists only tasks that contain TERM(s)."
     echo "      With -s, show just the summary, and the NUM last tasks."
     echo ""
@@ -55,14 +57,14 @@ if [ "$summaryNum" ]; then
         tasksCntPlural=s; [ $tasksCnt -eq 1 ] && tasksCntPlural=
         if [ $summaryNum -gt 0 ]; then
             if [ $tasksCnt -gt $summaryNum ]; then
-                printf 'TODO: You have %d local task%s open on this system; showing the last %d:\n' $tasksCnt "$tasksCntPlural" $summaryNum
+                printf 'TODO: You have %d local task%s open on this %s; showing the last %d:\n' $tasksCnt "$tasksCntPlural" "$TODOTXT_HERE_SCOPE_NAME" $summaryNum
                 echo "$tasks" | tail -n $summaryNum
             else
-                printf 'TODO: You have %d local task%s open on this system:\n' $tasksCnt "$tasksCntPlural"
+                printf 'TODO: You have %d local task%s open on this %s:\n' $tasksCnt "$tasksCntPlural" "$TODOTXT_HERE_SCOPE_NAME"
                 echo "$tasks"
             fi
         else
-            printf 'TODO: You have %d local task%s open on this system.\n' $tasksCnt "$tasksCntPlural"
+            printf 'TODO: You have %d local task%s open on this %s.\n' $tasksCnt "$tasksCntPlural" "$TODOTXT_HERE_SCOPE_NAME"
         fi
     fi
 else
