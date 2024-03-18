@@ -56,33 +56,34 @@ def printTaskGroups(title, taskDict, priorityList, percentages, taskNum):
     print("")
     print(title)
     if not taskDict:
-        print("No items to list.")
+        print('No items to list.')
+        return
+
+    itemMaxLength = len(max(taskDict, key=len))
+
+    # sort the dictionary by value
+    # http://python.fyxm.net/peps/pep-0265.html
+    items = [(v, k) for k, v in list(taskDict.items())]
+    items.sort()
+    items.reverse()             # so largest is first
+    items = [(k, v) for v, k in items]
+
+    if items[0][0] in percentages:
+        separator("-", 33 + itemMaxLength)
     else:
-        itemMaxLength = len(max(taskDict, key=len))
+        separator("-", 15 + itemMaxLength)
 
-        # sort the dictionary by value
-        # http://python.fyxm.net/peps/pep-0265.html
-        items = [(v, k) for k, v in list(taskDict.items())]
-        items.sort()
-        items.reverse()             # so largest is first
-        items = [(k, v) for v, k in items]
+    priorityItems, nonPriorityItems = [], []
+    for item in items:
+        (priorityItems if item[0] in priorityList else nonPriorityItems).append(item)
 
-        if items[0][0] in percentages:
-            separator("-", 33 + itemMaxLength)
-        else:
-            separator("-", 15 + itemMaxLength)
+    def printItemTaskGroup(item, star):
+        printTaskGroup(item, itemMaxLength, percentages.get(item[0], -1), star, taskNum)
 
-        priorityItems, nonPriorityItems = [], []
-        for item in items:
-            (priorityItems if item[0] in priorityList else nonPriorityItems).append(item)
-
-        def printItemTaskGroup(item, star):
-            printTaskGroup(item, itemMaxLength, percentages.get(item[0], -1), star, taskNum)
-
-        for item in priorityItems:
-            printItemTaskGroup(item, "*")
-        for item in nonPriorityItems:
-            printItemTaskGroup(item, " ")
+    for item in priorityItems:
+        printItemTaskGroup(item, "*")
+    for item in nonPriorityItems:
+        printItemTaskGroup(item, " ")
 
 
 def printTaskGroup(p, pMaxLen, pctage, star, taskNum):
