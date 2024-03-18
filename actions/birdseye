@@ -73,17 +73,11 @@ def printTaskGroups(title, taskDict, priorityList, percentages, taskNum):
             separator("-", 15 + itemMaxLength)
         for item in items:
             if item[0] in priorityList:
-                if item[0] not in percentages:
-                    printTaskGroup(item, itemMaxLength, -1, "*", taskNum)
-                else:
-                    printTaskGroup(item, itemMaxLength, percentages[item[0]], "*", taskNum)
+                printTaskGroup(item, itemMaxLength, percentages.get(item[0], -1), "*", taskNum)
 
         for item in items:
             if item[0] not in priorityList:
-                if item[0] not in percentages:
-                    printTaskGroup(item, itemMaxLength, -1, " ", taskNum)
-                else:
-                    printTaskGroup(item, itemMaxLength, percentages[item[0]], " ", taskNum)
+                printTaskGroup(item, itemMaxLength, percentages.get(item[0], -1), " ", taskNum)
 
 
 def printTaskGroup(p, pMaxLen, pctage, star, taskNum):
