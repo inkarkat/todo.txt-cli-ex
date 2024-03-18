@@ -87,22 +87,14 @@ def printTaskGroups(title, taskDict, priorityList, percentages, taskNum):
 
 
 def printTaskGroup(p, pMaxLen, pctage, star, taskNum):
-    taskWidth = int(math.ceil(math.log(taskNum,10)))
+    taskWidth = int(math.ceil(math.log(taskNum, 10)))
+    taskPlural = " " if p[1] == 1 else "s"
+    pctageWidget = ''
     if pctage > -1:
-        progressBar = ""
-        numStars = int(pctage//10)
-        progressBar = "=" * numStars
-        numSpaces = 10 - numStars
-        for n in range(numSpaces):
-            progressBar += " "
+        progressBar = "=" * int(pctage // 10)
+        pctageWidget = f' {pctage:3d}% [{progressBar:10s}]'
 
-        if pctage > 9:
-            displayTotal = " %d%%"% (pctage, );
-        else:
-            displayTotal = "  %d%%"% (pctage, );
-        print("%s %s [%s] %*s (%*d task%s)"% (star, displayTotal, progressBar, (-1 * pMaxLen), p[0], taskWidth, p[1], (" " if p[1] == 1 else "s"), ))
-    else:
-        print("%s %*s (%*d task%s)"% (star, (-1 * pMaxLen), p[0], taskWidth, p[1], (" " if p[1] == 1 else "s"), ))
+    print(f'{star}{pctageWidget} {p[0]:{pMaxLen}s} ({p[1]:{taskWidth}d} task{taskPlural})')
 
 
 global sepWidth
