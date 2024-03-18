@@ -124,17 +124,11 @@ def process(filespec, prefix, tasks, completed, priority):
             if words[0] == ("x"):
                 for word in words:
                     if word[0:1] == prefix and len(word) > 1:
-                        if word not in completed:
-                            completed[word] = 1
-                        else:
-                            completed[word] = completed.setdefault(word, 0) + 1
+                        completed[word] = completed.setdefault(word, 0) + 1
             else:
                 for word in words:
                     if word[0:1] == prefix and len(word) > 1:
-                        if word not in tasks:
-                            tasks[word] = 1
-                        else:
-                            tasks[word] = tasks.setdefault(word, 0)  + 1
+                        tasks[word] = tasks.setdefault(word, 0)  + 1
                         if prioritized:
                             priority.append(word)
         f.close()
