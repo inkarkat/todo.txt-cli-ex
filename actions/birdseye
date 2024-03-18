@@ -35,18 +35,13 @@ CHANGELOG:
 """
 
 
-import math, sys, os
-#import datetime
+import math
+import os
+import sys
 
-__version__ = "1.1"
-__date__ = "2006/05/02"
-__updated__ = "2006/07/29"
 __author__ = "Gina Trapani (ginatrapani@gmail.com)"
 __copyright__ = "Copyright 2006, Gina Trapani"
 __license__ = "GPL"
-__history__ = """
-1.0 - Released.
-"""
 
 
 def usage():
@@ -59,7 +54,7 @@ def usage():
 
 def printTaskGroups(title, taskDict, priorityList, percentages, taskNum):
     print("")
-    print("%s"% (title,))
+    print(title)
     if not taskDict:
         print("No items to list.")
     else:
@@ -122,15 +117,15 @@ def separator(c, width):
 
 def process(filespec, prefix, tasks, completed, priority):
     try:
-        f = open (filespec, "r")
+        f = open(filespec, "r")
         taskNum = 0
         for line in f:
             prioritized = False
             words = line.split()
             if not words:
                 continue
-            if words[0] == ("X"):
-                continue	# Ignore trashed tasks.
+            if words[0] == "X":
+                continue    # Ignore trashed tasks.
             taskNum += 1
             if words[0].startswith("("):
                 prioritized = True
@@ -147,13 +142,13 @@ def process(filespec, prefix, tasks, completed, priority):
                         if word not in tasks:
                             tasks[word] = 1
                         else:
-                            tasks[word] = tasks.setdefault(word,0)  + 1
+                            tasks[word] = tasks.setdefault(word, 0)  + 1
                         if prioritized:
                             priority.append(word)
         f.close()
         return taskNum
     except IOError:
-        print("ERROR:  The file named %s could not be read."% (filespec, ))
+        print(f'ERROR: The file named {filespec} could not be read.')
         usage()
         sys.exit(2)
 
@@ -161,14 +156,14 @@ def process(filespec, prefix, tasks, completed, priority):
 def gather(prefix, tasks, completed, priority):
     taskNum = process(os.environ['TODO_FILE'], prefix, tasks, completed, priority)
     doneNum = process(os.environ['DONE_FILE'], prefix, completed, completed, priority)
-    return [taskNum, doneNum]
+    return taskNum, doneNum
 
 
 def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
     tasks = {}
     completed = {}
     priority = []
-    [taskNum, doneNum] = gather(prefix, tasks, completed, priority)
+    taskNum, doneNum = gather(prefix, tasks, completed, priority)
 
     if isPrintOpen:
         percentages = {}
@@ -181,7 +176,7 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
             totalTasks = openTasks + closedTasks
             percentages[task] = int((closedTasks*100) / totalTasks)
 
-        printTaskGroups("%s with open tasks (* = prioritized)"% (prefixDescription, ), tasks, priority, percentages, taskNum)
+        printTaskGroups(f"{prefixDescription} with open tasks (* = prioritized)", tasks, priority, percentages, taskNum)
 
     if isPrintCompleted:
         tasksWithNoIncompletes = {}
@@ -189,14 +184,14 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
             if task not in tasks:
                 tasksWithNoIncompletes[task] = completed[task]
 
-        printTaskGroups("completed %s (no open tasks)"% (prefixDescription, ), tasksWithNoIncompletes, [], {}, taskNum + doneNum)
+        printTaskGroups(f'completed {prefixDescription} (no open tasks)', tasksWithNoIncompletes, [], {}, taskNum + doneNum)
 
 
 def main(argv):
     if len(argv) == 0 or argv[0] == 'usage':
         usage()
         return
-    elif len(argv) == 1:
+    if len(argv) == 1:
         argv += ['all-projects', 'open-contexts']
 
     try:
@@ -204,7 +199,7 @@ def main(argv):
             isPrintOpen = False
             isPrintCompleted = False
 
-            [which, item] = arg.split('-')
+            which, item = arg.split('-')
             if which == 'open':
                 isPrintOpen = True
             elif which == 'completed':
