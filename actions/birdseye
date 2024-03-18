@@ -61,12 +61,8 @@ def printTaskGroups(title, taskDict, priorityList, percentages, taskNum):
 
     itemMaxLength = len(max(taskDict, key=len))
 
-    # sort the dictionary by value
-    # http://python.fyxm.net/peps/pep-0265.html
-    items = [(v, k) for k, v in list(taskDict.items())]
-    items.sort()
-    items.reverse()             # so largest is first
-    items = [(k, v) for v, k in items]
+    # Sort first by number of tasks descending, then by case-insensitive item name.
+    items = sorted(list(taskDict.items()), key=lambda x: (-1 * x[1], x[0].casefold()))
 
     if items[0][0] in percentages:
         separator("-", 33 + itemMaxLength)
