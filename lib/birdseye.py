@@ -97,7 +97,7 @@ def process(filespec, sigil, openTaskCounts, doneTaskCounts, prioritizedTasks):
                     if wordWithSigil:
                         openTaskCounts[wordWithSigil] = openTaskCounts.setdefault(wordWithSigil, 0) + 1
                         if prioritized:
-                            prioritizedTasks.append(wordWithSigil)
+                            prioritizedTasks.add(wordWithSigil)
         return taskCnt
 
 
@@ -145,7 +145,7 @@ def gather(sigil, openTaskCounts, doneTaskCounts, prioritizedTasks):
 def run(sigil, sigilDescription, isPrintOpen, isPrintCompleted):
     openTaskCounts = {}
     doneTaskCounts = {}
-    prioritizedTasks = []
+    prioritizedTasks = set()
     taskNum, doneNum = gather(sigil, openTaskCounts, doneTaskCounts, prioritizedTasks)
 
     if isPrintOpen:
@@ -164,7 +164,7 @@ def run(sigil, sigilDescription, isPrintOpen, isPrintCompleted):
             if task not in openTaskCounts:
                 tasksWithNoneOpen[task] = doneTaskCounts[task]
 
-        printTaskGroups(f'completed {sigilDescription} (all done, no open tasks)', tasksWithNoneOpen, [], {}, taskNum + doneNum)
+        printTaskGroups(f'completed {sigilDescription} (all done, no open tasks)', tasksWithNoneOpen, set(), {}, taskNum + doneNum)
 
 
 def main(argv):
