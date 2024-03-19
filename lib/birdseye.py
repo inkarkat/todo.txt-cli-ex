@@ -3,7 +3,7 @@
 
 """ TODO.TXT Bird's Eye View Reporter
 USAGE NOTES:
-    Works on the raw, unfiltered text files referenced by $TODO_FILE and $DONE_FILE.
+    Works on the raw text files referenced by $TODO_FILE and $DONE_FILE.
     See more on todo.txt here: http://todotxt.com
 
 OUTPUT:
