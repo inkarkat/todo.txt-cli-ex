@@ -90,12 +90,13 @@ def printTaskGroup(p, pMaxLen, pctage, star, taskNum):
     print(f'{star}{pctageWidget} {p[0]:{pMaxLen}s} ({p[1]:{taskWidth}d} task{taskPlural})')
 
 
-global sepWidth
-sepWidth = 0
+SEP_WIDTH = 0
+
+
 def separator(c, width):
-    global sepWidth
-    sepWidth = max([width, sepWidth])
-    print(c * sepWidth)
+    global SEP_WIDTH
+    SEP_WIDTH = max([width, SEP_WIDTH])
+    print(c * SEP_WIDTH)
 
 
 def process(filespec, sigil, tasks, completed, priority):
@@ -122,7 +123,7 @@ def process(filespec, sigil, tasks, completed, priority):
                 for word in words:
                     wordWithSigil = getWordWithSigil(word, sigil)
                     if wordWithSigil:
-                        tasks[wordWithSigil] = tasks.setdefault(wordWithSigil, 0)  + 1
+                        tasks[wordWithSigil] = tasks.setdefault(wordWithSigil, 0) + 1
                         if prioritized:
                             priority.append(wordWithSigil)
         return taskNum
@@ -182,7 +183,7 @@ def run(sigil, sigilDescription, isPrintOpen, isPrintCompleted):
             else:
                 closedTasks = 0
             totalTasks = openTasks + closedTasks
-            percentages[task] = int((closedTasks*100) / totalTasks)
+            percentages[task] = int((closedTasks * 100) / totalTasks)
 
         printTaskGroups(f"{sigilDescription} with open tasks (* = prioritized)", tasks, priority, percentages, taskNum)
 
