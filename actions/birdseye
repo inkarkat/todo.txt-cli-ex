@@ -128,8 +128,28 @@ def process(filespec, sigil, tasks, completed, priority):
         return taskNum
 
 
-def getWordWithSigil(word, sigil):
-    return word if word[0:1] == sigil and len(word) > 1 else None
+if os.environ['TODOTXT_SIGIL_BEFORE_PATTERN'] or os.environ['TODOTXT_SIGIL_VALID_PATTERN'] != '.*' or os.environ['TODOTXT_SIGIL_AFTER_PATTERN']:
+    import re
+
+    def bre_to_pcre(bre_pattern):
+        pcre_pattern = bre_pattern
+        pcre_pattern = re.sub(r'\\([][(){}+?.*])', r'\1', pcre_pattern)
+        pcre_pattern = re.sub(r'\\([<>])', r'\b', pcre_pattern)
+        return pcre_pattern
+
+    def getWordWithSigil(word, sigil):
+        if os.environ['TODOTXT_SIGIL_BEFORE_PATTERN']:
+            word = re.sub('^' + bre_to_pcre(os.environ['TODOTXT_SIGIL_BEFORE_PATTERN']), '', word)
+        if os.environ['TODOTXT_SIGIL_AFTER_PATTERN']:
+            word = re.sub(bre_to_pcre(os.environ['TODOTXT_SIGIL_AFTER_PATTERN']) + '$', '', word)
+        if os.environ['TODOTXT_SIGIL_VALID_PATTERN']:
+            match = re.match(re.escape(sigil) + bre_to_pcre(os.environ['TODOTXT_SIGIL_VALID_PATTERN']) + '$', word)
+            if match:
+                return match.group(0)
+        return None
+else:
+    def getWordWithSigil(word, sigil):
+        return word if word[0:1] == sigil and len(word) > 1 else None
 
 
 def gather(sigil, tasks, completed, priority):
