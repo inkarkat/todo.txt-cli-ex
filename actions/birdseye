@@ -137,16 +137,25 @@ if os.environ['TODOTXT_SIGIL_BEFORE_PATTERN'] or os.environ['TODOTXT_SIGIL_VALID
         pcre_pattern = re.sub(r'\\([<>])', r'\b', pcre_pattern)
         return pcre_pattern
 
-    def getWordWithSigil(word, sigil):
-        if os.environ['TODOTXT_SIGIL_BEFORE_PATTERN']:
-            word = re.sub('^' + bre_to_pcre(os.environ['TODOTXT_SIGIL_BEFORE_PATTERN']), '', word)
-        if os.environ['TODOTXT_SIGIL_AFTER_PATTERN']:
-            word = re.sub(bre_to_pcre(os.environ['TODOTXT_SIGIL_AFTER_PATTERN']) + '$', '', word)
-        if os.environ['TODOTXT_SIGIL_VALID_PATTERN']:
+    PATTERNS = []
+    if os.environ['TODOTXT_SIGIL_BEFORE_PATTERN']:
+        BEFORE_PATTERN = re.compile('^' + bre_to_pcre(os.environ['TODOTXT_SIGIL_BEFORE_PATTERN']))
+        PATTERNS.append(lambda word, _: BEFORE_PATTERN.sub('', word))
+    if os.environ['TODOTXT_SIGIL_AFTER_PATTERN']:
+        AFTER_PATTERN = re.compile(bre_to_pcre(os.environ['TODOTXT_SIGIL_AFTER_PATTERN']) + '$')
+        PATTERNS.append(lambda word, _: AFTER_PATTERN.sub('', word))
+    if os.environ['TODOTXT_SIGIL_VALID_PATTERN']:
+        def extractValid(word, sigil):
             match = re.match(re.escape(sigil) + bre_to_pcre(os.environ['TODOTXT_SIGIL_VALID_PATTERN']) + '$', word)
             if match:
                 return match.group(0)
-        return None
+            return None
+        PATTERNS.append(extractValid)
+
+    def getWordWithSigil(word, sigil):
+        for pattern in PATTERNS:
+            word = pattern(word, sigil)
+        return word
 else:
     def getWordWithSigil(word, sigil):
         return word if word[0:1] == sigil and len(word) > 1 else None
