@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -31,5 +31,5 @@ shift
     exit
 }
 
-export TODOTXT_LST_ADDITIONAL_SORT_COMMAND="tail -n $((${LINES:-20}/2))"
+export TODOTXT_LST_ADDITIONAL_SORT_COMMAND="tail -n $((${LINES:-20}/2 - 4))"
 exec "$TODO_FULL_SH" listbydate "$@"
