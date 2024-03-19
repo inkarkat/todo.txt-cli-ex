@@ -99,8 +99,7 @@ def separator(c, width):
 
 
 def process(filespec, prefix, tasks, completed, priority):
-    try:
-        f = open(filespec, "r")
+    with open(filespec, "r") as f:
         taskNum = 0
         for line in f:
             prioritized = False
@@ -109,9 +108,11 @@ def process(filespec, prefix, tasks, completed, priority):
                 continue
             if words[0] == "X":
                 continue    # Ignore trashed tasks.
+
             taskNum += 1
             if words[0].startswith("("):
                 prioritized = True
+
             if words[0] == ("x"):
                 for word in words:
                     if word[0:1] == prefix and len(word) > 1:
@@ -122,12 +123,7 @@ def process(filespec, prefix, tasks, completed, priority):
                         tasks[word] = tasks.setdefault(word, 0)  + 1
                         if prioritized:
                             priority.append(word)
-        f.close()
         return taskNum
-    except IOError:
-        print(f'ERROR: The file named {filespec} could not be read.')
-        usage()
-        sys.exit(2)
 
 
 def gather(prefix, tasks, completed, priority):
