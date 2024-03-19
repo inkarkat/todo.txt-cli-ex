@@ -95,9 +95,7 @@ sepWidth = 0
 def separator(c, width):
     global sepWidth
     sepWidth = max([width, sepWidth])
-    sep = ""
-    sep = c * sepWidth
-    print(sep)
+    print(c * sepWidth)
 
 
 def process(filespec, prefix, tasks, completed, priority):
