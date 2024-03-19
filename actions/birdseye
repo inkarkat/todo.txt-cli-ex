@@ -1,4 +1,5 @@
 #!/bin/bash
+shopt -qs extglob
 ###############################################################################
 ##
 # FILE:         birdseye
@@ -23,19 +24,38 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [(open|completed|all)-(projects|contexts) [...]]"
-    echo "      Show a textual report of open and completed tasks"
-    echo "      for all projects and contexts."
+    echo "    $(basename $0) [(open|completed|all)-(projects|contexts) [...]] [TERM...]"
+    echo "      Show a textual report of open and completed tasks for all projects and"
+    echo "      contexts. If TERM specified, considers only tasks that contain TERM(s)."
     echo ""
     exit
 }
+
+typeset -a birdseyeArgs=()
+while [ $# -ne 0 ]
+do
+    case "$1" in
+        @(open|completed|all)-@(projects|contexts)) birdseyeArgs+=("$1"); shift;;
+        *)                                          break;;
+    esac
+done
+if [ $# -gt 0 ]; then
+    # Need to filter both active and archived tasks files and inject those into birdseye.py.
+    tempTodoFilespec="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TMPDIR:-/tmp}/$(basename -- "$0").$$$RANDOM")"
+    tempDoneFilespec="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TMPDIR:-/tmp}/$(basename -- "$0").$$$RANDOM")"
+    [ "${DEBUG:-}" ] || trap 'rm -f -- "$tempTodoFilespec" "$tempDoneFilespec" 2>/dev/null' EXIT
+    eval "$(filtercommand 'cat "$TODO_FILE"' '' "$@")" > "$tempTodoFilespec"
+    eval "$(filtercommand 'cat "$DONE_FILE"' '' "$@")" > "$tempDoneFilespec"
+    export TODO_FILE="$tempTodoFilespec"
+    export DONE_FILE="$tempDoneFilespec"
+fi
 
 readonly scriptDir="$([ "${BASH_SOURCE[0]}" ] && dirname -- "${BASH_SOURCE[0]}" || exit 3)"
 [ -d "$scriptDir" ] || { echo >&2 'ERROR: Cannot determine script directory!'; exit 3; }
 readonly projectDir="${scriptDir}/.."
 readonly libDir="${projectDir}/lib"
 
-"${libDir}/birdseye.py" "$@"; status=$?
+"${libDir}/birdseye.py" "${birdseyeArgs[@]}"; status=$?
 if [ $status -eq 2 ]; then
     echo
     "${BASH_SOURCE[0]}" usage
