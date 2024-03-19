@@ -181,10 +181,7 @@ def run(sigil, sigilDescription, isPrintOpen, isPrintCompleted):
         percentages = {}
         for task in tasks:
             openTasks = tasks[task]
-            if task in completed:
-                closedTasks = completed[task]
-            else:
-                closedTasks = 0
+            closedTasks = completed.get(task, 0)
             totalTasks = openTasks + closedTasks
             percentages[task] = int((closedTasks * 100) / totalTasks)
 
