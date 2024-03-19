@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# pylint: disable=global-statement,invalid-name,missing-function-docstring
 
 """ TODO.TXT Bird's Eye View Reporter
 USAGE NOTES:
@@ -45,7 +46,7 @@ __license__ = "GPL"
 
 
 def usage():
-    print("    %s [(open|completed|all)-(projects|contexts) [...]]" % (os.path.basename(sys.argv[0]), ))
+    print(f'    {os.path.basename(sys.argv[0])} [(open|completed|all)-(projects|contexts) [...]]')
     print("      Show a textual report of open and completed tasks")
     print("      for all projects and contexts")
     print("      Works on the unfiltered tasks of TODO_FILE and DONE_FILE.")
@@ -129,7 +130,9 @@ def process(filespec, sigil, tasks, completed, priority):
         return taskNum
 
 
-if os.environ['TODOTXT_SIGIL_BEFORE_PATTERN'] or os.environ['TODOTXT_SIGIL_VALID_PATTERN'] != '.*' or os.environ['TODOTXT_SIGIL_AFTER_PATTERN']:
+if (os.environ['TODOTXT_SIGIL_BEFORE_PATTERN']
+        or os.environ['TODOTXT_SIGIL_VALID_PATTERN'] != '.*'
+        or os.environ['TODOTXT_SIGIL_AFTER_PATTERN']):
     import re
 
     def bre_to_pcre(bre_pattern):
