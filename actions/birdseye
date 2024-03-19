@@ -208,23 +208,27 @@ def main(argv):
             isPrintOpen = False
             isPrintCompleted = False
 
-            which, item = arg.split('-')
-            if which == 'open':
+            selector, axis = arg.split('-')
+            if selector == 'open':
                 isPrintOpen = True
-            elif which == 'completed':
+            elif selector == 'completed':
                 isPrintCompleted = True
-            elif which == 'all':
+            elif selector == 'all':
                 isPrintOpen = isPrintCompleted = True
             else:
-                raise Exception("Invalid selector: " + which)
+                raise ValueError("Invalid selector: " + selector)
 
-            if item == 'projects':
-                run('+', item, isPrintOpen, isPrintCompleted)
-            elif item == 'contexts':
-                run('@', item, isPrintOpen, isPrintCompleted)
+            if axis == 'projects':
+                run('+', axis, isPrintOpen, isPrintCompleted)
+            elif axis == 'contexts':
+                run('@', axis, isPrintOpen, isPrintCompleted)
             else:
-                raise Exception("Invalid item: " + item)
-    except Exception as e:
+                raise ValueError("Invalid axis: " + axis)
+    except ValueError as e:
+        print(e)
+        usage()
+        sys.exit(2)
+    except Exception as e:  # pylint: disable=broad-except
         print(e)
         sys.exit(1)
 
