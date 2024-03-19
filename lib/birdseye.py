@@ -67,7 +67,7 @@ SEP_WIDTH = 0
 
 def separator(c, width):
     global SEP_WIDTH
-    SEP_WIDTH = max([width, SEP_WIDTH])
+    SEP_WIDTH = max(width, SEP_WIDTH)
     print(c * SEP_WIDTH)
 
 
