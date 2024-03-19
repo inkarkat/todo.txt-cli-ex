@@ -24,7 +24,7 @@ __copyright__ = "Copyright 2006-2024, Gina Trapani"
 __license__ = "GPL"
 
 
-def printTaskGroups(title, taskDict, priorityList, percentages, taskNum):
+def printTaskGroups(title, taskDict, prioritizedTasks, taskCompletionPercentages, taskNum):
     print("")
     print(title)
     if not taskDict:
@@ -36,14 +36,14 @@ def printTaskGroups(title, taskDict, priorityList, percentages, taskNum):
     # Sort first by number of tasks descending, then by case-insensitive item name.
     items = sorted(list(taskDict.items()), key=lambda x: (-1 * x[1], x[0].casefold()))
 
-    separator('-', (33 if items[0][0] in percentages else 15) + itemMaxLength)
+    separator('-', (33 if items[0][0] in taskCompletionPercentages else 15) + itemMaxLength)
 
     priorityItems, nonPriorityItems = [], []
     for item in items:
-        (priorityItems if item[0] in priorityList else nonPriorityItems).append(item)
+        (priorityItems if item[0] in prioritizedTasks else nonPriorityItems).append(item)
 
     def printItemTaskGroup(item, star):
-        printTaskGroup(item, itemMaxLength, percentages.get(item[0], -1), star, taskNum)
+        printTaskGroup(item, itemMaxLength, taskCompletionPercentages.get(item[0], -1), star, taskNum)
 
     for item in priorityItems:
         printItemTaskGroup(item, "*")
@@ -71,9 +71,9 @@ def separator(c, width):
     print(c * SEP_WIDTH)
 
 
-def process(filespec, sigil, tasks, completed, priority):
+def process(filespec, sigil, openTaskCounts, doneTaskCounts, prioritizedTasks):
     with open(filespec, "r") as f:
-        taskNum = 0
+        taskCnt = 0
         for line in f:
             prioritized = False
             words = line.split()
@@ -82,7 +82,7 @@ def process(filespec, sigil, tasks, completed, priority):
             if words[0] == "X":
                 continue    # Ignore trashed tasks.
 
-            taskNum += 1
+            taskCnt += 1
             if words[0].startswith("("):
                 prioritized = True
 
@@ -90,15 +90,15 @@ def process(filespec, sigil, tasks, completed, priority):
                 for word in words:
                     wordWithSigil = getWordWithSigil(word, sigil)
                     if wordWithSigil:
-                        completed[wordWithSigil] = completed.setdefault(wordWithSigil, 0) + 1
+                        doneTaskCounts[wordWithSigil] = doneTaskCounts.setdefault(wordWithSigil, 0) + 1
             else:
                 for word in words:
                     wordWithSigil = getWordWithSigil(word, sigil)
                     if wordWithSigil:
-                        tasks[wordWithSigil] = tasks.setdefault(wordWithSigil, 0) + 1
+                        openTaskCounts[wordWithSigil] = openTaskCounts.setdefault(wordWithSigil, 0) + 1
                         if prioritized:
-                            priority.append(wordWithSigil)
-        return taskNum
+                            prioritizedTasks.append(wordWithSigil)
+        return taskCnt
 
 
 if (os.environ['TODOTXT_SIGIL_BEFORE_PATTERN']
@@ -136,35 +136,35 @@ else:
         return word if word[0:1] == sigil and len(word) > 1 else None
 
 
-def gather(sigil, tasks, completed, priority):
-    taskNum = process(os.environ['TODO_FILE'], sigil, tasks, completed, priority)
-    doneNum = process(os.environ['DONE_FILE'], sigil, completed, completed, priority)
+def gather(sigil, openTaskCounts, doneTaskCounts, prioritizedTasks):
+    taskNum = process(os.environ['TODO_FILE'], sigil, openTaskCounts, doneTaskCounts, prioritizedTasks)
+    doneNum = process(os.environ['DONE_FILE'], sigil, doneTaskCounts, doneTaskCounts, prioritizedTasks)
     return taskNum, doneNum
 
 
 def run(sigil, sigilDescription, isPrintOpen, isPrintCompleted):
-    tasks = {}
-    completed = {}
-    priority = []
-    taskNum, doneNum = gather(sigil, tasks, completed, priority)
+    openTaskCounts = {}
+    doneTaskCounts = {}
+    prioritizedTasks = []
+    taskNum, doneNum = gather(sigil, openTaskCounts, doneTaskCounts, prioritizedTasks)
 
     if isPrintOpen:
-        percentages = {}
-        for task in tasks:
-            openTasks = tasks[task]
-            closedTasks = completed.get(task, 0)
-            totalTasks = openTasks + closedTasks
-            percentages[task] = int((closedTasks * 100) / totalTasks)
+        taskCompletionPercentages = {}
+        for task in openTaskCounts:
+            openTaskNum = openTaskCounts[task]
+            doneTaskNum = doneTaskCounts.get(task, 0)
+            totalTaskNum = openTaskNum + doneTaskNum
+            taskCompletionPercentages[task] = int((doneTaskNum * 100) / totalTaskNum)
 
-        printTaskGroups(f"{sigilDescription} with open tasks (* = prioritized)", tasks, priority, percentages, taskNum)
+        printTaskGroups(f"{sigilDescription} with open tasks (* = prioritized)", openTaskCounts, prioritizedTasks, taskCompletionPercentages, taskNum)
 
     if isPrintCompleted:
-        tasksWithNoIncompletes = {}
-        for task in completed:
-            if task not in tasks:
-                tasksWithNoIncompletes[task] = completed[task]
+        tasksWithNoneOpen = {}
+        for task in doneTaskCounts:
+            if task not in openTaskCounts:
+                tasksWithNoneOpen[task] = doneTaskCounts[task]
 
-        printTaskGroups(f'completed {sigilDescription} (no open tasks)', tasksWithNoIncompletes, [], {}, taskNum + doneNum)
+        printTaskGroups(f'completed {sigilDescription} (all done, no open tasks)', tasksWithNoneOpen, [], {}, taskNum + doneNum)
 
 
 def main(argv):
