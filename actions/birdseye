@@ -98,7 +98,7 @@ def separator(c, width):
     print(c * sepWidth)
 
 
-def process(filespec, prefix, tasks, completed, priority):
+def process(filespec, sigil, tasks, completed, priority):
     with open(filespec, "r") as f:
         taskNum = 0
         for line in f:
@@ -115,28 +115,34 @@ def process(filespec, prefix, tasks, completed, priority):
 
             if words[0] == ("x"):
                 for word in words:
-                    if word[0:1] == prefix and len(word) > 1:
-                        completed[word] = completed.setdefault(word, 0) + 1
+                    wordWithSigil = getWordWithSigil(word, sigil)
+                    if wordWithSigil:
+                        completed[wordWithSigil] = completed.setdefault(wordWithSigil, 0) + 1
             else:
                 for word in words:
-                    if word[0:1] == prefix and len(word) > 1:
-                        tasks[word] = tasks.setdefault(word, 0)  + 1
+                    wordWithSigil = getWordWithSigil(word, sigil)
+                    if wordWithSigil:
+                        tasks[wordWithSigil] = tasks.setdefault(wordWithSigil, 0)  + 1
                         if prioritized:
-                            priority.append(word)
+                            priority.append(wordWithSigil)
         return taskNum
 
 
-def gather(prefix, tasks, completed, priority):
-    taskNum = process(os.environ['TODO_FILE'], prefix, tasks, completed, priority)
-    doneNum = process(os.environ['DONE_FILE'], prefix, completed, completed, priority)
+def getWordWithSigil(word, sigil):
+    return word if word[0:1] == sigil and len(word) > 1 else None
+
+
+def gather(sigil, tasks, completed, priority):
+    taskNum = process(os.environ['TODO_FILE'], sigil, tasks, completed, priority)
+    doneNum = process(os.environ['DONE_FILE'], sigil, completed, completed, priority)
     return taskNum, doneNum
 
 
-def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
+def run(sigil, sigilDescription, isPrintOpen, isPrintCompleted):
     tasks = {}
     completed = {}
     priority = []
-    taskNum, doneNum = gather(prefix, tasks, completed, priority)
+    taskNum, doneNum = gather(sigil, tasks, completed, priority)
 
     if isPrintOpen:
         percentages = {}
@@ -149,7 +155,7 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
             totalTasks = openTasks + closedTasks
             percentages[task] = int((closedTasks*100) / totalTasks)
 
-        printTaskGroups(f"{prefixDescription} with open tasks (* = prioritized)", tasks, priority, percentages, taskNum)
+        printTaskGroups(f"{sigilDescription} with open tasks (* = prioritized)", tasks, priority, percentages, taskNum)
 
     if isPrintCompleted:
         tasksWithNoIncompletes = {}
@@ -157,7 +163,7 @@ def run(prefix, prefixDescription, isPrintOpen, isPrintCompleted):
             if task not in tasks:
                 tasksWithNoIncompletes[task] = completed[task]
 
-        printTaskGroups(f'completed {prefixDescription} (no open tasks)', tasksWithNoIncompletes, [], {}, taskNum + doneNum)
+        printTaskGroups(f'completed {sigilDescription} (no open tasks)', tasksWithNoIncompletes, [], {}, taskNum + doneNum)
 
 
 def main(argv):
