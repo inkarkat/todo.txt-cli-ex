@@ -17,6 +17,7 @@ OUTPUT:
 
 import math
 import os
+import re
 import sys
 
 __author__ = "Gina Trapani (ginatrapani@gmail.com)"
@@ -24,7 +25,7 @@ __copyright__ = "Copyright 2006-2024, Gina Trapani"
 __license__ = "GPL"
 
 
-def printTaskGroups(title, taskDict, prioritizedTasks, taskCompletionPercentages, taskNum):
+def printTaskGroups(title, taskDict, taskPriorities, taskCompletionPercentages, taskNum):
     print("")
     print(title)
     if not taskDict:
@@ -40,7 +41,7 @@ def printTaskGroups(title, taskDict, prioritizedTasks, taskCompletionPercentages
 
     priorityItems, nonPriorityItems = [], []
     for item in items:
-        (priorityItems if item[0] in prioritizedTasks else nonPriorityItems).append(item)
+        (priorityItems if item[0] in taskPriorities.keys() else nonPriorityItems).append(item)
 
     def printItemTaskGroup(item, star):
         printTaskGroup(item, itemMaxLength, taskCompletionPercentages.get(item[0], -1), star, taskNum)
@@ -71,11 +72,12 @@ def separator(c, width):
     print(c * SEP_WIDTH)
 
 
-def process(filespec, sigil, openTaskCounts, doneTaskCounts, prioritizedTasks):
+PRIORITY_PATTERN = re.compile(r'\(([A-Z])\)')
+def process(filespec, sigil, openTaskCounts, doneTaskCounts, taskPriorities):
     with open(filespec, "r") as f:
         taskCnt = 0
         for line in f:
-            prioritized = False
+            priority = None
             words = line.split()
             if not words:
                 continue
@@ -83,8 +85,8 @@ def process(filespec, sigil, openTaskCounts, doneTaskCounts, prioritizedTasks):
                 continue    # Ignore trashed tasks.
 
             taskCnt += 1
-            if words[0].startswith("("):
-                prioritized = True
+            if priorityMatch := PRIORITY_PATTERN.fullmatch(words[0]):
+                priority = priorityMatch.group(1)
 
             if words[0] == ("x"):
                 for word in words:
@@ -96,15 +98,14 @@ def process(filespec, sigil, openTaskCounts, doneTaskCounts, prioritizedTasks):
                     wordWithSigil = getWordWithSigil(word, sigil)
                     if wordWithSigil:
                         openTaskCounts[wordWithSigil] = openTaskCounts.setdefault(wordWithSigil, 0) + 1
-                        if prioritized:
-                            prioritizedTasks.add(wordWithSigil)
+                        if priority:
+                            taskPriorities.setdefault(wordWithSigil, set()).add(priority)
         return taskCnt
 
 
 if (os.environ['TODOTXT_SIGIL_BEFORE_PATTERN']
         or os.environ['TODOTXT_SIGIL_VALID_PATTERN'] != '.*'
         or os.environ['TODOTXT_SIGIL_AFTER_PATTERN']):
-    import re
 
     def bre_to_pcre(bre_pattern):
         pcre_pattern = bre_pattern
@@ -136,17 +137,17 @@ else:
         return word if word[0:1] == sigil and len(word) > 1 else None
 
 
-def gather(sigil, openTaskCounts, doneTaskCounts, prioritizedTasks):
-    taskNum = process(os.environ['TODO_FILE'], sigil, openTaskCounts, doneTaskCounts, prioritizedTasks)
-    doneNum = process(os.environ['DONE_FILE'], sigil, doneTaskCounts, doneTaskCounts, prioritizedTasks)
+def gather(sigil, openTaskCounts, doneTaskCounts, taskPriorities):
+    taskNum = process(os.environ['TODO_FILE'], sigil, openTaskCounts, doneTaskCounts, taskPriorities)
+    doneNum = process(os.environ['DONE_FILE'], sigil, doneTaskCounts, doneTaskCounts, taskPriorities)
     return taskNum, doneNum
 
 
 def run(sigil, sigilDescription, isPrintOpen, isPrintCompleted):
     openTaskCounts = {}
     doneTaskCounts = {}
-    prioritizedTasks = set()
-    taskNum, doneNum = gather(sigil, openTaskCounts, doneTaskCounts, prioritizedTasks)
+    taskPriorities = {}
+    taskNum, doneNum = gather(sigil, openTaskCounts, doneTaskCounts, taskPriorities)
 
     if isPrintOpen:
         taskCompletionPercentages = {}
@@ -156,7 +157,7 @@ def run(sigil, sigilDescription, isPrintOpen, isPrintCompleted):
             totalTaskNum = openTaskNum + doneTaskNum
             taskCompletionPercentages[task] = int((doneTaskNum * 100) / totalTaskNum)
 
-        printTaskGroups(f"{sigilDescription} with open tasks (* = prioritized)", openTaskCounts, prioritizedTasks, taskCompletionPercentages, taskNum)
+        printTaskGroups(f"{sigilDescription} with open tasks (* = prioritized)", openTaskCounts, taskPriorities, taskCompletionPercentages, taskNum)
 
     if isPrintCompleted:
         tasksWithNoneOpen = {}
@@ -164,7 +165,7 @@ def run(sigil, sigilDescription, isPrintOpen, isPrintCompleted):
             if task not in openTaskCounts:
                 tasksWithNoneOpen[task] = doneTaskCounts[task]
 
-        printTaskGroups(f'completed {sigilDescription} (all done, no open tasks)', tasksWithNoneOpen, set(), {}, taskNum + doneNum)
+        printTaskGroups(f'completed {sigilDescription} (all done, no open tasks)', tasksWithNoneOpen, {}, {}, taskNum + doneNum)
 
 
 def main(argv):
