@@ -47,10 +47,15 @@ def printTaskGroups(title, taskDict, taskPriorities, taskCompletionPercentages, 
         printTaskGroup(item, itemMaxLength, taskCompletionPercentages.get(item[0], -1), star, taskNum)
 
     for item in priorityItems:
-        printItemTaskGroup(item, "*")
+        printItemTaskGroup(item, renderPriorities(taskPriorities[item[0]]))
     for item in nonPriorityItems:
-        printItemTaskGroup(item, " ")
+        printItemTaskGroup(item, "    ")
 
+def renderPriorities(priorities):
+    sortedPriorities = sorted(priorities)
+    if len(sortedPriorities) <= 4:  # There's enough space to show all priorities.
+        return f'{"".join(sortedPriorities):4s}'
+    return f'{sortedPriorities[0]}..{sortedPriorities[-1]}' # Just show the first and last priority.
 
 def printTaskGroup(p, pMaxLen, pctage, star, taskNum):
     taskWidth = int(math.ceil(math.log(taskNum, 10)))
@@ -157,7 +162,7 @@ def run(sigil, sigilDescription, isPrintOpen, isPrintCompleted):
             totalTaskNum = openTaskNum + doneTaskNum
             taskCompletionPercentages[task] = int((doneTaskNum * 100) / totalTaskNum)
 
-        printTaskGroups(f"{sigilDescription} with open tasks (* = prioritized)", openTaskCounts, taskPriorities, taskCompletionPercentages, taskNum)
+        printTaskGroups(f"{sigilDescription} with open tasks", openTaskCounts, taskPriorities, taskCompletionPercentages, taskNum)
 
     if isPrintCompleted:
         tasksWithNoneOpen = {}
