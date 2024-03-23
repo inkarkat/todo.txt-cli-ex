@@ -19,6 +19,7 @@ import math
 import os
 import re
 import sys
+from collections import defaultdict
 
 __author__ = "Gina Trapani (ginatrapani@gmail.com)"
 __copyright__ = "Copyright 2006-2024, Gina Trapani"
@@ -97,14 +98,14 @@ def process(filespec, sigil, openTaskCounts, doneTaskCounts, taskPriorities):
                 for word in words:
                     wordWithSigil = getWordWithSigil(word, sigil)
                     if wordWithSigil:
-                        doneTaskCounts[wordWithSigil] = doneTaskCounts.setdefault(wordWithSigil, 0) + 1
+                        doneTaskCounts[wordWithSigil] += 1
             else:
                 for word in words:
                     wordWithSigil = getWordWithSigil(word, sigil)
                     if wordWithSigil:
-                        openTaskCounts[wordWithSigil] = openTaskCounts.setdefault(wordWithSigil, 0) + 1
+                        openTaskCounts[wordWithSigil] += 1
                         if priority:
-                            taskPriorities.setdefault(wordWithSigil, set()).add(priority)
+                            taskPriorities[wordWithSigil].add(priority)
         return taskCnt
 
 
@@ -149,9 +150,9 @@ def gather(sigil, openTaskCounts, doneTaskCounts, taskPriorities):
 
 
 def run(sigil, sigilDescription, isPrintOpen, isPrintCompleted):
-    openTaskCounts = {}
-    doneTaskCounts = {}
-    taskPriorities = {}
+    openTaskCounts = defaultdict(int)
+    doneTaskCounts = defaultdict(int)
+    taskPriorities = defaultdict(set)
     taskNum, doneNum = gather(sigil, openTaskCounts, doneTaskCounts, taskPriorities)
 
     if isPrintOpen:
