@@ -38,14 +38,16 @@ priorityHelp()
 (A) top priority:  do ASAP
 (B) must priority: important and work-related tasks, to be done soon
 (C) want priority: private or side tasks, to be done if time permits
+(D) to be deleted
 (O) opportunity:   optional, stretch goals that may be done opportunistically
 (P) progressing:   started tasks, only a step away from completion
-(Q) qualified:     already committed to, should be started soon${TODOTXT_CHEAT_CUSTOM_PRIORITIES:+
+(Q) qualified:     already committed to, should be started soon
+(R) regular:       routine tasks, to be done regularly over a longer period
+(T) to be trashed${TODOTXT_CHEAT_CUSTOM_PRIORITIES:+
 }${TODOTXT_CHEAT_CUSTOM_PRIORITIES}
 EOF
-if [ "$TODOTXT_WHAT_PRIORITIES" ]; then
-    echo "Priorities $TODOTXT_WHAT_PRIORITIES are included in the todo.sh what output."
-fi
+    [ -z "$TODOTXT_WHAT_PRIORITIES" ] || echo "Priorities $TODOTXT_WHAT_PRIORITIES are included in the todo.sh what output."
+    [ -z "$TODOTXT_SUMMARY_PRIORITIES" ] || echo "Priorities $TODOTXT_SUMMARY_PRIORITIES are included in the todo.sh summary output."
 }
 
 markerHelp()
