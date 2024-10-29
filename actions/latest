@@ -23,13 +23,25 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [-a] [TERM...]"
+    echo "    $(basename $0) [-n NUM] [-a] [TERM...]"
     echo "    lt [TERM...]"
-    echo "      Displays the last added open (all with -a) tasks"
+    echo "      Displays the last [NUM] added open (all with -a) tasks"
     echo "      that contain TERM(s). Tasks without a date are ignored."
     echo ""
     exit
 }
 
-export TODOTXT_LST_ADDITIONAL_SORT_COMMAND="tail -n $((${LINES:-20}/2 - 4))"
-exec "$TODO_FULL_SH" listbydate "$@"
+additional_filter_command="grep -ve '^ *[0-9]\+ [xX] ' | "
+typeset -a listByDateArgs=()
+if [ "$1" = '-a' ]; then
+    listByDateArgs+=("$1"); shift
+    additional_filter_command=
+fi
+
+summaryNum=$((${LINES:-20}/2 - 4))
+if [ "$1" = '-n' ]; then
+    summaryNum=$2; shift; shift
+fi
+
+export TODOTXT_LST_ADDITIONAL_SORT_COMMAND="tail -n $summaryNum"
+exec "$TODO_FULL_SH" listbydate "${listByDateArgs[@]}" "$@"
