@@ -81,6 +81,7 @@ do
 
         if ! [[ "$url" =~ / ]]; then
             # Attachments are scoped by the task's add date (if such is present).
+            # Duplicated to attach
             [[ "$todo" =~ ^(\([A-Z]\) |[xX] [0-9]{4}-[0-9]{2}-[0-9]{2} )?([0-9]{4})-([0-9]{2})-([0-9]{2})\  ]] \
                 && dateSubdir="${BASH_REMATCH[2]}/${BASH_REMATCH[3]}/${BASH_REMATCH[4]}/" \
                 || dateSubdir=''
