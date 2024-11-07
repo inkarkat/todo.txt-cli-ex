@@ -57,6 +57,7 @@ addAttachment()
 {
     local filename="${1:?}"; shift
     [[ "$filename" =~ [[:space:]] ]] && filename="(${filename})"
+    "$@" || return $?
     attachments+="${attachments:+ }a:${filename}"
 }
 
@@ -69,19 +70,12 @@ do
         cat > "$placeholderForStdin" || exit $?
         < /dev/tty read -p "Attachment name: " -e -r name
         if [ -n "$name" ] && [[ ! "$name" =~ / ]]; then
-            if mv -- "$placeholderForStdin" "${dirspec}/${name}"; then
-                addAttachment "$name"
-            else
-                status=$?
-            fi
+            addAttachment "$name" mv -- "$placeholderForStdin" "${dirspec}/${name}" || status=$?
         else
             status=4
         fi
-    elif "${action[@]}" --target-directory "$dirspec" -- "$filespec"; then
-        filename="$(basename -- "$filespec")"
-        addAttachment "$filename"
     else
-        status=$?
+        addAttachment "$(basename -- "$filespec")" "${action[@]}" --target-directory "$dirspec" -- "$filespec" || status=$?
     fi
 done
 if [ -n "$attachments" ]; then
