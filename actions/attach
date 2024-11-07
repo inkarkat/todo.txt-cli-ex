@@ -23,13 +23,13 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [mv|move] ITEM# FILE [...]"
+    echo "    $(basename $0) [mv|move] ITEM# FILE|- [...]"
     echo "      Copies (/ moves) FILE(s) to the attachment subdir of \$TODO_DIR and adds a"
     echo "      a: reference to the task."
     echo ""
     exit
 }
-errmsg="usage: $TODO_SH $(basename $0) [mv|move] ITEM# FILE [...]"
+errmsg="usage: $TODO_SH $(basename $0) [mv|move] ITEM# FILE|- [...]"
 
 typeset -a action=(cp)
 if [ "$1" = "mv" -o "$1" = "move" ]; then
@@ -53,12 +53,18 @@ dirspec="${TODO_DIR}/attachments/${dateSubdir}"
 mkdir --parents -- "$dirspec" || exit 3
 
 attachments=''
+addAttachment()
+{
+    local filename="${1:?}"; shift
+    [[ "$filename" =~ [[:space:]] ]] && filename="(${filename})"
+    attachments+="${attachments:+ }a:${filename}"
+}
+
 for filespec
 do
     if "${action[@]}" --target-directory "$dirspec" -- "$filespec"; then
         filename="$(basename -- "$filespec")"
-        [[ "$filename" =~ [[:space:]] ]] && filename="(${filename})"
-        attachments+="${attachments:+ }a:${filename}"
+        addAttachment "$filename"
     else
         status=$?
     fi
