@@ -57,8 +57,15 @@ addAttachment()
 {
     local filename="${1:?}"; shift
     [[ "$filename" =~ [[:space:]] ]] && filename="(${filename})"
+    local attachmentMarker="a:${filename}"
+
+    if [[ "$todo" =~ (^|[[:space:]])"$attachmentMarker"($|[[:space:]]) ]]; then
+        printf >&2 'ERROR: Attachment %s already exists for task %d.\n' "$attachmentMarker" "$item"
+        return 1
+    fi
+
     "$@" || return $?
-    attachments+="${attachments:+ }a:${filename}"
+    attachments+="${attachments:+ }${attachmentMarker}"
 }
 
 readonly placeholderForStdin="${dirspec}/_"
