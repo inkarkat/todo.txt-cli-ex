@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2013 Ingo Karkat
+# COPYRIGHT: (C) 2013-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -51,26 +51,26 @@ fi
 typeset -a urls=()
 while [ $# -gt 0 ]
 do
-    item=$1
+    item="$1"
     shift
     getTodo "$item"
 
-    taskUrls=$(echo "$todo" | grep -o "${TODOTXT_OPEN_URL_SCHEMES}${TODOTXT_BROWSER_URL_CHARACTERS}")
-    linkMarkers=$(echo "$todo" | grep -o '[^ ]*a:[^(][^[:space:]]*' | grep '^a:'; echo "$todo" | grep -o '[^ ]*a:([^)]\+)' | grep '^a:')
-    if [ -z "$taskUrls" -a -z "$linkMarkers" ]; then
+    readarray -t taskUrls < <(echo "$todo" | grep -o "${TODOTXT_OPEN_URL_SCHEMES}${TODOTXT_BROWSER_URL_CHARACTERS}")
+    readarray -t linkMarkers < <(echo "$todo" | grep -o '[^ ]*a:[^(][^[:space:]]*' | grep '^a:'; echo "$todo" | grep -o '[^ ]*a:([^)]\+)' | grep '^a:')
+    if [ ${#taskUrls[@]} -eq 0 -a ${#linkMarkers[@]} -eq 0 ]; then
         [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
         echo "TODO: No URL found in task $item."
     fi
 
     IFS=$'\n'
-    for url in $taskUrls
+    for url in "${taskUrls[@]}"
     do
         if ! printf %s "$url" | grep -q "${TODOTXT_BROWSER_URL_SCHEMES}${TODOTXT_BROWSER_URL_CHARACTERS}"; then
             urls+=("$url")
             echo "$url"
         fi
     done
-    for linkMarker in $linkMarkers
+    for linkMarker in "${linkMarkers[@]}"
     do
         url=${linkMarker#a:(}
         if [ "$url" = "$linkMarker" ]; then
@@ -87,9 +87,9 @@ done
 
 
 
-if [ "$TODOTXT_OPENER" ]; then
+if [ -n "$TODOTXT_OPENER" ]; then
     exec "$TODOTXT_OPENER" "${urls[@]}"
-elif [ "$COMSPEC" ]; then
+elif [ -n "$COMSPEC" ]; then
     comspecFilespec=$(cygpath "$COMSPEC" 2>/dev/null || printf %s "$COMSPEC")
     for url in "${urls[@]}"
     do
