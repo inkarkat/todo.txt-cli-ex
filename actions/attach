@@ -60,9 +60,24 @@ addAttachment()
     attachments+="${attachments:+ }a:${filename}"
 }
 
+readonly placeholderForStdin="${dirspec}/_"
 for filespec
 do
-    if "${action[@]}" --target-directory "$dirspec" -- "$filespec"; then
+    if [ "$filespec" = - ]; then
+        # Need to first collect stdin; we can only query for the filename after the
+        # source has been exhausted and we're reading from the terminal again.
+        cat > "$placeholderForStdin" || exit $?
+        < /dev/tty read -p "Attachment name: " -e -r name
+        if [ -n "$name" ] && [[ ! "$name" =~ / ]]; then
+            if mv -- "$placeholderForStdin" "${dirspec}/${name}"; then
+                addAttachment "$name"
+            else
+                status=$?
+            fi
+        else
+            status=4
+        fi
+    elif "${action[@]}" --target-directory "$dirspec" -- "$filespec"; then
         filename="$(basename -- "$filespec")"
         addAttachment "$filename"
     else
