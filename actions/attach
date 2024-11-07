@@ -62,6 +62,11 @@ addAttachment()
     if [[ "$todo" =~ (^|[[:space:]])"$attachmentMarker"($|[[:space:]]) ]]; then
         printf >&2 'ERROR: Attachment %s already exists for task %d.\n' "$attachmentMarker" "$item"
         return 1
+    elif [ -e "${dirspec:?}/${filename:?}" ]; then
+        printf >&2 'TODO: Attachment %s already exists in %s. Rename or press enter to skip.\n' "$filename" "$dirspec"
+        < /dev/tty read -p "Attachment name: " -e -r -i "$filename" newname
+        [ -n "$newname" -a "$newname" != "$filename" ] || return 4
+        addAttachment "$newname" "$@"; return $?
     fi
 
     "$@" "${dirspec:?}/${filename:?}" || return $?
