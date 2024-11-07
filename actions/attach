@@ -1,0 +1,96 @@
+#!/bin/bash
+###############################################################################
+##
+# FILE:         attach
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 07-Nov-2024
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2024 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)attach	$Id$	todo.txt-cli-ex
+###############################################################################
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [mv|move] ITEM# FILE|- [...]"
+    echo "      Copies (/ moves) FILE(s) to the attachment subdir of \$TODO_DIR and adds a"
+    echo "      a: reference to the task."
+    echo ""
+    exit
+}
+errmsg="usage: $TODO_SH $(basename $0) [mv|move] ITEM# FILE|- [...]"
+
+typeset -a action=(cp)
+if [ "$1" = "mv" -o "$1" = "move" ]; then
+    action=(mv)
+    shift
+fi
+if [[ "$1" =~ ^[0-9]+$ ]]; then
+    item="$1"; shift
+else
+    die "$errmsg"
+fi
+[ $# -gt 0 ] || die "$errmsg"
+
+getTodo "$item"
+# Duplicated to open
+[[ "$todo" =~ ^(\([A-Z]\) |[xX] [0-9]{4}-[0-9]{2}-[0-9]{2} )?([0-9]{4})-([0-9]{2})-([0-9]{2})\  ]] \
+    && dateSubdir="${BASH_REMATCH[2]}/${BASH_REMATCH[3]}/${BASH_REMATCH[4]}/" \
+    || dateSubdir=''
+dirspec="${TODO_DIR}/attachments/${dateSubdir}"
+
+mkdir --parents -- "$dirspec" || exit 3
+
+attachments=''
+addAttachment()
+{
+    local filename="${1:?}"; shift
+    [[ "$filename" =~ [[:space:]] ]] && filename="(${filename})"
+    local attachmentMarker="a:${filename}"
+
+    if [[ "$todo" =~ (^|[[:space:]])"$attachmentMarker"($|[[:space:]]) ]]; then
+        printf >&2 'ERROR: Attachment %s already exists for task %d.\n' "$attachmentMarker" "$item"
+        return 1
+    elif [ -e "${dirspec:?}/${filename:?}" ]; then
+        printf >&2 'TODO: Attachment %s already exists in %s. Rename or press enter to skip.\n' "$filename" "$dirspec"
+        < /dev/tty read -p "Attachment name: " -e -r -i "$filename" newname
+        [ -n "$newname" -a "$newname" != "$filename" ] || return 4
+        addAttachment "$newname" "$@"; return $?
+    fi
+
+    "$@" "${dirspec:?}/${filename:?}" || return $?
+    attachments+="${attachments:+ }${attachmentMarker}"
+}
+
+readonly placeholderForStdin="${dirspec}/_"
+for filespec
+do
+    if [ "$filespec" = - ]; then
+        # Need to first collect stdin; we can only query for the filename after the
+        # source has been exhausted and we're reading from the terminal again.
+        cat > "$placeholderForStdin" || exit $?
+        < /dev/tty read -p "Attachment name: " -e -r name
+        if [ -n "$name" ] && [[ ! "$name" =~ / ]]; then
+            addAttachment "$name" mv -- "$placeholderForStdin" || status=$?
+        else
+            status=4
+        fi
+    else
+        addAttachment "$(basename -- "$filespec")" "${action[@]}" -- "$filespec" || status=$?
+    fi
+done
+if [ -n "$attachments" ]; then
+    "$TODO_FULL_SH" command append "$item" "$attachments" || status=$?
+fi
+exit $status

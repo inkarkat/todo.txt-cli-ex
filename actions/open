@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2013 Ingo Karkat
+# COPYRIGHT: (C) 2013-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -24,9 +24,9 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) ITEM#[, ITEM#, ...]"
-    echo "      Searches for all kinds of non-web URLs and non-task a:... references"
-    echo "      in the task text and launches them through their associated application."
-    echo "      For web resources, use the browse action instead."
+    echo "      Searches for attachments and all kinds of non-web URLs and non-task a:..."
+    echo "      references in the task text and launches them through their associated"
+    echo "      application. For web resources, use the browse action instead."
     echo "    $(basename $0) [TERM...]"
     echo "      Displays all tasks that contain all kinds of non-web URLs and TERM(s)."
     echo ""
@@ -51,32 +51,41 @@ fi
 typeset -a urls=()
 while [ $# -gt 0 ]
 do
-    item=$1
+    item="$1"
     shift
     getTodo "$item"
 
-    taskUrls=$(echo "$todo" | grep -o "${TODOTXT_OPEN_URL_SCHEMES}${TODOTXT_BROWSER_URL_CHARACTERS}")
-    linkMarkers=$(echo "$todo" | grep -o '[^ ]*a:[^(][^[:space:]]*' | grep '^a:'; echo "$todo" | grep -o '[^ ]*a:([^)]\+)' | grep '^a:')
-    if [ -z "$taskUrls" -a -z "$linkMarkers" ]; then
+    readarray -t taskUrls < <(echo "$todo" | grep -o "${TODOTXT_OPEN_URL_SCHEMES}${TODOTXT_BROWSER_URL_CHARACTERS}")
+    readarray -t linkMarkers < <(echo "$todo" | grep -o '[^ ]*a:[^(][^[:space:]]*' | grep '^a:'; echo "$todo" | grep -o '[^ ]*a:([^)]\+)' | grep '^a:')
+    if [ ${#taskUrls[@]} -eq 0 -a ${#linkMarkers[@]} -eq 0 ]; then
         [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
         echo "TODO: No URL found in task $item."
     fi
 
     IFS=$'\n'
-    for url in $taskUrls
+    for url in "${taskUrls[@]}"
     do
         if ! printf %s "$url" | grep -q "${TODOTXT_BROWSER_URL_SCHEMES}${TODOTXT_BROWSER_URL_CHARACTERS}"; then
             urls+=("$url")
             echo "$url"
         fi
     done
-    for linkMarker in $linkMarkers
+    for linkMarker in "${linkMarkers[@]}"
     do
         url=${linkMarker#a:(}
         if [ "$url" = "$linkMarker" ]; then
             url=${linkMarker#a:}
         else
             url=${url%)}
+        fi
+
+        if ! [[ "$url" =~ / ]]; then
+            # Attachments are scoped by the task's add date (if such is present).
+            # Duplicated to attach
+            [[ "$todo" =~ ^(\([A-Z]\) |[xX] [0-9]{4}-[0-9]{2}-[0-9]{2} )?([0-9]{4})-([0-9]{2})-([0-9]{2})\  ]] \
+                && dateSubdir="${BASH_REMATCH[2]}/${BASH_REMATCH[3]}/${BASH_REMATCH[4]}/" \
+                || dateSubdir=''
+            url="${TODO_DIR}/attachments/${dateSubdir}${url}"
         fi
 
         urls+=("$url")
@@ -87,9 +96,9 @@ done
 
 
 
-if [ "$TODOTXT_OPENER" ]; then
+if [ -n "$TODOTXT_OPENER" ]; then
     exec "$TODOTXT_OPENER" "${urls[@]}"
-elif [ "$COMSPEC" ]; then
+elif [ -n "$COMSPEC" ]; then
     comspecFilespec=$(cygpath "$COMSPEC" 2>/dev/null || printf %s "$COMSPEC")
     for url in "${urls[@]}"
     do
