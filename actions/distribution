@@ -25,7 +25,7 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [--no-footer|--final-footer-only|footer-only-on-change|--footer-every N] [--force-legends] [--as colorbox-calendar|green-[large-]calendar|...] [--over day|month|year|year-weekly|--weekly] [--done|--both|--trashed|--any] [--all|SRC] [-d|--date DATEGLOB [-d|--date ...]] [TERM...]"
+    echo "    $(basename $0) [--no-footer|--final-footer-only|footer-only-on-change|--footer-every N] [--force-legends] [--bucket-legend] [--as colorbox-calendar|green-[large-]calendar|...] [--over day|month|year|year-weekly|--weekly] [--done|--both|--trashed|--any] [--all|SRC] [-d|--date DATEGLOB [-d|--date ...]] [TERM...]"
     echo "      Prints the distribution of added (or done with --done, both with --both,"
     echo "      or trashed with --trashed, any with --any) tasks"
     echo "      [in SRC, or in todo.txt and done.txt with --all (like lsa)]"
@@ -51,7 +51,7 @@ do
         -[S])           distributionArgs+=("$1"); shift;;
         --@(no-footer|final-footer-only|footer-only-on-change|no-splitting|weekly|force-legends))
                         distributionArgs+=("$1"); shift;;
-        --@(footer-every|graph-legend|footer-legend|as|over))
+        --@(bucket-legend|footer-every|graph-legend|footer-legend|as|over))
                         distributionArgs+=("$1" "$2"); shift; shift;;
 
         --)             shift; break;;
