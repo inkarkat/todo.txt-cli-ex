@@ -31,6 +31,8 @@ shift
     exit
 }
 
+: ${COLOR_DASHBOARD_HEADER='\\033[38;2;72;81;101m'}
+
 filter=
 [ $# -gt 0 ] && filter="$* "
 
@@ -38,7 +40,7 @@ modDate=$([ ${TODOTXT_RELTIME:-1} -ne 0 ] && reldate "$TODO_FILE" 2>/dev/null ||
 export TODOTXT_SUMMARY_PRIORITY_ADDENDUM="last modified ${modDate}"
 "$TODO_FULL_SH" summary "$@"
 
-echo "${TODOTXT_DASHBOARD_SEPARATOR}    Pending ${filter}tasks:"
+echo -e "${TODOTXT_DASHBOARD_SEPARATOR}    ${COLOR_DASHBOARD_HEADER//\\\\/\\}Pending ${filter}tasks:${DEFAULT//\\\\/\\}"
 TODOTXT_VERBOSE=0 "$TODO_FULL_SH" what "$@"
 
 if [ "$HOSTNAME" -a "$*" != "@$HOSTNAME" ]; then
@@ -46,7 +48,7 @@ if [ "$HOSTNAME" -a "$*" != "@$HOSTNAME" ]; then
     hereTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here "$@")
     if [ "$hereTasks" ]; then
         hereTaskNum=$(echo "$hereTasks" | sed -n '$ =')
-        echo "${TODOTXT_DASHBOARD_SEPARATOR}    Local ${filter}tasks @${HOSTNAME}:"
+        echo -e "${TODOTXT_DASHBOARD_SEPARATOR}    ${COLOR_DASHBOARD_HEADER//\\\\/\\}Local ${filter}tasks @${HOSTNAME}:${DEFAULT//\\\\/\\}"
         echo "$hereTasks"
     fi
 
@@ -79,10 +81,10 @@ if [ -x "$TODO_ACTIONS_DIR/lsbumped" ]; then
             mostBumpedTask=$mostBumpedTasks
             mostBumpedAppendix=
         fi
-        echo "${TODOTXT_DASHBOARD_SEPARATOR}    Most bumped ${filter}task${mostBumpedAppendix}:"
+        echo -e "${TODOTXT_DASHBOARD_SEPARATOR}    ${COLOR_DASHBOARD_HEADER//\\\\/\\}Most bumped ${filter}task${mostBumpedAppendix}:${DEFAULT//\\\\/\\}"
         echo "$mostBumpedTask"
     fi
 fi
 
-echo "${TODOTXT_DASHBOARD_SEPARATOR}    Last ${filter}tasks:"
+echo -e "${TODOTXT_DASHBOARD_SEPARATOR}    ${COLOR_DASHBOARD_HEADER//\\\\/\\}Last ${filter}tasks:${DEFAULT//\\\\/\\}"
 TODOTXT_VERBOSE=0 "$TODO_FULL_SH" last "$@"
