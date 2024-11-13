@@ -34,12 +34,12 @@ shift
 filter=
 [ $# -gt 0 ] && filter="$* "
 
+modDate=$([ ${TODOTXT_RELTIME:-1} -ne 0 ] && reldate "$TODO_FILE" 2>/dev/null || date -d "$(stat -c %y "$TODO_FILE")" '+%F %R')
+export TODOTXT_SUMMARY_PRIORITY_ADDENDUM="last modified ${modDate}"
+
 echo "    Pending ${filter}tasks:"
 TODOTXT_VERBOSE=0 "$TODO_FULL_SH" what "$@"
 "$TODO_FULL_SH" summary "$@"
-
-modDate=$([ ${TODOTXT_RELTIME:-1} -ne 0 ] && reldate "$TODO_FILE" 2>/dev/null || date -d "$(stat -c %y "$TODO_FILE")" '+%F %R')
-echo "TODO: last modified ${modDate}"
 
 if [ "$HOSTNAME" -a "$*" != "@$HOSTNAME" ]; then
     hereTaskNum=0
