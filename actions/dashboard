@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2015 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -31,23 +31,24 @@ shift
     exit
 }
 
+: ${COLOR_DASHBOARD_HEADER='\\033[38;2;72;81;101m'}
+
 filter=
 [ $# -gt 0 ] && filter="$* "
 
-echo "    Pending ${filter}tasks:"
-"$TODO_FULL_SH" what "$@"
+modDate=$([ ${TODOTXT_RELTIME:-1} -ne 0 ] && reldate "$TODO_FILE" 2>/dev/null || date -d "$(stat -c %y "$TODO_FILE")" '+%F %R')
+export TODOTXT_SUMMARY_PRIORITY_ADDENDUM="last modified ${modDate}"
 "$TODO_FULL_SH" summary "$@"
 
-modDate=$([ ${TODOTXT_RELTIME:-1} -ne 0 ] && reldate "$TODO_FILE" 2>/dev/null || date -d "$(stat -c %y "$TODO_FILE")" '+%F %R')
-echo "TODO: last modified ${modDate}"
+echo -e "${TODOTXT_DASHBOARD_SEPARATOR}    ${COLOR_DASHBOARD_HEADER//\\\\/\\}Pending ${filter}tasks:${DEFAULT//\\\\/\\}"
+TODOTXT_VERBOSE=0 "$TODO_FULL_SH" what "$@"
 
 if [ "$HOSTNAME" -a "$*" != "@$HOSTNAME" ]; then
     hereTaskNum=0
     hereTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" here "$@")
     if [ "$hereTasks" ]; then
         hereTaskNum=$(echo "$hereTasks" | sed -n '$ =')
-        echo
-        echo "    Local ${filter}tasks @${HOSTNAME}:"
+        echo -e "${TODOTXT_DASHBOARD_SEPARATOR}    ${COLOR_DASHBOARD_HEADER//\\\\/\\}Local ${filter}tasks @${HOSTNAME}:${DEFAULT//\\\\/\\}"
         echo "$hereTasks"
     fi
 
@@ -80,12 +81,10 @@ if [ -x "$TODO_ACTIONS_DIR/lsbumped" ]; then
             mostBumpedTask=$mostBumpedTasks
             mostBumpedAppendix=
         fi
-        echo
-        echo "    Most bumped ${filter}task${mostBumpedAppendix}:"
+        echo -e "${TODOTXT_DASHBOARD_SEPARATOR}    ${COLOR_DASHBOARD_HEADER//\\\\/\\}Most bumped ${filter}task${mostBumpedAppendix}:${DEFAULT//\\\\/\\}"
         echo "$mostBumpedTask"
     fi
 fi
 
-echo
-echo "    Last ${filter}tasks:"
+echo -e "${TODOTXT_DASHBOARD_SEPARATOR}    ${COLOR_DASHBOARD_HEADER//\\\\/\\}Last ${filter}tasks:${DEFAULT//\\\\/\\}"
 TODOTXT_VERBOSE=0 "$TODO_FULL_SH" last "$@"

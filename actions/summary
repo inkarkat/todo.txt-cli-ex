@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2014 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -74,8 +74,8 @@ partDoneNum=$("$TODO_FULL_SH" -p lsdopart "$@" | wc -l)   # All partially done t
 
 filter=
 [ $# -gt 0 ] && filter="$* "
-summaryOfPriorities="${listNum} ${filter}tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due"
-summaryOfStates="${activeNum} open, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${partDoneNum} partially done, ${doneNum} done"
+summaryOfPriorities="${listNum} ${filter}tasks${totalMessage}, ${prioNum} prioritized, ${dueNum} due${TODOTXT_SUMMARY_PRIORITY_ADDENDUM:+; }${TODOTXT_SUMMARY_PRIORITY_ADDENDUM}"
+summaryOfStates="${activeNum} open, ${waitNum} waiting, ${futureNum} future, ${trashedNum} trashed, ${partDoneNum} partially done, ${doneNum} done${TODOTXT_SUMMARY_STATES_ADDENDUM:+; }${TODOTXT_SUMMARY_STATES_ADDENDUM}"
 echo "TODO: ${summaryOfPriorities}"
 echo "TODO: ${summaryOfStates}"
 
