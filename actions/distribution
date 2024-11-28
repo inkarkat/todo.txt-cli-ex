@@ -28,7 +28,7 @@ shift
     echo "    $(basename $0) [--no-footer|--final-footer-only|footer-only-on-change|--footer-every N] [--force-legends] [--bucket-legend] [--as colorbox-calendar|green-[large-]calendar|...] [--over day|month|year|year-weekly|--weekly] [--done|--both|--trashed|--any] [--all|SRC] [-d|--date DATEGLOB [-d|--date ...]] [TERM...]"
     echo "      Prints the distribution of added (or done with --done, both with --both,"
     echo "      or trashed with --trashed, any with --any) tasks"
-    echo "      [in SRC, or in todo.txt and done.txt with --all (like lsa)]"
+    echo "      [in SRC, or in todo.txt and done.txt and trash.txt with --all (like lsa)]"
     echo "      [that match (any) DATEGLOB(s)] [that contain TERM(s)]."
     echo ""
     exit
