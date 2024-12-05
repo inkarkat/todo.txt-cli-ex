@@ -1,7 +1,7 @@
 #!/bin/bash
 ###############################################################################
 ##
-# FILE:         subst
+# FILE:         gsub
 # PRODUCT:      todo.txt-cli-ex
 # AUTHOR:       Ingo Karkat <ingo@karkat.de>
 # DATE CREATED: 20-May-2010
@@ -11,12 +11,12 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
-# @(#)subst	$Id$	todo.txt-cli-ex
+# @(#)gsub	$Id$	todo.txt-cli-ex
 ###############################################################################
 
 action=$1

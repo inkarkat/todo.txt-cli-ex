@@ -186,14 +186,14 @@ do
     case $date in
         '')
             if [ "$isZap" ]; then
-                "$TODO_FULL_SH" subst "$item" " u:\\($datePattern\\)" ' z:\1'
+                "$TODO_FULL_SH" gsub "$item" " u:\\($datePattern\\)" ' z:\1'
             else
                 die "$errmsg"
             fi
             ;;
         none|never|off|del|rm)
             if [ "$isZap" ]; then
-                "$TODO_FULL_SH" subst "$item" " z:\\($datePattern\\)" ' u:\1'
+                "$TODO_FULL_SH" gsub "$item" " z:\\($datePattern\\)" ' u:\1'
             else
                 remove "$item"
             fi
