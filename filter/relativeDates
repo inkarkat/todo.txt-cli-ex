@@ -29,7 +29,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2016 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -37,6 +37,9 @@
 # @(#)relativeDates	$Id$	todo.txt-cli-ex
 ###############################################################################
 
+if [ $TODOTXT_PLAIN = 1 ]; then
+    export COLOR_TRASH=$NONE
+fi
 if [ ${TODOTXT_RELDATE:-1} -ne 0 ]; then
 awk -v date=$1 -v dayRange=${TODOTXT_RELDATE_DAYRANGE:-14} '
 function highlight(colorVar,      color) {

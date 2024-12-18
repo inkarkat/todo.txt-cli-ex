@@ -3,15 +3,17 @@ TESTS = $(wildcard tests/t[0-9][0-9][0-9][0-9]-*.sh)
 
 # Use the main todo.sh executable and the test library and utilities from a
 # ../todo.txt-cli working copy next to this.
+DEPENDENCY_DIR ?= ../todo.txt-cli
+
 test-copy-deps: todo.sh tests/test-lib.sh tests/aggregate-results.sh
 
-todo.sh: ../todo.txt-cli/todo.sh
+todo.sh: $(DEPENDENCY_DIR)/todo.sh
 	cp $< .
 
-tests/test-lib.sh: ../todo.txt-cli/tests/test-lib.sh
+tests/test-lib.sh: $(DEPENDENCY_DIR)/tests/test-lib.sh
 	cp $< tests/
 
-tests/aggregate-results.sh: ../todo.txt-cli/tests/aggregate-results.sh
+tests/aggregate-results.sh: $(DEPENDENCY_DIR)/tests/aggregate-results.sh
 	cp $< tests/
 
 test-pre-clean:

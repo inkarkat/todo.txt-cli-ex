@@ -2,6 +2,8 @@
 
 _A set of extensions for todo.txt-cli, a shell script for managing your todo.txt file._
 
+![Build Status](https://github.com/inkarkat/todo.txt-cli-ex/actions/workflows/build.yml/badge.svg)
+
 The [Command Line Interface](https://github.com/todotxt/todo.txt-cli) of
 the [Todo.txt](http://todotxt.org/) task tracking system allows extension via
 **add-ons** (which supply customized or additional actions) and **filters** (which

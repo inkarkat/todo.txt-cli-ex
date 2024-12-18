@@ -24,19 +24,19 @@ X 2009-02-12 2009-02-01 prioritized A but already trashed A:2009-02-09
 EOF
 
 test_todo_session 'synthesized prioritization' <<EOF
->>> todo.sh list prioritized
-[1;33m[7m12[1;33m (A) (12 days ago) first not yet prioritized A task A:(in 9 days) A:(4 days ago)[0m
-[1;33m[7m13[1;33m (A) (12 days ago) last not yet prioritized A task A:(4 days ago) A:(in 9 days)[0m
-[1;33m[7m05[1;33m (A) (12 days ago) prioritized A A:(4 days ago)[0m
-[0;32m[7m07[0;32m (B) (12 days ago) prioritized B out of three A:(in 9 days) B:(4 days ago) C:(5 days ago)[0m
-[1;34m[7m09[1;34m (C) (12 days ago) override priority B with lower prioritized C C:(4 days ago)[0m
-[1;34m[7m10[1;34m (C) (12 days ago) override priority D with higher prioritized C C:(4 days ago)[0m
-[1;34m[7m08[1;34m (C) (12 days ago) prioritized C because it is last A:(in 9 days) B:(4 days ago) D:(4 days ago) C:(4 days ago) E:(in 9 days)[0m
-[1;37m[7m06[1;37m (X) (12 days ago) prioritized X X:(4 days ago)[0m
-[7m11[0m (12 days ago) invalid prioritized I task I:2009-02-0911
-[0m[47m[7m04[0m[47m (12 days ago) not yet prioritized A A:(in 9 days)[0m
-[0;37m02 x (yesterday, after 11 days) prioritized A but already done A:(4 days ago)[0m
-[1;30m03 X (yesterday, after 11 days) prioritized A but already trashed A:(4 days ago)[0m
+>>> todo.sh -p list prioritized
+12 (A) (12 days ago) first not yet prioritized A task A:(in 9 days) A:(4 days ago)
+13 (A) (12 days ago) last not yet prioritized A task A:(4 days ago) A:(in 9 days)
+05 (A) (12 days ago) prioritized A A:(4 days ago)
+07 (B) (12 days ago) prioritized B out of three A:(in 9 days) B:(4 days ago) C:(5 days ago)
+09 (C) (12 days ago) override priority B with lower prioritized C C:(4 days ago)
+10 (C) (12 days ago) override priority D with higher prioritized C C:(4 days ago)
+08 (C) (12 days ago) prioritized C because it is last A:(in 9 days) B:(4 days ago) D:(4 days ago) C:(4 days ago) E:(in 9 days)
+06 (X) (12 days ago) prioritized X X:(4 days ago)
+11 (12 days ago) invalid prioritized I task I:2009-02-0911
+04 (12 days ago) not yet prioritized A A:(in 9 days)
+02 x (yesterday, after 11 days) prioritized A but already done A:(4 days ago)
+03 X (yesterday, after 11 days) prioritized A but already trashed A:(4 days ago)
 --
 TODO: 12 of 13 tasks shown
 EOF
@@ -58,18 +58,18 @@ X (A) 2009-02-12 2009-02-01 depri of prioritized A but already trashed d:2009-02
 EOF
 
 test_todo_session 'synthesized deprioritization' <<EOF
->>> todo.sh list depri
-[1;33m[7m12[1;33m (A) (12 days ago) last not yet depri of prioritized A task d:(4 days ago) d:(in 9 days)[0m
-[1;33m[7m06[1;33m (A) (12 days ago) not yet depri of prioritized A task d:(in 9 days)[0m
-[1;34m[7m09[1;34m (C) (12 days ago) not yet depri of synthetically prioritized C task C:(11 days ago) d:(in 9 days)[0m
-[1;37m[7m10[1;37m (I) (12 days ago) invalid depri of prioritized I task d:2009-02-0911[0m
-[7m05[0m (12 days ago) depri of prioritized A task d:(4 days ago)
-[0m[47m[7m07[0m[47m (12 days ago) depri of prioritized Z task d:(4 days ago)[0m
-[7m08[0m (12 days ago) depri of synthetically prioritized C task C:(11 days ago) d:(4 days ago)
-[0m[47m[7m04[0m[47m (12 days ago) depri of unprioritized task d:(4 days ago)[0m
-[7m11[0m (12 days ago) first not yet depri of prioritized A task d:(in 9 days) d:(4 days ago)
-[0;37m02 x (A) yesterday (12 days ago) depri of prioritized A but already done d:(4 days ago)[0m
-[1;30m03 X (A) yesterday (12 days ago) depri of prioritized A but already trashed d:(4 days ago)[0m
+>>> todo.sh -p list depri
+12 (A) (12 days ago) last not yet depri of prioritized A task d:(4 days ago) d:(in 9 days)
+06 (A) (12 days ago) not yet depri of prioritized A task d:(in 9 days)
+09 (C) (12 days ago) not yet depri of synthetically prioritized C task C:(11 days ago) d:(in 9 days)
+10 (I) (12 days ago) invalid depri of prioritized I task d:2009-02-0911
+05 (12 days ago) depri of prioritized A task d:(4 days ago)
+07 (12 days ago) depri of prioritized Z task d:(4 days ago)
+08 (12 days ago) depri of synthetically prioritized C task C:(11 days ago) d:(4 days ago)
+04 (12 days ago) depri of unprioritized task d:(4 days ago)
+11 (12 days ago) first not yet depri of prioritized A task d:(in 9 days) d:(4 days ago)
+02 x (A) yesterday (12 days ago) depri of prioritized A but already done d:(4 days ago)
+03 X (A) yesterday (12 days ago) depri of prioritized A but already trashed d:(4 days ago)
 --
 TODO: 11 of 12 tasks shown
 EOF
@@ -87,14 +87,14 @@ X 2009-02-12 2009-02-01 trashed and already trashed x:2009-02-09
 EOF
 
 test_todo_session 'synthesized trashing' <<EOF
->>> todo.sh list trashed
-[7m6[0m (12 days ago) invalid trashed x:2009-02-0911
-[0m[47m[7m8[0m[47m (12 days ago) last not yet trashed x:(4 days ago) x:(in 9 days)[0m
-[7m4[0m (12 days ago) not yet trashed x:(in 9 days)
-[1;30m7 X (4 days ago, after 8 days) first not yet trashed x:(in 9 days) x:(4 days ago)[0m
-[1;30m5 X (4 days ago, after 8 days) trashed x:(4 days ago)[0m
-[1;30m3 X (yesterday, after 11 days) trashed and already trashed x:(4 days ago)[0m
-[0;37m2 x (yesterday, after 11 days) trashed but already done x:(4 days ago)[0m
+>>> todo.sh -p list trashed
+6 (12 days ago) invalid trashed x:2009-02-0911
+8 (12 days ago) last not yet trashed x:(4 days ago) x:(in 9 days)
+4 (12 days ago) not yet trashed x:(in 9 days)
+7 X (4 days ago, after 8 days) first not yet trashed x:(in 9 days) x:(4 days ago)
+5 X (4 days ago, after 8 days) trashed x:(4 days ago)
+3 X (yesterday, after 11 days) trashed and already trashed x:(4 days ago)
+2 x (yesterday, after 11 days) trashed but already done x:(4 days ago)
 --
 TODO: 7 of 8 tasks shown
 EOF
@@ -114,16 +114,16 @@ X 2009-02-12 2009-02-01 do-until-then-trash and already trashed z:2009-02-09
 EOF
 
 test_todo_session 'synthesized do-until-then-trash' <<EOF
->>> todo.sh list do-until-then-trash
-[0m[48;5;202m[7m06[0m[48;5;202m (12 days ago) do-until-then-trash on the until day z:today[0m
-[7m08[0m (12 days ago) invalid do-until-then-trash z:2009-02-0911
-[0m[47m[7m10[0m[47m (12 days ago) last not yet do-until-then-trash z:(4 days ago) z:(in 9 days)[0m
-[7m04[0m (12 days ago) not yet do-until-then-trash z:(in 9 days)
-[1;30m05 X (4 days ago, after 8 days) do-until-then-trash z:(4 days ago)[0m
-[1;30m09 X (4 days ago, after 8 days) first not yet do-until-then-trash z:(in 9 days) z:(4 days ago)[0m
-[1;30m03 X (yesterday, after 11 days) do-until-then-trash and already trashed z:(4 days ago)[0m
-[0;37m02 x (yesterday, after 11 days) do-until-then-trash but already done z:(4 days ago)[0m
-[1;30m07 X (yesterday, after 11 days) do-until-then-trash one after the until day z:yesterday[0m
+>>> todo.sh -p list do-until-then-trash
+06 (12 days ago) do-until-then-trash on the until day z:today
+08 (12 days ago) invalid do-until-then-trash z:2009-02-0911
+10 (12 days ago) last not yet do-until-then-trash z:(4 days ago) z:(in 9 days)
+04 (12 days ago) not yet do-until-then-trash z:(in 9 days)
+05 X (4 days ago, after 8 days) do-until-then-trash z:(4 days ago)
+09 X (4 days ago, after 8 days) first not yet do-until-then-trash z:(in 9 days) z:(4 days ago)
+03 X (yesterday, after 11 days) do-until-then-trash and already trashed z:(4 days ago)
+02 x (yesterday, after 11 days) do-until-then-trash but already done z:(4 days ago)
+07 X (yesterday, after 11 days) do-until-then-trash one after the until day z:yesterday
 --
 TODO: 9 of 10 tasks shown
 EOF
