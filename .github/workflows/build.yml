@@ -1,0 +1,18 @@
+name: Build scripts
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+  pull_request:
+  # Allows you to run this workflow manually from the Actions tab.
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: inkarkat/scripting-setup/.github/workflows/build.yml@master
+    with:
+      packages: ''
+      testrunner-settings: DEPENDENCY_DIR=dependencies/todo.txt-cli
+    secrets: inherit
