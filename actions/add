@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2023 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -44,8 +44,8 @@ TOTAL=$(sed -n '$ =' "$TODO_FILE") || exit $?
 task="$("${scriptDir}/renderrelativemarkers" --task "$((TOTAL+1))" "$task")" || exit $?
 
 # Translate @here to the actual lowercased hostname.
-hostname="$TODOTXT_HOSTNAME"
-[ -n "$hostname" ] || hostname="$(readableHostname)"
+hostname="${TODOTXT_HOSTNAME:-$(type -t readableHostname >/dev/null && readableHostname)}"
+hostname="${hostname:-$HOSTNAME}"
 if [ -n "$hostname" ]; then
     literalHostname="${hostname,,}"
     literalHostname="${literalHostname//\\/\\\\}"
