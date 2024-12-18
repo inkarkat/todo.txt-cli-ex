@@ -26,7 +26,7 @@ EOF
 test_todo_session 'rendering synthesized prioritization' <<EOF
 >>> TODOTXT_VERBOSE=0 todo.sh rendermarkers 2009-02-13
 
->>> todo.sh list prioritized
+>>> TERM_COLORS=16 todo.sh list prioritized
 [1;33m[7m12[1;33m (A) (12 days ago) first not yet prioritized A task A:(in 9 days)[0m
 [1;33m[7m13[1;33m (A) (12 days ago) last not yet prioritized A task A:(in 9 days)[0m
 [1;33m[7m05[1;33m (A) (12 days ago) prioritized A[0m
@@ -62,7 +62,7 @@ EOF
 test_todo_session 'rendering synthesized deprioritization' <<EOF
 >>> TODOTXT_VERBOSE=0 todo.sh rendermarkers 2009-02-13
 
->>> todo.sh list depri
+>>> TERM_COLORS=16 todo.sh list depri
 [1;33m[7m12[1;33m (A) (12 days ago) last not yet depri of prioritized A task d:(4 days ago) d:(in 9 days)[0m
 [1;33m[7m06[1;33m (A) (12 days ago) not yet depri of prioritized A task d:(in 9 days)[0m
 [1;34m[7m09[1;34m (C) (12 days ago) not yet depri of synthetically prioritized C task d:(in 9 days)[0m
@@ -93,7 +93,7 @@ EOF
 test_todo_session 'rendering synthesized trashing' <<EOF
 >>> TODOTXT_VERBOSE=0 todo.sh rendermarkers 2009-02-13
 
->>> todo.sh list trashed
+>>> TERM_COLORS=16 todo.sh list trashed
 [7m6[0m (12 days ago) invalid trashed x:2009-02-0911
 [0m[47m[7m8[0m[47m (12 days ago) last not yet trashed x:(4 days ago) x:(in 9 days)[0m
 [7m4[0m (12 days ago) not yet trashed x:(in 9 days)
@@ -122,8 +122,8 @@ EOF
 test_todo_session 'rendering synthesized do-until-then-trash' <<EOF
 >>> TODOTXT_VERBOSE=0 todo.sh rendermarkers 2009-02-13
 
->>> todo.sh list do-until-then-trash
-[0m[48;5;202m[7m06[0m[48;5;202m (12 days ago) do-until-then-trash on the until day z:today[0m
+>>> TERM_COLORS=16 todo.sh list do-until-then-trash
+[0m[37;41m[7m06[0m[37;41m (12 days ago) do-until-then-trash on the until day z:today[0m
 [7m08[0m (12 days ago) invalid do-until-then-trash z:2009-02-0911
 [0m[47m[7m10[0m[47m (12 days ago) last not yet do-until-then-trash z:(4 days ago) z:(in 9 days)[0m
 [7m04[0m (12 days ago) not yet do-until-then-trash z:(in 9 days)
