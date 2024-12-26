@@ -23,10 +23,10 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ...]"
+    echo "    $(basename $0) NR [NR ...]"
     echo "      Searches for attachments and all kinds of non-web URLs and non-task a:..."
-    echo "      references in the task text and launches them through their associated"
-    echo "      application. For web resources, use the browse action instead."
+    echo "      references in the task text on line(s) NR and launches them through their"
+    echo "      associated application. For web resources, use the browse action instead."
     echo "    $(basename $0) [TERM...]"
     echo "      Displays all tasks that contain all kinds of non-web URLs and TERM(s)."
     echo ""

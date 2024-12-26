@@ -23,13 +23,13 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] \"THING DEPENDING ON ITEM#\""
-    echo "      Adds THING DEPENDING ON ITEM#, and marks them as depending on ITEM#."
+    echo "    $(basename $0) NR [NR ...] \"THING DEPENDING ON NR\""
+    echo "      Adds THING DEPENDING ON NR, and marks them as depending on NR."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ...] \"THING DEPENDING ON ITEM#\""
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] \"THING DEPENDING ON NR\""
 
 typeset -a depitems=()
 while [[ "$1" =~ ^[,0-9]+$ ]]

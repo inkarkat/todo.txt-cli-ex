@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2021-2022 Ingo Karkat
+# COPYRIGHT: (C) 2021-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -23,14 +23,14 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
-    echo "      Marks task(s) on line ITEM# as done in todo.txt,"
+    echo "    $(basename $0) NR [NR ...] [COMMENT]"
+    echo "      Marks task(s) on line(s) NR as done in todo.txt,"
     echo "      optionally appending COMMENT, and add them as open task(s) again."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] [COMMENT]"
 [ $# -eq 0 ] && die "$errmsg"
 
 items=

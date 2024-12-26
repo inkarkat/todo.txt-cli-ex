@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2017 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -23,16 +23,16 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM# del|trash [--hard] DUPITEM#[, DUPITEM#, ...]"
-    echo "      Delete / trash the tasks on line(s) DUPITEM# with a comment of"
-    echo "      \"dup of ITEM#\". Use this when the tasks are identical and."
+    echo "    $(basename $0) NR del|trash [--hard] DUP-NR[, DUP-NR, ...]"
+    echo "      Delete / trash the tasks on line(s) DUP-NR with a comment of"
+    echo "      \"dup of NR\". Use this when the tasks are identical and."
     echo "      were added without knowledge of the existing task."
-    echo "    $(basename $0) goal GOAL ITEM#[, ITEM#, ...]"
-    echo "      Bidirectionally join the tasks on lines ITEM# together"
+    echo "    $(basename $0) goal GOAL NR [NR ...]"
+    echo "      Bidirectionally join the tasks on line(s) NR together"
     echo "      as contradependent tasks. Use this when the tasks are"
     echo "      different takes on achieving the same GOAL."
-    echo "    $(basename $0) link ITEM# ITEM#[, ITEM#, ...]"
-    echo "      Bidirectionally cross-link the tasks on lines ITEM# together"
+    echo "    $(basename $0) link NR NR [NR ...]"
+    echo "      Bidirectionally cross-link the tasks on lines NR together"
     echo "      as duplicate tasks. Use this when doing one task should do all others,"
     echo "      too."
     echo ""
@@ -41,7 +41,7 @@ shift
 
 shopt -s extglob
 
-errmsg="usage: $TODO_SH $(basename $0) (ITEM# (del|trash [--hard]))|(goal GOAL)|link ITEM#[, ITEM#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) (NR (del|trash [--hard]))|(goal GOAL)|link NR [NR ...]"
 
 isHard=
 case "$1" in
@@ -70,7 +70,7 @@ case "$1" in
         [ $# -ge 2 ] || die "$errmsg"
         goal=$1
         # Ensure that an actual GOAL is given, and do not just pick a following
-        # ITEM# as the GOAL.
+        # NR as the GOAL.
         [[ "$goal" =~ ^[,0-9]+$ ]] && die "$errmsg"
         shift
         dupItems=$*

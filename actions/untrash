@@ -23,15 +23,15 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) last|ITEM#[, ITEM#, ITEM#, ...]"
-    echo "      Puts the trashed task(s) on line ITEM# from trash.txt back to"
+    echo "    $(basename $0) last|NR [NR ...]"
+    echo "      Puts the trashed task(s) on line NR from trash.txt back to"
     echo "      todo.txt."
     echo ""
     exit
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH $(basename $0) last|ITEM#[, ITEM#, ITEM#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) last|NR [NR ...]"
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 

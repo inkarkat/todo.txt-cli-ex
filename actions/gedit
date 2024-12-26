@@ -13,7 +13,7 @@
 #
 # SOURCE:
 #
-# COPYRIGHT: (C) 2010-2018 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -25,11 +25,12 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [ITEM#] [SRC]"
-    echo "      Open ITEM# in \$TODO_DIR/SRC in \$GUI_EDITOR for editing in a GUI editor."
-    echo "      If ITEM# is omitted, the entire file is edited."
+    echo "    $(basename $0) [NR] [SRC]"
+    echo "      Open task on line NR in \$TODO_DIR/SRC in \$GUI_EDITOR for editing in a"
+    echo "      GUI editor."
+    echo "      If NR is omitted, the entire file is edited."
     echo "      If BASENAME is not given, defaults to 'todo'."
-    echo "      ITEM# can be removed by deleting the line."
+    echo "      The task on line NR can be removed by deleting the line."
     echo "      Additional tasks can be added by appending more lines."
     echo ""
     exit

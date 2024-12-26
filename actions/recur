@@ -15,7 +15,7 @@
 #   actions) into a fixed date; which would confuse / break the recurrent
 #   scheduling.
 #
-# COPYRIGHT: (C) 2010-2013 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -27,12 +27,12 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM# RELATIVEDATE"
-    echo "      Make task ITEM# recurrent each RELATIVEDATE."
-    echo "    $(basename $0) ITEM# none|never"
-    echo "      Completely remove the scheduling of task ITEM#."
-    echo "    $(basename $0) ITEM# off"
-    echo "      Remove the recurrent scheduling of task ITEM#."
+    echo "    $(basename $0) NR RELATIVEDATE"
+    echo "      Make task on line NR recurrent each RELATIVEDATE."
+    echo "    $(basename $0) NR none|never"
+    echo "      Completely remove the scheduling of task on line NR."
+    echo "    $(basename $0) NR off"
+    echo "      Remove the recurrent scheduling of task on line NR."
     echo "      The task will still be scheduled once more."
     echo "    $(basename $0) [list [TERM...]]"
     echo "      List recurring tasks that contain TERM(s)."
@@ -41,7 +41,7 @@ shift
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH $(basename $0) [list [TERM...]]|[ITEM# RELATIVEDATE|none|never|off]"
+errmsg="usage: $TODO_SH $(basename $0) [list [TERM...]]|[NR RELATIVEDATE|none|never|off]"
 
 extractRecurDate()
 {

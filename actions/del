@@ -23,15 +23,15 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [TERM]"
-    echo "      Deletes the task(s) on line ITEM# in todo.txt."
-    echo "      Task(s) that were dependent on ITEM# have that blocker removed."
+    echo "    $(basename $0) NR [NR ...] [TERM]"
+    echo "      Deletes the task(s) on line NR in todo.txt."
+    echo "      Task(s) that were dependent on NR have that blocker removed."
     echo "      If TERM specified, deletes only TERM from the task."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [TERM]"
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] [TERM]"
 [ $# -eq 0 ] && die "$errmsg"
 
 items=

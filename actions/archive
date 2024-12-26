@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -28,10 +28,10 @@ shift
     echo "      and removes blank lines."
     echo "    $(basename $0) TERM..."
     echo "      If TERM specified, processes only tasks that contain TERM(s)."
-    echo "      Note that if TERM is a number it is considered as an ITEM# number."
-    echo "    $(basename $0) ITEM#[, ITEM#, ...]"
-    echo "      Processes task(s) ITEM# and removes blank lines. Ignores ITEM# if it's"
-    echo "      not done or trashed."
+    echo "      Note that if TERM is a number it is considered as a NR number."
+    echo "    $(basename $0) NR [NR ...]"
+    echo "      Processes task(s) on line(s) NR and removes blank lines."
+    echo "      Ignores line NR if it's not done or trashed."
     echo ""
     exit
 }

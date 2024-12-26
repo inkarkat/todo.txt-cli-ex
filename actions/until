@@ -22,17 +22,17 @@ action=$1
 shift
 
 if [ "$action" = "usage" ]; then
-    echo "    $(basename $0) DATE ITEM#[, ITEM#, ...]"
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] DATE"
+    echo "    $(basename $0) DATE NR [NR ...]"
+    echo "    $(basename $0) NR [NR ...] DATE"
     echo "      Set or change do-until date of a task."
-    echo "    $(basename $0) DATE zap ITEM#[, ITEM#, ...]"
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] zap DATE"
+    echo "    $(basename $0) DATE zap NR [NR ...]"
+    echo "    $(basename $0) NR [NR ...] zap DATE"
     echo "      Set or change do-until-then-trash date of a task."
-    echo "    $(basename $0) zap [none|never|off|del|rm] ITEM#[, ITEM#, ...]"
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] zap [none|never|off|del|rm]"
+    echo "    $(basename $0) zap [none|never|off|del|rm] NR [NR ...]"
+    echo "    $(basename $0) NR [NR ...] zap [none|never|off|del|rm]"
     echo "      Change \"u:date\" into \"z:date\" [and vice versa]."
-    echo "    $(basename $0) none|never|off|del|rm ITEM#[, ITEM#, ...]"
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] none|never|off|del|rm"
+    echo "    $(basename $0) none|never|off|del|rm NR [NR ...]"
+    echo "    $(basename $0) NR [NR ...] none|never|off|del|rm"
     echo "      Remove do-until date of a task."
     echo "    $(basename $0) [(any|all|now|on DATE|soon [on DATE]|for DATE) [TERM...]]"
     echo "      List tasks with a do-until \"u:date\" or"
@@ -52,7 +52,7 @@ shopt -s extglob
 
 readonly datePattern='\([0-9]\{2,4\}[^A-Za-z0-9]\)\{2\}[0-9]\{2,4\}' # not enforcing any particular format
 readonly pattern=' \([uz]\):'"$datePattern"
-readonly errmsg="usage: $TODO_SH $(basename $0) [ITEM#[, ITEM#, ...] DATE [zap]|none|never|off|del|rm|zap [none|never|off|del|rm]]] | [(any|all|now|on DATE|soon [on DATE]|for DATE) [TERM...]]"
+readonly errmsg="usage: $TODO_SH $(basename $0) [NR [NR ...] DATE [zap]|none|never|off|del|rm|zap [none|never|off|del|rm]]] | [(any|all|now|on DATE|soon [on DATE]|for DATE) [TERM...]]"
 
 ensureFilter()
 {

@@ -25,7 +25,7 @@ TODO: 2 of 2 tasks shown
 EOF
 
 > todo.txt
-test_todo_session 'addlike plain omit ITEM#' <<EOF
+test_todo_session 'addlike plain omit NR' <<EOF
 >>> todo.sh add notice the daisies
 1 notice the daisies
 TODO: 1 added.
@@ -116,7 +116,7 @@ TODO: 2 added.
 EOF
 
 > todo.txt
-test_todo_session 'addlike omit ITEM#' <<EOF
+test_todo_session 'addlike omit NR' <<EOF
 >>> todo.sh add +tv @home watch movies
 1 +tv @home watch movies
 TODO: 1 added.

@@ -23,21 +23,21 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...]|all|[PRIORITIES] [on DATE|DATE-] NEW-PRIORITY [COMMENT]"
-    echo "    $(basename $0) [on DATE|DATE-] ITEM#[, ITEM#, ITEM#, ...]|all|[PRIORITIES] NEW-PRIORITY [COMMENT]"
-    echo "      Changes the priority from the task(s) on line ITEM# in todo.txt, or all"
+    echo "    $(basename $0) NR [NR ...]|all|[PRIORITIES] [on DATE|DATE-] NEW-PRIORITY [COMMENT]"
+    echo "    $(basename $0) [on DATE|DATE-] NR [NR ...]|all|[PRIORITIES] NEW-PRIORITY [COMMENT]"
+    echo "      Changes the priority from the task(s) on line NR in todo.txt, or all"
     echo "      (currently) prioritized tasks, or all (currently) having PRIORITIES"
     echo "      (a single one (A) or range (A-C))."
     echo "      With DATE-, the task will be reprioritized on DATE (via A:DATE)."
-    echo "    $(basename $0) [never|on none] ITEM#[, ITEM#, ITEM#, ...]|all|[PRIORITIES] [COMMENT]"
+    echo "    $(basename $0) [never|on none] NR [NR ...]|all|[PRIORITIES] [COMMENT]"
     echo "      Removes the A:DATE reprioritization on a date, from the task(s) on line"
-    echo "      ITEM# in todo.txt, or all tasks with a future reprioritization, or all"
+    echo "      NR in todo.txt, or all tasks with a future reprioritization, or all"
     echo "      tasks with a future reprioritization to PRIORITIES."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...]|all|[PRIORITIES] [never|on none|on DATE|DATE-] NEW-PRIORITY [COMMENT]"
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...]|all|[PRIORITIES] [never|on none|on DATE|DATE-] NEW-PRIORITY [COMMENT]"
 [ $# -eq 0 ] && die "$errmsg"
 
 makeDate()

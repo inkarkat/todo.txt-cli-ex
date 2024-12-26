@@ -8,7 +8,7 @@
 #
 ###############################################################################
 # CONTENTS:
-#   Converts x:DUPITEM# marker into trashing of the task, with a corresponding
+#   Converts x:DUP-NR marker into trashing of the task, with a corresponding
 #   comment (the same that "dup del" uses) appended. Useful as an alternative to
 #   "dup del" when editing in other clients.
 #

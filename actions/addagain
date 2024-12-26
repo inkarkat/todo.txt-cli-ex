@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2012-2022 Ingo Karkat
+# COPYRIGHT: (C) 2012-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -26,8 +26,9 @@ shift
     echo "    $(basename $0) [TERM...]"
     echo "      Adds a done task specified by TERM(s) as an open task again."
     echo "      When multiple tasks are found, queries which task to choose."
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] [TERM...]"
-    echo "      Adds done, but not yet archived task(s) from todo.txt as open task(s)."
+    echo "    $(basename $0) NR [NR ...] [TERM...]"
+    echo "      Adds done, but not yet archived task(s) from todo.txt line NR as open"
+    echo "      task(s)."
     echo ""
     exit
 }

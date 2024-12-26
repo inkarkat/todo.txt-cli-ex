@@ -15,11 +15,11 @@ EOF
 
 test_todo_session 'bump without arguments' <<EOF
 >>> todo.sh -p bump
-usage: todo.sh bump ITEM#[, ITEM#, ...]]
+usage: todo.sh bump NR [NR ...]]
 === 1
 EOF
 
-test_todo_session 'bump single ITEM#' <<EOF
+test_todo_session 'bump single NR' <<EOF
 >>> todo.sh -p bump 1
 1 2011-08-08 mow the lawn !:1
 TODO: 1 was bumped for the first time.
@@ -35,7 +35,7 @@ TODO: 3 was bumped for the first time.
 1 2011-08-08 mow the lawn !:2 and cut the trees
 TODO: 1 has now been bumped 2 times.
 EOF
-test_todo_session 'bump multiple ITEM#' <<EOF
+test_todo_session 'bump multiple NR' <<EOF
 >>> todo.sh -p bump 1 2,3
 1 2011-08-08 mow the lawn !:3 and cut the trees
 TODO: 1 has now been bumped 3 times.

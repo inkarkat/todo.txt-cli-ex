@@ -27,7 +27,7 @@ if [ $TODOTXT_PLAIN -eq 0 ]; then
     if [ ${TERM_COLORS:-0} -ge 256 ]; then
         # Color for tasks that are blocked.
         export COLOR_BLOCKED=${COLOR_BLOCKED-'\\033[0;38;5;136m'}
-        # Color for the wait reason itself (but not for dependent ITEM# task
+        # Color for the wait reason itself (but not for dependent NR task
         # numbers). Usually used on top of COLOR_BLOCKED, but can appear
         # independently when the task is already highlighted otherwise.
         export COLOR_BLOCKER=${COLOR_BLOCKER-'\\033[7;38;5;136m'}

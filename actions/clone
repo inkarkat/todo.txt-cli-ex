@@ -23,15 +23,16 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM# [PATTERN REPLACEMENT ...]"
-    echo "      Clones ITEM# into a new task and replaces PATTERN with REPLACEMENT."
+    echo "    $(basename $0) NR [PATTERN REPLACEMENT ...]"
+    echo "      Clones task on line NR into a new task and replaces PATTERN with"
+    echo "      REPLACEMENT."
     echo ""
     exit
 }
 
 shopt -s extglob
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM# [PATTERN REPLACEMENT ...]"
+errmsg="usage: $TODO_SH $(basename $0) NR [PATTERN REPLACEMENT ...]"
 item=$1; shift
 
 [ -z "$item" ] && die "$errmsg"

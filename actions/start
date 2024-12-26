@@ -23,15 +23,15 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [on DATE|DATE-] [until DATE|-DATE] ITEM#[, ITEM#, ...] [COMMENT]"
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] [on DATE|DATE-] [until DATE|-DATE] [COMMENT]"
-    echo "      Marks task(s) on line ITEM# as being worked on (priority P) in todo.txt,"
+    echo "    $(basename $0) [on DATE|DATE-] [until DATE|-DATE] NR [NR ...] [COMMENT]"
+    echo "    $(basename $0) NR [NR ...] [on DATE|DATE-] [until DATE|-DATE] [COMMENT]"
+    echo "      Marks task(s) on line NR as being worked on (priority P) in todo.txt,"
     echo "      optionally appending COMMENT."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [on DATE|DATE-] [until DATE|-DATE] [COMMENT]"
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] [on DATE|DATE-] [until DATE|-DATE] [COMMENT]"
 [ $# -eq 0 ] && die "$errmsg"
 
 "$TODO_FULL_SH" pri P "$@"

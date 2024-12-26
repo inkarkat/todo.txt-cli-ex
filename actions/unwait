@@ -23,21 +23,21 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ...]"
-    echo "      Unblock the task(s) on line ITEM#"
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] PRIORITY"
-    echo "      Unblock the task(s) on line ITEM# and prioritize as PRIORITY."
-    echo "    $(basename $0) [ITEM#, ...] \"REASON for Waiting\"[, REASON, ...]"
-    echo "      Remove REASON as a blocker for the task(s) on line ITEM#,"
+    echo "    $(basename $0) NR [NR ...]"
+    echo "      Unblock the task(s) on line NR"
+    echo "    $(basename $0) NR [NR ...] PRIORITY"
+    echo "      Unblock the task(s) on line NR and prioritize as PRIORITY."
+    echo "    $(basename $0) [NR, ...] \"REASON for Waiting\"[, REASON, ...]"
+    echo "      Remove REASON as a blocker for the task(s) on line NR,"
     echo "      or (if not specified) all tasks that are blocked because of it."
-    echo "    $(basename $0) [ITEM#, ...] for DEPITEM#[, DEPITEM#, ...]"
-    echo "      Remove DEPITEM# as a dependency for the task(s) on line ITEM#,"
+    echo "    $(basename $0) [NR, ...] for DEPNR[, DEPNR, ...]"
+    echo "      Remove DEPNR as a dependency for the task(s) on line NR,"
     echo "      or (if not specified) all tasks that are blocked because of it."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) [ITEM#, ...] \"REASON for Waiting\"[, REASON, ...] | for DEPITEM#[, #DEPITEM, ...] | [PRIORITY]"
+errmsg="usage: $TODO_SH $(basename $0) [NR, ...] \"REASON for Waiting\"[, REASON, ...] | for DEPNR[, #DEPITEM, ...] | [PRIORITY]"
 
 [ $# -eq 0 ] && die "$errmsg"
 
@@ -58,7 +58,7 @@ if [ $# -eq 0 ]; then
 elif [[ "$1" = [a-zA-Z] ]]; then
     pri="$1"; shift
 elif [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
-    # We have dependent tasks: DEPITEM#.
+    # We have dependent tasks: DEPNR.
     waitDescription="dependent tasks"
     shift # Remove the "for" filler argument.
 

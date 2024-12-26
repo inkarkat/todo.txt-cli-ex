@@ -23,8 +23,8 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM# [PATTERN]"
-    echo "      Splits task on line ITEM# on PATTERN (or the word \"and\") and creates"
+    echo "    $(basename $0) NR [PATTERN]"
+    echo "      Splits task on line NR on PATTERN (or the word \"and\") and creates"
     echo "      new task(s) for them. Dates, priorities, projects, contexts and markers"
     echo "      are cloned to the new task(s); a done / trashed status is not."
     echo ""
@@ -34,7 +34,7 @@ shift
 shopt -s extglob
 . "${TODO_ACTIONS_DIR}/../lib/common.sh"
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM# [PATTERN]"
+errmsg="usage: $TODO_SH $(basename $0) NR [PATTERN]"
 item=$1; shift
 if [ $# -eq 0 ]; then
     pattern=',\? \+and \+'

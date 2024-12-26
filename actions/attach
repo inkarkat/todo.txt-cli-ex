@@ -23,13 +23,13 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [mv|move] ITEM# FILE|- [...]"
+    echo "    $(basename $0) [mv|move] NR FILE|- [...]"
     echo "      Copies (/ moves) FILE(s) to the attachment subdir of \$TODO_DIR and adds a"
-    echo "      a: reference to the task."
+    echo "      a: reference to the task on line NR."
     echo ""
     exit
 }
-errmsg="usage: $TODO_SH $(basename $0) [mv|move] ITEM# FILE|- [...]"
+errmsg="usage: $TODO_SH $(basename $0) [mv|move] NR FILE|- [...]"
 
 typeset -a action=(cp)
 if [ "$1" = "mv" -o "$1" = "move" ]; then

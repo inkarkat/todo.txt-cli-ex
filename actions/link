@@ -23,16 +23,16 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM# TARGET#[, TARGET#, ...]"
-    echo "      Link the task on line ITEM# to item(s) TARGET#."
+    echo "    $(basename $0) NR TARGET-NR [TARGET-NR ...]"
+    echo "      Link the task on line NR to item(s) TARGET-NR."
     echo "      (In addition to any existing links.)"
-    echo "    $(basename $0) ITEM# none"
-    echo "      Remove all links from the task on line ITEM#."
+    echo "    $(basename $0) NR none"
+    echo "      Remove all links from the task on line NR."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM# none|TARGET#[, TARGET#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) NR none|TARGET-NR [TARGET-NR ...]"
 
 [ $# -lt 2 ] && die "$errmsg"
 

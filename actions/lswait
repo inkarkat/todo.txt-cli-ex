@@ -26,10 +26,10 @@ shift
     echo "    $(basename $0) [TERM...]"
     echo "      Displays all blocked tasks that wait for a precondition."
     echo "      If TERM specified, lists only tasks that contain TERM(s)."
-    echo "    $(basename $0) for DEPITEM#[, DEPITEM#, ...]"
+    echo "    $(basename $0) for DEP-NR[, DEP-NR, ...]"
     echo "    $(basename $0) for REASON[, REASON, ...]"
     echo "      Displays all tasks that are blocked because of a dependency to"
-    echo "      any one of DEPITEM#(s) or REASON."
+    echo "      any one of task(s) on line(s) DEP-NR or REASON."
     echo ""
     exit
 }
@@ -41,7 +41,7 @@ shift
 export COLOR_BLOCKED=
 
 if [ "$1" = 'for' -a $# -gt 1 ]; then
-    # We have dependent tasks DEPITEM# or REASON.
+    # We have dependent tasks DEPNR or REASON.
     shift # Remove the "for" filler argument.
 
     waitPattern=

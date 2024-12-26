@@ -23,15 +23,15 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM# PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
+    echo "    $(basename $0) NR PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
     echo "      Replaces all instances of (sed-style) PATTERN with REPLACEMENT"
-    echo "      on line ITEM#."
+    echo "      on line NR."
     echo ""
     exit
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH $(basename $0) ITEM# PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
+errmsg="usage: $TODO_SH $(basename $0) NR PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
 item=$1; shift
 
 getTodo "$item"

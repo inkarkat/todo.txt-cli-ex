@@ -22,8 +22,8 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ...]"
-    echo "      Searches for URLs of web resources in the task text and"
+    echo "    $(basename $0) NR [NR ...]"
+    echo "      Searches for URLs of web resources in the task text on line NR and"
     echo "      launches a browser."
     echo "    $(basename $0) [TERM...]"
     echo "      Displays all tasks that contain URLs and TERM(s)."

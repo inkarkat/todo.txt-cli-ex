@@ -4,10 +4,10 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] [TERM...]"
+    echo "    $(basename $0) NR [NR ...] [TERM...]"
     echo "      TODO"
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ...] [TERM...]"
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] [TERM...]"

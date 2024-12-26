@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2016 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -23,13 +23,13 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [-q] ITEM#"
-    echo "      Removes the done / trashed comment on task ITEM#."
+    echo "    $(basename $0) [-q] NR"
+    echo "      Removes the done / trashed comment from task on line NR."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) [-q] ITEM#"
+errmsg="usage: $TODO_SH $(basename $0) [-q] NR"
 
 : ${TODOTXT_COMMENT_SYMBOL:= => }
 : ${TODOTXT_DISARMED_COMMENT_SYMBOL:=; }

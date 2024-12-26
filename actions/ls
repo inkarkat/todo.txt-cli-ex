@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -26,8 +26,8 @@ shift
     echo "    $(basename $0) [TERM...]"
     echo "      Displays all open tasks that contain TERM(s)"
     echo "      sorted by priority with line numbers."
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] [TERM...]"
-    echo "      Displays task(s) ITEM#."
+    echo "    $(basename $0) NR [NR ...] [TERM...]"
+    echo "      Displays task(s) on line(s) NR."
     echo ""
     exit
 }

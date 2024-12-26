@@ -52,7 +52,7 @@ TODO: 2 blocked of 9 tasks shown
 TODO: 0 blocked of 9 tasks shown
 EOF
 
-test_todo_session 'lswait for DEPITEM#' <<EOF
+test_todo_session 'lswait for DEPNR' <<EOF
 >>> todo.sh -p lswait for 1
 3 2012-02-02 buy the site +house w:1 w:2
 --
@@ -69,7 +69,7 @@ TODO: No tasks have a dependency to 9.
 === 1
 EOF
 
-test_todo_session 'lswait for multiple-DEPITEM#' <<EOF
+test_todo_session 'lswait for multiple-DEPNR' <<EOF
 >>> todo.sh -p lswait for 2,3
 3 2012-02-02 buy the site +house w:1 w:2
 4 2012-02-03 hire an architect +house w:2 w:3

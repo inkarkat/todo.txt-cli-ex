@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2013-2022 Ingo Karkat
+# COPYRIGHT: (C) 2013-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -23,14 +23,15 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) KEEPITEM# ITEM#[, ITEM#, ...] [CONJUNCTION]"
-    echo "      Combines ITEM# with KEEPITEM# (concatenated [with CONJUNCTION]) and"
-    echo "      deletes all ITEM#. Duplicate projects and contexts are removed."
+    echo "    $(basename $0) KEEP-NR NR [NR ...] [CONJUNCTION]"
+    echo "      Combines task(s) on line(s) NR with KEEP-NR (concatenated"
+    echo "      [with CONJUNCTION]) and deletes all NR."
+    echo "      Duplicate projects and contexts are removed."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) KEEPITEM# ITEM#[, ITEM#, ...] [CONJUNCTION]"
+errmsg="usage: $TODO_SH $(basename $0) KEEP-NR NR [NR ...] [CONJUNCTION]"
 [ $# -eq 0 ] && die "$errmsg"
 
 keepitem=$1

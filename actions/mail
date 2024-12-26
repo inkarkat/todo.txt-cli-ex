@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2023 Ingo Karkat
+# COPYRIGHT: (C) 2010-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -26,10 +26,10 @@ shift
     echo "    $(basename $0) [-t] [-e | -m MESSAGE] TERM..."
     echo "      Sends all tasks that aren't done yet and contain TERM(s),"
     echo "      putting the tasks into the email body."
-    echo "    $(basename $0) [-t] [-e | -m MESSAGE] ITEM#, ITEM#[, ITEM#, ...]"
-    echo "      Sends all tasks on lines ITEM#, putting the tasks into the email body."
-    echo "    $(basename $0) [-t] [-e | -m MESSAGE] -s ITEM#"
-    echo "      Sends task ITEM#, putting the task directly into the email subject."
+    echo "    $(basename $0) [-t] [-e | -m MESSAGE] NR [NR ...]"
+    echo "      Sends all tasks on lines NR, putting the tasks into the email body."
+    echo "    $(basename $0) [-t] [-e | -m MESSAGE] -s NR"
+    echo "      Sends task on line NR, putting the task directly into the email subject."
     echo "      -t just prints what would be sent."
     echo "      -e edits the email recipients and body before sending."
     echo "      -m uses MESSAGE as the email body."
@@ -44,7 +44,7 @@ shift
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) [-t] [-e | -m MESSAGE] TERM... | ITEM#[, ITEM#] | -s ITEM#"
+errmsg="usage: $TODO_SH $(basename $0) [-t] [-e | -m MESSAGE] TERM... | NR [NR ...] | -s NR"
 : ${TODOTXT_MAIL_MARKER_PATTERN:='^[wRACI]:\([[:upper:]]\|.\+@.\+\)$'}
 
 shopt -s extglob

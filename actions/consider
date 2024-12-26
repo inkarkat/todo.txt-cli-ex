@@ -23,15 +23,15 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ...]"
-    echo "      Adds priority O to task(s) on line ITEM#"
+    echo "    $(basename $0) NR [NR ...]"
+    echo "      Adds priority O to task(s) on line NR"
     echo "      only for today and tomorrow."
     echo "      Use \"todo.sh opportunity\" to specify a different date range."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...]"
 [ $# -lt 1 ] && die "$errmsg"
 
 exec "$TODO_FULL_SH" opportunity "$@" '2 days'

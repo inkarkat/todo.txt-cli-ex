@@ -23,17 +23,17 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] \"REASON for Waiting\"[, REASON, ...]"
-    echo "      Mark the task(s) on line ITEM# as blocked due to REASON."
-    echo "    $(basename $0) ITEM#[, ITEM#, ...] for DEPITEM#[, DEPITEM#, ...]"
-    echo "      Mark the task(s) on line ITEM# as dependent on task(s) DEPITEM#."
+    echo "    $(basename $0) NR [NR ...] \"REASON for Waiting\"[, REASON, ...]"
+    echo "      Mark the task(s) on line NR as blocked due to REASON."
+    echo "    $(basename $0) NR [NR ...] for DEPNR[, DEPNR, ...]"
+    echo "      Mark the task(s) on line NR as dependent on task(s) DEPNR."
     echo ""
     exit
 }
 
 set -o pipefail
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ...] \"REASON for Waiting\"[, REASON, ...] | for DEPITEM#[, DEPITEM#, ...]"
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] \"REASON for Waiting\"[, REASON, ...] | for DEPNR[, DEPNR, ...]"
 
 [ $# -eq 0 ] && die "$errmsg"
 
@@ -45,7 +45,7 @@ done
 [ "$items" -a $# -gt 0 ] || die "$errmsg"
 
 if [[ "$*" =~ ^for\ +[0-9,\ ]+$ ]]; then
-    # We have dependent tasks: DEPITEM#.
+    # We have dependent tasks: DEPNR.
     shift # Remove the "for" filler argument.
     waitDescription="has become dependent on"
 

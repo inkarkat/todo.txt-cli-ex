@@ -48,7 +48,7 @@ TODO: 3 is blocked due to w:wife.
 EOF
 
 set_up
-test_todo_session 'wait for DEPITEM#' <<EOF
+test_todo_session 'wait for DEPNR' <<EOF
 >>> todo.sh -p wait 3 for 2
 3 2012-02-02 buy the site w:2
 TODO: 3 has become dependent on 2.
@@ -64,14 +64,14 @@ TODO: 5 of 5 tasks shown
 EOF
 
 set_up
-test_todo_session 'wait for multiple DEPITEM#' <<EOF
+test_todo_session 'wait for multiple DEPNR' <<EOF
 >>> todo.sh -p wait 5 for 2 3,4
 5 2012-03-01 build your dream home w:2 w:3 w:4
 TODO: 5 has become dependent on 2, 3, 4.
 EOF
 
 set_up
-test_todo_session 'wait for additional DEPITEM#' <<EOF
+test_todo_session 'wait for additional DEPNR' <<EOF
 >>> todo.sh -p wait 5 for 2
 5 2012-03-01 build your dream home w:2
 TODO: 5 has become dependent on 2.

@@ -73,8 +73,8 @@ j:goal       joined to goal; when this is done, other tasks with the same goal
 t:2010-10-10 future task becomes due on the date, created via todo.sh schedule
 u:2011-12-01 do-until, ultimate, latest due date until the task should have been
              done.
-w:42         waiting for task number, created via todo.sh wait ITEM# for 42
-w:Gina       waiting for person / event, created via todo.sh wait ITEM# Gina
+w:42         waiting for task number, created via todo.sh wait NR for 42
+w:Gina       waiting for person / event, created via todo.sh wait NR Gina
 x:42         trash as a duplicate of task 42; useful as an alternative to
              todo.sh dup del when editing in other clients.
 x:2011-12-01 trash on date.

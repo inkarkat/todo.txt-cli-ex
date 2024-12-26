@@ -61,7 +61,7 @@ renderRelativeMarkers()
 
         if [[ "$netMarkerValue" =~ ^[0-9]+$ ]]; then
             # 'date' also accepts numbers (and always interprets them as the current
-            # day), but numbers should represent ITEM# for task references here.
+            # day), but numbers should represent NR for task references here.
             continue
         elif [[ "$netMarkerValue" =~ ^\.[+-][0-9]+$ ]]; then
             canonicalMarkerValue=$((${netMarkerValue/./$currentTaskNum}))

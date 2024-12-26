@@ -23,8 +23,8 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#"
-    echo "      Creates a new task with all parts of line ITEM# that are not yet marked"
+    echo "    $(basename $0) NR"
+    echo "      Creates a new task with all parts of line NR that are not yet marked"
     echo "      as partially done, and marks the original task as done."
     echo ""
     exit
@@ -35,7 +35,7 @@ shift
 shopt -s extglob
 . "${TODO_ACTIONS_DIR}/../lib/common.sh"
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#"
+errmsg="usage: $TODO_SH $(basename $0) NR"
 item=$1; shift
 [ -z "$item" ] && die "$errmsg"
 [[ "$item" = +([0-9]) ]] || die "$errmsg"

@@ -23,17 +23,17 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [--hard] ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
-    echo "      Marks task(s) on line ITEM# as trashed in todo.txt,"
+    echo "    $(basename $0) [--hard] NR [NR ...] [COMMENT]"
+    echo "      Marks task(s) on line NR as trashed in todo.txt,"
     echo "      optionally appending COMMENT."
     echo "      With --hard, immediately moves the task(s) into trash.txt."
-    echo "      Task(s) that were dependent on ITEM# have that blocker removed."
+    echo "      Task(s) that were dependent on NR have that blocker removed."
     echo ""
     exit
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH $(basename $0) [--hard] ITEM#[, ITEM#, ITEM#, ...] [COMMENT]"
+errmsg="usage: $TODO_SH $(basename $0) [--hard] NR [NR ...] [COMMENT]"
 
 TRASH_FILE=${TRASH_FILE:-$TODO_DIR/trash.txt}
 

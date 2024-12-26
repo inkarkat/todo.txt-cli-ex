@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2014-2022 Ingo Karkat
+# COPYRIGHT: (C) 2014-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -23,11 +23,11 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) TARGET# [DELIM] ITEM# [[DELIM] ITEM# ...]"
-    echo "      Appends all tasks ITEM# (space-delimited or by DELIM) to task TARGET#"
-    echo "      and then deletes them. Done markers, priorities, and dates are ignored,"
-    echo "      prefixed and appended markers are processed separately and added only"
-    echo "      once."
+    echo "    $(basename $0) TARGET-NR [DELIM] NR [[DELIM] NR ...]"
+    echo "      Appends all tasks on lines NR (space-delimited or by DELIM) to task"
+    echo "      TARGET-NR and then deletes them. Done markers, priorities, and dates are"
+    echo "      ignored, prefixed and appended markers are processed separately and added"
+    echo "      only once."
     echo ""
     exit
 }
@@ -35,7 +35,7 @@ shift
 shopt -s extglob
 . "${TODO_ACTIONS_DIR}/../lib/common.sh"
 
-errmsg="usage: $TODO_SH $(basename $0) TARGET# [DELIM] ITEM# [[DELIM] ITEM# ...]"
+errmsg="usage: $TODO_SH $(basename $0) TARGET-NR [DELIM] NR [[DELIM] NR ...]"
 
 containsPrepends()
 {

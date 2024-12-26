@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2012-2013 Ingo Karkat
+# COPYRIGHT: (C) 2012-2024 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -23,19 +23,19 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [ITEM#] THING SIMILAR TO ITEM#"
-    echo "      Adds THING SIMILAR TO ITEM#, including the project(s) and context(s) from"
-    echo "      ITEM# or, if omitted, the last task in todo.txt."
+    echo "    $(basename $0) [NR] THING SIMILAR TO NR"
+    echo "      Adds THING SIMILAR TO NR, including the project(s) and context(s) from"
+    echo "      line NR or, if omitted, the last task in todo.txt."
     echo ""
     exit
 }
 
 shopt -s extglob
 
-errmsg="usage: $TODO_SH $(basename $0) [ITEM#] THING SIMILAR TO ITEM#"
+errmsg="usage: $TODO_SH $(basename $0) [NR] THING SIMILAR TO NR"
 item=
 if [[ "$1" = +([0-9]) ]]; then
-    # We got an ITEM#.
+    # We got a NR.
     item=$1
     shift
 else

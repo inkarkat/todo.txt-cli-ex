@@ -23,20 +23,20 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [on] DATE [COMMENT]"
-    echo "      Marks task(s) on line ITEM# as done at DATE in todo.txt,"
+    echo "    $(basename $0) NR [NR ...] [on] DATE [COMMENT]"
+    echo "      Marks task(s) on line NR as done at DATE in todo.txt,"
     echo "      optionally appending COMMENT."
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] after DATESPAN [COMMENT]"
-    echo "      Marks task(s) on line ITEM# as done DATESPAN later than the added date,"
+    echo "    $(basename $0) NR [NR ...] after DATESPAN [COMMENT]"
+    echo "      Marks task(s) on line NR as done DATESPAN later than the added date,"
     echo "      optionally appending COMMENT."
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] the same|next day [COMMENT]"
-    echo "      Marks task(s) on line ITEM# as done on the same/next day they were added."
-    echo "      Task(s) that were dependent on ITEM# have that blocker removed."
+    echo "    $(basename $0) NR [NR ...] the same|next day [COMMENT]"
+    echo "      Marks task(s) on line NR as done on the same/next day they were added."
+    echo "      Task(s) that were dependent on NR have that blocker removed."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] [on] DATE | after DATESPAN | the same|next day [COMMENT]"
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] [on] DATE | after DATESPAN | the same|next day [COMMENT]"
 [ $# -eq 0 ] && die "$errmsg"
 
 items=

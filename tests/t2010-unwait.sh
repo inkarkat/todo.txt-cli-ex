@@ -43,7 +43,7 @@ TODO: 6 of 6 tasks shown
 EOF
 
 set_up
-test_todo_session 'unblock multiple-ITEM# REASON' <<EOF
+test_todo_session 'unblock multiple-NR REASON' <<EOF
 >>> todo.sh -p unwait 2,6 money
 2 2012-02-01 obtain a bank loan w:(salary increase)
 TODO: 2 had blocker(s) removed; still blocked.
@@ -58,7 +58,7 @@ TODO: 5 not blocked
 EOF
 
 set_up
-test_todo_session 'unblock ITEM# REASON' <<EOF
+test_todo_session 'unblock NR REASON' <<EOF
 >>> todo.sh -p unwait 2 money
 2 2012-02-01 obtain a bank loan w:(salary increase)
 TODO: 2 had blocker(s) removed; still blocked.
@@ -73,7 +73,7 @@ TODO: 1 not blocked
 EOF
 
 set_up
-test_todo_session 'unwait DEPITEM#' <<EOF
+test_todo_session 'unwait DEPNR' <<EOF
 >>> todo.sh -p unwait for 1
 3 2012-02-02 buy the site w:2
 TODO: 3 had blocker(s) removed; still blocked.
@@ -96,7 +96,7 @@ TODO: 6 of 6 tasks shown
 EOF
 
 set_up
-test_todo_session 'unwait multiple-DEPITEM#' <<EOF
+test_todo_session 'unwait multiple-DEPNR' <<EOF
 >>> todo.sh -p unwait for 1,2
 3 2012-02-02 buy the site
 TODO: 3 unblocked.
@@ -105,7 +105,7 @@ TODO: 4 had blocker(s) removed; still blocked.
 EOF
 
 set_up
-test_todo_session 'unwait ITEM# for DEPITEM#' <<EOF
+test_todo_session 'unwait NR for DEPNR' <<EOF
 >>> todo.sh -p unwait 4 for 2
 4 2012-02-03 hire an architect w:3
 TODO: 4 had blocker(s) removed; still blocked.
@@ -128,7 +128,7 @@ TODO: 4 not blocked
 EOF
 
 set_up
-test_todo_session 'unwait ITEM#' <<EOF
+test_todo_session 'unwait NR' <<EOF
 >>> todo.sh -p unwait 6
 6 2012-03-11 buy a color tv
 TODO: 6 unblocked.
@@ -151,7 +151,7 @@ TODO: 6 of 6 tasks shown
 EOF
 
 set_up
-test_todo_session 'unwait ITEM# PRIORITY' <<EOF
+test_todo_session 'unwait NR PRIORITY' <<EOF
 >>> todo.sh -p unwait 2 b
 2 2012-02-01 obtain a bank loan
 TODO: 2 unblocked.

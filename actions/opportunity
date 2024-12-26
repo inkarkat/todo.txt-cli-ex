@@ -23,8 +23,8 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) ITEM#[, ITEM#, ITEM#, ...] DATE"
-    echo "      Adds priority O to task(s) on line ITEM#,"
+    echo "    $(basename $0) NR [NR ...] DATE"
+    echo "      Adds priority O to task(s) on line NR,"
     echo "      and automatically de-prioritize the task(s) on DATE."
     echo ""
     exit
@@ -32,7 +32,7 @@ shift
 
 shopt -s extglob
 
-errmsg="usage: $TODO_SH $(basename $0) ITEM#[, ITEM#, ITEM#, ...] DATE"
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] DATE"
 [ $# -lt 2 ] && die "$errmsg"
 
 typeset -a items=()

@@ -13,10 +13,10 @@ remember the milk
 +buy something simple
 EOF
 
-test_todo_session 'no ITEM#' <<EOF
+test_todo_session 'no NR' <<EOF
 >>> todo.sh dopart foo
 === 1
-usage: todo.sh dopart ITEM# PART#|PATTERN [COMMENT]
+usage: todo.sh dopart NR PART|PATTERN [COMMENT]
 EOF
 
 test_todo_session 'only one part' <<EOF

@@ -24,13 +24,13 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0)"
-    echo "      Extracts the ITEM# task numbers from the output of a todo.sh command,"
+    echo "      Extracts the NR task numbers from the output of a todo.sh command,"
     echo "      so that these can be processed or supplied to another command."
     echo "      Example: List all task numbers of tasks with priority c:"
     echo "        todo.sh listpri c | todo.sh tasks"
     echo "    $(basename $0) ACTION [ACTION_ARGUMENTS]"
-    echo "      Extracts the ITEM# task numbers from the output of a todo.sh command,"
-    echo "      and passes each to todo.sh ACTION ITEM# [ACTION_ARGUMENTS]"
+    echo "      Extracts the NR task numbers from the output of a todo.sh command,"
+    echo "      and passes each to todo.sh ACTION NR [ACTION_ARGUMENTS]"
     echo "      Example: Re-prioritize all tasks with priority c to priority z:"
     echo "        todo.sh listpri c | todo.sh tasks pri z"
     echo "      (But you can also use the dedicated action: todo.sh repri c z.)"
@@ -38,7 +38,7 @@ shift
     exit
 }
 
-# Configuration of (built-in and add-on) actions that handle multiple ITEM#
+# Configuration of (built-in and add-on) actions that handle multiple NR
 # after the action.
 : ${TODOTXT_TASKS_MULTIACTIONS:=depri dp do}
 
