@@ -11,13 +11,17 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2023 Ingo Karkat
+# COPYRIGHT: (C) 2010-2025 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
 # @(#)trash	$Id$	todo.txt-cli-ex
 ###############################################################################
+
+readonly CACHE_DIRSPEC="${XDG_CACHE_HOME:-${HOME}/.cache}"
+[ -d "$CACHE_DIRSPEC" ] || mkdir --parents -- "$CACHE_DIRSPEC" || { printf >&2 'ERROR: Could not initialize cache store at %s\n' "$CACHE_DIRSPEC"; exit 3; }
+: ${TODOTXT_DO_LAST:=${CACHE_DIRSPEC}/todo-lastdone}
 
 action=$1
 shift
@@ -61,7 +65,7 @@ do
 done
 [ "$items" ] || die "$errmsg"
 
-[ "$RECURSIVE_DO" ] || > ~/.todo-lastdone
+[ "$RECURSIVE_DO" ] || > "$TODOTXT_DO_LAST"
 # Split multiple trash's, if comma separated change to whitespace separated.
 # Loop the 'trash' function for each task.
 for item in ${items//,/ }
@@ -102,7 +106,7 @@ do
             # Untrash from trash.txt via 'untrash'.
         else
             # Allow untrashing via 'undo'.
-            printf '%s ' $item >> ~/.todo-lastdone
+            printf '%s ' $item >> "$TODOTXT_DO_LAST"
         fi
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             if [ "$isHard" ]; then

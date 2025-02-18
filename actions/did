@@ -11,13 +11,17 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2023 Ingo Karkat
+# COPYRIGHT: (C) 2010-2025 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
 # @(#)did	$Id$	todo.txt-cli-ex
 ###############################################################################
+
+readonly CACHE_DIRSPEC="${XDG_CACHE_HOME:-${HOME}/.cache}"
+[ -d "$CACHE_DIRSPEC" ] || mkdir --parents -- "$CACHE_DIRSPEC" || { printf >&2 'ERROR: Could not initialize cache store at %s\n' "$CACHE_DIRSPEC"; exit 3; }
+: ${TODOTXT_DO_LAST:=${CACHE_DIRSPEC}/todo-lastdone}
 
 action=$1
 shift
@@ -70,7 +74,7 @@ else
     shift
 fi
 
-printf '' > ~/.todo-lastdone
+printf '' > "$TODOTXT_DO_LAST"
 for item in ${items//,/ }
 do
     if [ ! "$doneDate" ]; then
@@ -102,7 +106,7 @@ do
         echo "$item $newtodo"
         echo "TODO: $item marked as done on $doneDate."
     fi
-    printf '%s ' $item >> ~/.todo-lastdone
+    printf '%s ' $item >> "$TODOTXT_DO_LAST"
 
     if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
         # Unblock tasks that depended on the now done task.

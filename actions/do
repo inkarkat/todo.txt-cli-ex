@@ -11,13 +11,17 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2024 Ingo Karkat
+# COPYRIGHT: (C) 2010-2025 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
 #
 # @(#)do	$Id$	todo.txt-cli-ex
 ###############################################################################
+
+readonly CACHE_DIRSPEC="${XDG_CACHE_HOME:-${HOME}/.cache}"
+[ -d "$CACHE_DIRSPEC" ] || mkdir --parents -- "$CACHE_DIRSPEC" || { printf >&2 'ERROR: Could not initialize cache store at %s\n' "$CACHE_DIRSPEC"; exit 3; }
+: ${TODOTXT_DO_LAST:=${CACHE_DIRSPEC}/todo-lastdone}
 
 action=$1
 shift
@@ -57,7 +61,7 @@ do
 done
 [ "$items" ] || die "$errmsg"
 
-[ "$RECURSIVE_DO" ] || > ~/.todo-lastdone
+[ "$RECURSIVE_DO" ] || > "$TODOTXT_DO_LAST"
 originalAutoArchive=$TODOTXT_AUTO_ARCHIVE; TODOTXT_AUTO_ARCHIVE=0   # Don't immediately auto-archive; it would interfere with subsequent unblocking, recurrence, and the numbering of additional passed NR, and also trigger multiple times.
 for item in ${items//,/ }
 do
@@ -78,7 +82,7 @@ do
         die "TODO: $item is already marked as trashed."
     else
         "$TODO_FULL_SH" command do $item || exit $?
-        printf '%s ' $item >> ~/.todo-lastdone
+        printf '%s ' $item >> "$TODOTXT_DO_LAST"
     fi
 
 
