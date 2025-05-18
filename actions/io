@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 [ "$1" = "usage" ] && exit
 exec "$TODO_ACTIONS_DIR/inout" "$@"
