@@ -40,7 +40,7 @@ errmsg="usage: $TODO_SH $(basename $0) [NR [NR ...]]"
 
 if [ $# -eq 0 ]; then
     [ -r "$TODOTXT_DO_LAST" ] || die 'TODO: No undo information available!'
-    items=$(cat -- "$TODOTXT_DO_LAST"
+    items=$(cat -- "$TODOTXT_DO_LAST")
     rm -- "$TODOTXT_DO_LAST"
     [ -n "$items" ] || die 'TODO: No undo information available!'
 else
