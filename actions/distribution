@@ -73,6 +73,7 @@ export TODOTXT_SORT_COMMAND='cat'   # Need to do sorting after todo.sh, as the "
 export TODOTXT_FINAL_FILTER="$filterCommand"    # XXX: Cannot use post_filter_command; it sometimes messes up the output.
 export TODOTXT_VERBOSE=0    # Omit the task number summary.
 
-"$TODO_FULL_SH" -p "${todoArgs[@]}" "$@" | \
-    eval 'sort' "${dateGlobs:+| globgrep}" '"${dateGlobs[@]}"' | \
-    distribution-over-autorange "${distributionArgs[@]}"
+"$TODO_FULL_SH" -p "${todoArgs[@]}" "$@" \
+    | eval 'sort' \
+    "${dateGlobs:+| globgrep}" '"${dateGlobs[@]}"' \
+    | distribution-over-autorange "${distributionMinArg[@]}" "${distributionArgs[@]}"
