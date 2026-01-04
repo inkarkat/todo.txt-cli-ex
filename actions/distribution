@@ -38,6 +38,7 @@ filterCommand="sed -ne 's#^ *[0-9]\\+ \\((.) \\)\\?\\([0-9]\\{2,4\\}-[0-9]\\{2\\
 listAction='list'
 typeset -a dateGlobs=()
 typeset -a distributionArgs=()
+typeset -a distributionMinArg=(--min 0)
 while [ $# -ne 0 ]
 do
     case "$1" in
@@ -53,6 +54,7 @@ do
                         distributionArgs+=("$1"); shift;;
         --@(footer-every|graph-legend|footer-legend|legend-unit|as|over|color|width|days-per-slot|slots-per-day|max|scale))
                         distributionArgs+=("$1" "$2"); shift; shift;;
+        --min)		distributionMinArg=("$1" "$2"); shift; shift;;
 
         --)             shift; break;;
         *)              break;;
