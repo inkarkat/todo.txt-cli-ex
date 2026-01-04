@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+###############################################################################
+##
+# FILE:         lastyear
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 04-Jan-2026
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2026 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)lastyear	$Id$	todo.txt-cli-ex
+###############################################################################
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [(-o|--offset N|--year YEAR) [-n|--years M]] [ACTION ...|TERM ...]"
+    echo "      Show all tasks from todo.txt AND done.txt AND trash.txt / run ACTION with"
+    echo "      a filter for tasks from the entire fully passed last [M] year[s] /"
+    echo "      previous N'th year[s] / year YEAR [and M previous]."
+    echo ""
+    exit
+}
+
+year=
+count=1
+typeset -a args=()
+while [ $# -ne 0 ]
+do
+    case "$1" in
+        --help|-h|-\?)	shift; printLongUsage "$0"; exit 0;;
+        --offset|-o)	shift; year="$(($(date +%Y) - ${1:?} - 1))"; shift;;
+        --year)		shift; year="${1:?}"; shift;;
+        --years|-n)	shift; count="${1:?}"; shift;;
+        --)		args+=("$1"); shift; break;;
+        *)		args+=("$1"); shift;;
+    esac
+done
+set -- "${args[@]}" "$@"
+
+if [ -z "$year" ]; then
+    year=$(date +%Y)
+    yearOffset=-1
+fi
+
+endYear=$((year + yearOffset + 1))
+startYear=$((endYear - count))
+typeset -a dateArgs=()
+dateGlob=
+for ((year=startYear; year<endYear; year++))
+do
+    dateArgs+=(--date "$year-*")
+    dateGlob+="${dateGlob:+\\|}$year-[01][0-9]-[0123][0-9]"
+done
+dateGlobs="[[:space:]]\\(${dateGlob}\\)\\([[:space:]]\\|\$\\)"
+
+if [ -n "$1" ] && [ -x "$TODO_ACTIONS_DIR/$1/$1" -o -x "$TODO_ACTIONS_DIR/$1" ]; then
+    action="$1"; shift
+    "$TODO_FULL_SH" "$action" "${dateArgs[@]}" "$@"
+else
+    "$TODO_FULL_SH" lsa "${dateGlobs[@]}" "$@"
+fi
