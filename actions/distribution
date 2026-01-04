@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2022-2024 Ingo Karkat
+# COPYRIGHT: (C) 2022-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -25,7 +25,7 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [--no-footer|--final-footer-only|footer-only-on-change|--footer-every N] [--force-legends] [--bucket-legend] [--as colorbox-calendar|green-[large-]calendar|...] [--over day|month|year|year-weekly|--weekly] [--done|--both|--trashed|--any] [--all|SRC] [-d|--date DATEGLOB [-d|--date ...]] [TERM...]"
+    echo "    $(basename $0) [--no-footer|--final-footer-only|footer-only-on-change|--footer-every N] [--force-legends] [--bucket-legend [--legend-unit UNIT]] [--as colorbox-calendar|green-[large-]calendar|...] [--over day|month|year|year-weekly|--weekly] [--done|--both|--trashed|--any] [--all|SRC] [-d|--date DATEGLOB [-d|--date ...]] [TERM...]"
     echo "      Prints the distribution of added (or done with --done, both with --both,"
     echo "      or trashed with --trashed, any with --any) tasks"
     echo "      [in SRC, or in todo.txt and done.txt and trash.txt with --all (like lsa)]"
@@ -49,9 +49,9 @@ do
         --date|-d)      shift; dateGlobs+=(-e "${1%\*}*");;    # De-anchor at the end.
 
         -[S])           distributionArgs+=("$1"); shift;;
-        --@(no-footer|final-footer-only|footer-only-on-change|no-splitting|weekly|force-legends))
+        --@(no-footer|final-footer-only|footer-only-on-change|bucket-legend|no-splitting|weekly|force-legends|no-start-date|no-end-date|no-day-zoom|no-color|color=*))
                         distributionArgs+=("$1"); shift;;
-        --@(bucket-legend|footer-every|graph-legend|footer-legend|as|over))
+        --@(footer-every|graph-legend|footer-legend|legend-unit|as|over|color|width|days-per-slot|slots-per-day|max|scale))
                         distributionArgs+=("$1" "$2"); shift; shift;;
 
         --)             shift; break;;
