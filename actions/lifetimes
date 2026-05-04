@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2024 Ingo Karkat
+# COPYRIGHT: (C) 2024-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -90,4 +90,4 @@ eval '"$TODO_FULL_SH" -p "${todoArgs[@]}" "$@"' \
     "${dateGlobs:+| globgrep}" '"${dateGlobs[@]}"' \
     | toLifetime \
     | STATISTICS_PRECISION=0 statistics \
-    | secondsToDuration --factor 86400 --precision 8 --skip '[N≠]:&'
+    | secondsToDuration --factor 86400 --precision-width 8 --skip '[N≠]:&'
