@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2024 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -23,9 +23,9 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) NR del|trash [--hard] DUP-NR[, DUP-NR, ...]"
+    echo "    $(basename $0) NR del|trash [--hard] DUP-NR [DUP-NR ...]"
     echo "      Delete / trash the tasks on line(s) DUP-NR with a comment of"
-    echo "      \"dup of NR\". Use this when the tasks are identical and."
+    echo "      \"dup of NR\". Use this when the tasks are identical and"
     echo "      were added without knowledge of the existing task."
     echo "    $(basename $0) goal GOAL NR [NR ...]"
     echo "      Bidirectionally join the tasks on line(s) NR together"

@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -27,17 +27,17 @@ shift
     echo "      Unblock the task(s) on line NR"
     echo "    $(basename $0) NR [NR ...] PRIORITY"
     echo "      Unblock the task(s) on line NR and prioritize as PRIORITY."
-    echo "    $(basename $0) [NR, ...] \"REASON for Waiting\"[, REASON, ...]"
+    echo "    $(basename $0) [NR, ...] \"REASON for Waiting\" [REASON ...]"
     echo "      Remove REASON as a blocker for the task(s) on line NR,"
     echo "      or (if not specified) all tasks that are blocked because of it."
-    echo "    $(basename $0) [NR, ...] for DEPNR[, DEPNR, ...]"
+    echo "    $(basename $0) [NR, ...] for DEPNR [DEPNR ...]"
     echo "      Remove DEPNR as a dependency for the task(s) on line NR,"
     echo "      or (if not specified) all tasks that are blocked because of it."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) [NR, ...] \"REASON for Waiting\"[, REASON, ...] | for DEPNR[, #DEPITEM, ...] | [PRIORITY]"
+errmsg="usage: $TODO_SH $(basename $0) [NR, ...] \"REASON for Waiting\" [REASON ...] | for DEPNR [DEPNR ...] | [PRIORITY]"
 
 [ $# -eq 0 ] && die "$errmsg"
 

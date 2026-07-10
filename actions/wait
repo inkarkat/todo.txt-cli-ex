@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -23,9 +23,9 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) NR [NR ...] \"REASON for Waiting\"[, REASON, ...]"
+    echo "    $(basename $0) NR [NR ...] \"REASON for Waiting\" [REASON ...]"
     echo "      Mark the task(s) on line NR as blocked due to REASON."
-    echo "    $(basename $0) NR [NR ...] for DEPNR[, DEPNR, ...]"
+    echo "    $(basename $0) NR [NR ...] for DEPNR [DEPNR ...]"
     echo "      Mark the task(s) on line NR as dependent on task(s) DEPNR."
     echo ""
     exit
@@ -33,7 +33,7 @@ shift
 
 set -o pipefail
 
-errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] \"REASON for Waiting\"[, REASON, ...] | for DEPNR[, DEPNR, ...]"
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] \"REASON for Waiting\" [REASON  ...] | for DEPNR [DEPNR ...]"
 
 [ $# -eq 0 ] && die "$errmsg"
 
