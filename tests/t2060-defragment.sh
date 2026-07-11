@@ -236,7 +236,7 @@ test_todo_session 'defragment change marker syntax' <<EOF
 --
 TODO: 4 of 4 tasks shown
 
->>> TODOTXT_DEFRAGMENT_MARKER_PATTERN='^[[:lower:]]+:[0-9]+$' todo.sh defragment
+>>> TODOTXT_TASK_MARKER_PATTERN='^[[:lower:]]+:[0-9]+$' todo.sh defragment
 
 >>> todo.sh -p command ls
 1 2011-01-01 find a building site +house
@@ -292,7 +292,7 @@ test_todo_session 'defragment change reference syntax' <<EOF
 --
 TODO: 4 of 4 tasks shown
 
->>> TODOTXT_DEFRAGMENT_REFERENCE_PATTERN='^(item|thing)$' todo.sh defragment
+>>> TODOTXT_TASK_REFERENCE_PATTERN='^(item|thing)$' todo.sh defragment
 
 >>> todo.sh -p command ls
 1 2011-01-01 find a building site +house is no easy task to do

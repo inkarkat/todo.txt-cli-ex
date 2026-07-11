@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2024 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -32,8 +32,8 @@ shift
 
 set -o pipefail
 
-: ${TODOTXT_DEFRAGMENT_MARKER_PATTERN:='^[[:graph:]]:[0-9]+$'}
-: ${TODOTXT_DEFRAGMENT_REFERENCE_PATTERN:='^task$'}
+: ${TODOTXT_TASK_MARKER_PATTERN:='^[[:graph:]]:[0-9]+$'}
+: ${TODOTXT_TASK_REFERENCE_PATTERN:='^task$'}
 
 # Defragment blank lines.
 # Note: Deletion of blank lines must proceed from end to begin to avoid adapting
@@ -48,8 +48,8 @@ do
     [ "$emptyLineNum" = "$finalLineNumber" ] && isSelfReferenceWarning=1 || isSelfReferenceWarning=0
 
     awk \
-            -v "markerPattern=$TODOTXT_DEFRAGMENT_MARKER_PATTERN" \
-            -v "referencePattern=$TODOTXT_DEFRAGMENT_REFERENCE_PATTERN" \
+            -v "markerPattern=$TODOTXT_TASK_MARKER_PATTERN" \
+            -v "referencePattern=$TODOTXT_TASK_REFERENCE_PATTERN" \
             -v "lineNum=$emptyLineNum" \
             -v "isSelfReferenceWarning=$isSelfReferenceWarning" \
 '
