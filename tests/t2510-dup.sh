@@ -39,7 +39,6 @@ TODO: 9 of 9 tasks shown
 
 >>> todo.sh -a -f dup 6 del 9
 9 2012-03-21 fix old running shoes => dup of 6
-9 2012-03-21 fix old running shoes => dup of 6
 TODO: 9 deleted.
 EOF
 
@@ -60,9 +59,7 @@ TODO: 9 of 9 tasks shown
 
 >>> todo.sh -a -f dup 6 del 7 9
 7 2012-03-19 clean up repair shop => dup of 6
-7 2012-03-19 clean up repair shop => dup of 6
 TODO: 7 deleted.
-9 2012-03-21 fix old running shoes => dup of 6
 9 2012-03-21 fix old running shoes => dup of 6
 TODO: 9 deleted.
 EOF
@@ -83,7 +80,6 @@ test_todo_session 'trash duplicate task' <<EOF
 TODO: 9 of 9 tasks shown
 
 >>> todo.sh -a -f dup 6 trash 9
-9 2012-03-21 fix old running shoes => dup of 6
 9 X 2009-02-13 2012-03-21 fix old running shoes => dup of 6
 TODO: 9 trashed.
 EOF
@@ -104,7 +100,6 @@ test_todo_session 'immediate (hard) trash duplicate task' <<EOF
 TODO: 9 of 9 tasks shown
 
 >>> todo.sh -a -f dup 6 trash --hard 9
-9 2012-03-21 fix old running shoes => dup of 6
 1 X 2009-02-13 2012-03-21 fix old running shoes => dup of 6
 TODO: 9 put into TRASH as 1.
 EOF

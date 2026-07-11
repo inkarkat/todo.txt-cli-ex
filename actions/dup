@@ -85,16 +85,22 @@ case "$1" in
     *)  die "$errmsg";;
 esac
 
+dupComment()
+{
+    typeset -a commandPrefix=(); [ $TODOTXT_VERBOSE -eq 1 ] && commandPrefix=(env TODOTXT_VERBOSE=0)
+    "${commandPrefix[@]}" "$TODO_FULL_SH" comment $dupItem "dup of $item"
+}
+
 # Split multiple duplicates, if comma separated change to whitespace separated.
 for dupItem in ${dupItems//,/ }
 do
     case $subaction in
         del)
-            "$TODO_FULL_SH" comment $dupItem "dup of $item" || exit $?
+            dupComment || exit $?
             "$TODO_FULL_SH" del $dupItem || exit $?
             ;;
         trash)
-            "$TODO_FULL_SH" comment $dupItem "dup of $item" || exit $?
+            dupComment || exit $?
             eval 'RECURSIVE_DO=true "$TODO_FULL_SH" trash' ${isHard:+--hard} '$dupItem' || exit $?
             ;;
         append)
