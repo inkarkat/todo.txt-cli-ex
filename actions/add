@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2024 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -24,6 +24,7 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) \"THING I NEED TO DO t:tomorrow u:(next week)\""
+    echo "    echo \"THING I NEED TO DO\" | $TODO_SH $(basename $0) -"
     echo "      Adds THING I NEED TO DO to your todo.txt file on its own line."
     echo "      Dates in m: markers can be specified in various formats and will be"
     echo "      canonicalized to YYYY-MM-DD."
@@ -34,11 +35,17 @@ shift
 readonly scriptDir="$([ "${BASH_SOURCE[0]}" ] && dirname -- "${BASH_SOURCE[0]}" || exit 3)"
 [ -d "$scriptDir" ] || { echo >&2 "ERROR: Cannot determine script directory!"; exit 3; }
 
+if [ "$*" = - ]; then
+    task="$(</dev/stdin)"
+else
+    task="$*"
+fi
+
 # Note: We only offer the canonicalization of the date for add and actions based
 # on add, but not for all other actions that modify tasks (e.g. append, replace,
 # etc.) This is meant as a convenient shortcut when adding new tasks; existing
 # task markers should be modified through dedicated actions (e.g. schedule).
-task="${TODOTXT_ADD_PREFIX:-}${*}${TODOTXT_ADD_SUFFIX:-}"
+task="${TODOTXT_ADD_PREFIX:-}${task}${TODOTXT_ADD_SUFFIX:-}"
 
 TOTAL=$(sed -n '$ =' "$TODO_FILE") || exit $?
 task="$("${scriptDir}/renderrelativemarkers" --task "$((TOTAL+1))" "$task")" || exit $?

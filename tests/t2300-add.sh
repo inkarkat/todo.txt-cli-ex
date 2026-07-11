@@ -7,31 +7,45 @@ This test covers adding a task with shortcuts and special notation in markers.
 '
 . ./test-lib.sh
 
-> todo.txt
+: > todo.txt
 test_todo_session 'add with tomorrow in date format renders into canonical date' <<EOF
 >>> todo.sh add go to bed like m:14-Feb-2009
 1 go to bed like m:2009-02-14
 TODO: 1 added.
 EOF
 
-> todo.txt
+: > todo.txt
 test_todo_session 'add with today in date format renders into canonical date' <<EOF
 >>> todo.sh add go to bed like m:today | sed -e "s/$(date -d today +%F)/TODAY/"
 1 go to bed like m:TODAY
 TODO: 1 added.
 EOF
 
-> todo.txt
+: > todo.txt
 test_todo_session 'add with today in date format does not render into canonical date' <<EOF
 >>> todo.sh add go to bed like m:13-Feb-2009
 1 go to bed like m:13-Feb-2009
 TODO: 1 added.
 EOF
 
-> todo.txt
+: > todo.txt
 test_todo_session 'add with tomorrow in all-numbers format is not rendered' <<EOF
 >>> todo.sh add go to bed like m:20090214
 1 go to bed like m:20090214
+TODO: 1 added.
+EOF
+
+: > todo.txt
+test_todo_session 'add - adds single line standard input' <<EOF
+>>> echo pick some flowers | todo.sh add -
+1 pick some flowers
+TODO: 1 added.
+EOF
+
+: > todo.txt
+test_todo_session 'add - adds multi-line standard input as a single task' <<EOF
+>>> printf $'pick some flowers\nand cut some wood\nin the forest\n' | todo.sh add -
+1 pick some flowers and cut some wood in the forest
 TODO: 1 added.
 EOF
 
