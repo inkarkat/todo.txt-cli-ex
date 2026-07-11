@@ -80,12 +80,13 @@ test_todo_session 'delete duplicate task that is referenced' <<EOF
 TODO: 9 of 9 tasks shown
 
 >>> todo.sh -a -f dup 9 del 5
+TODO: Changed 2 task references from 5 to 9.
 5 2002-03-18 buy new walking shoes => dup of 9
 TODO: 5 deleted.
 
 >>> todo.sh -p command ls
-1 2001-01-01 find a building site a:5 +house
-2 2002-02-02 obtain a bank loan +house w:money k:5
+1 2001-01-01 find a building site a:9 +house
+2 2002-02-02 obtain a bank loan +house w:money k:9
 3 2002-02-03 hire an architect +house w:1 w:2
 4 2002-03-01 build your dream home +house w:3 k:6
 6 2002-03-18 go jogging
@@ -131,20 +132,24 @@ test_todo_session 'trash duplicate task that is referenced' <<EOF
 --
 TODO: 9 of 9 tasks shown
 
->>> todo.sh -a -f dup 9 trash 5
+>>> todo.sh -a -f dup 9 trash 5 6
+TODO: Changed 2 task references from 5 to 9.
 5 X 2009-02-13 2002-03-18 buy new walking shoes => dup of 9
 TODO: 5 trashed.
+TODO: Changed 1 task reference from 6 to 9.
+6 X 2009-02-13 2002-03-18 go jogging => dup of 9
+TODO: 6 trashed.
 
 >>> todo.sh -p -x command ls
-1 2001-01-01 find a building site a:5 +house
-2 2002-02-02 obtain a bank loan +house w:money k:5
+1 2001-01-01 find a building site a:9 +house
+2 2002-02-02 obtain a bank loan +house w:money k:9
 3 2002-02-03 hire an architect +house w:1 w:2
-4 2002-03-01 build your dream home +house w:3 k:6
-6 2002-03-18 go jogging
+4 2002-03-01 build your dream home +house w:3 k:9
 7 2002-03-19 clean up repair shop
 8 2002-03-20 enroll in swimming lessons
 9 2002-03-21 fix old running shoes
 5 X 2009-02-13 2002-03-18 buy new walking shoes => dup of 9
+6 X 2009-02-13 2002-03-18 go jogging => dup of 9
 --
 TODO: 9 of 9 tasks shown
 EOF
