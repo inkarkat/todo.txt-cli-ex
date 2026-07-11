@@ -41,8 +41,8 @@ suffix=''
 
 while getopts ":b:e:" opt; do
   case "$opt" in
-    'b') prefix="$OPTARG "; echo $OPTARG ;;
-    'e') suffix=" $OPTARG"; echo $OPTARG ;;
+    'b') prefix="$OPTARG ";;
+    'e') suffix=" $OPTARG";;
   esac
 done
 shift $((OPTIND - 1))
