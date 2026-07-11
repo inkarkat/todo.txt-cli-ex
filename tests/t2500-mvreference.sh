@@ -59,6 +59,32 @@ test_todo_session 'mvreference adapts OLDNR to NEWNR' <<EOF
 TODO: 6 of 6 tasks shown
 
 >>> todo.sh mvreference 3 10
+TODO: Changed 1 task reference from 3 to 10.
+
+>>> todo.sh -p command ls
+1 2011-01-01 find a building site +house
+2 2012-02-02 obtain a bank loan +house w:money
+3 2012-02-03 hire an architect +house w:2 w:10
+4 2012-03-01 build your dream home +house w:4
+5 2012-03-18 buy new walking shoes
+8 2012-03-18 go jogging w:10
+--
+TODO: 6 of 6 tasks shown
+EOF
+
+setup
+test_todo_session 'nonverbose mvreference is silent' <<EOF
+>>> todo.sh -p command ls
+1 2011-01-01 find a building site +house
+2 2012-02-02 obtain a bank loan +house w:money
+3 2012-02-03 hire an architect +house w:2 w:3
+4 2012-03-01 build your dream home +house w:4
+5 2012-03-18 buy new walking shoes
+8 2012-03-18 go jogging w:10
+--
+TODO: 6 of 6 tasks shown
+
+>>> TODOTXT_VERBOSE=0 todo.sh mvreference 3 10
 
 >>> todo.sh -p command ls
 1 2011-01-01 find a building site +house
@@ -87,6 +113,7 @@ test_todo_session 'mvreference marker syntax' <<EOF
 TODO: 4 of 4 tasks shown
 
 >>> todo.sh mvreference 6 77
+TODO: Changed 4 task references from 6 to 77.
 
 >>> todo.sh -p command ls
 1 2011-01-01 find a building site +house
@@ -113,6 +140,7 @@ test_todo_session 'mvreference change marker syntax' <<EOF
 TODO: 4 of 4 tasks shown
 
 >>> TODOTXT_TASK_MARKER_PATTERN='^[[:lower:]]+:[0-9]+$' todo.sh mvreference 6 77
+TODO: Changed 2 task references from 6 to 77.
 
 >>> todo.sh -p command ls
 1 2011-01-01 find a building site +house
@@ -139,6 +167,7 @@ test_todo_session 'mvreference reference syntax' <<EOF
 TODO: 4 of 4 tasks shown
 
 >>> todo.sh mvreference 6 77
+TODO: Changed 4 task references from 6 to 77.
 
 >>> todo.sh -p command ls
 1 2011-01-01 find a building site +house is no easy task to do
@@ -165,6 +194,7 @@ test_todo_session 'mvreference change reference syntax' <<EOF
 TODO: 4 of 4 tasks shown
 
 >>> TODOTXT_TASK_REFERENCE_PATTERN='^(item|thing)$' todo.sh mvreference 2 8
+TODO: Changed 4 task references from 2 to 8.
 
 >>> todo.sh -p command ls
 1 2011-01-01 find a building site +house is no easy task to do
