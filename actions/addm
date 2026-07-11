@@ -25,6 +25,7 @@ shift
 [ "$action" = "usage" ] && {
   echo "    addm [-b prefix] [-e suffix] \"FIRST THING I NEED TO DO +project1 @context"
   echo "    SECOND THING I NEED TO DO +project2 @context\""
+  echo "    printf '%s\n' {FIRST,SECOND}\" THING I NEED TO DO\" | $TODO_SH $(basename $0) -"
   echo "      Adds FIRST THING I NEED TO DO to your todo.txt on its own line and"
   echo "      Adds SECOND THING I NEED TO DO to you todo.txt on its own line."
   echo "      Project and context notation optional."
@@ -47,11 +48,17 @@ while getopts ":b:e:" opt; do
 done
 shift $((OPTIND - 1))
 
+if [ "$*" = - ]; then
+    tasks="$(</dev/stdin)"
+else
+    tasks="$*"
+fi
+
 # Combine with configured prefixes and suffixes and render everything here, so
 # that those apply to each item, not just the first / last one, respectively.
 prefix="${TODOTXT_ADD_PREFIX}${prefix}"; TODOTXT_ADD_PREFIX=''
 suffix="${suffix}${TODOTXT_ADD_SUFFIX}"; TODOTXT_ADD_SUFFIX=''
-items="${prefix}${*//$'\n'/${suffix}$'\n'${prefix}}${suffix}"
+items="${prefix}${tasks//$'\n'/${suffix}$'\n'${prefix}}${suffix}"
 
 if [ -x "$TODO_ACTIONS_DIR/add" ]; then
   export TODOTXT_ADD_ACTION='addm'
