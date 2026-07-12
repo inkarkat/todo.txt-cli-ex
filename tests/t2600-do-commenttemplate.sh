@@ -57,4 +57,26 @@ TODO: Could not expand comment template: ~> with ${WHAT^^} but ` is bad
 TODO: 1 marked as done.
 EOF
 
+cat > todo.txt <<'EOF'
+2009-02-01 a simple task
+2009-02-02 cleanup ~> with ${WHAT:-friends} in ${TIMESPAN:-no time at all}
+EOF
+test_todo_session 'user-supplied COMMENT is appended and considered for comment template' <<'EOF'
+>>> todo.sh -a -f do 2 "; that's how I prefer it"
+2 2009-02-02 cleanup ~> with ${WHAT:-friends} in ${TIMESPAN:-no time at all}; that's how I prefer it
+2 x 2009-02-13 2009-02-02 cleanup => with friends in no time at all; that's how I prefer it
+TODO: 2 marked as done.
+
+>>> FEELING=boring todo.sh -a -f do 1 '~> $FEELING'
+1 2009-02-01 a simple task ~> $FEELING
+1 x 2009-02-13 2009-02-01 a simple task => boring
+TODO: 1 marked as done.
+
+>>> todo.sh -p -x lsdo
+1 x 2009-02-13 2009-02-01 a simple task => boring
+2 x 2009-02-13 2009-02-02 cleanup => with friends in no time at all; that's how I prefer it
+--
+TODO: 2 of 2 tasks shown
+EOF
+
 test_done
