@@ -78,9 +78,15 @@ do
     getTodo "$item"
 
     if [[ "$todo" =~ ^(.*)"$TODOTXT_COMMENTTEMPLATE_SYMBOL"(.*)$ ]]; then
-        input="${BASH_REMATCH[1]}${TODOTXT_COMMENT_SYMBOL}${BASH_REMATCH[2]}"
-        cleaninput "for sed"
-        sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
+        body="${BASH_REMATCH[1]}"
+        template="${BASH_REMATCH[2]}"
+        if comment="$(evalFile <<<"$template" 2>/dev/null)"; then
+            input="${body}${TODOTXT_COMMENT_SYMBOL}${comment}"
+            cleaninput "for sed"
+            sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
+        else
+            printf 'TODO: Could not expand comment template:%s%s\n' "$TODOTXT_COMMENTTEMPLATE_SYMBOL" "$template"
+        fi
     fi
 
     if [ "$isTrashInstead" ]; then

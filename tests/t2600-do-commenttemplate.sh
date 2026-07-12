@@ -22,4 +22,39 @@ TODO: 2 marked as done.
 TODO: 1 of 2 tasks shown
 EOF
 
+cat > todo.txt <<'EOF'
+2009-02-01 a simple task => easily done
+2009-02-02 $WEEKLY cleanup ~> with ${WHAT^^} in $TIMESPAN
+2009-02-03 task cleanup ~> on a total of $(sed -ne \$= "$TODO_FILE") tasks
+2009-02-03 count stuff ~> $(seq 1 3) and `seq 5 8`
+EOF
+test_todo_session 'turn a comment template into a comment' <<'EOF'
+>>> WEEKLY=thisShouldNotMatter WHAT=charisma TIMESPAN='5 minutes' todo.sh -a -f do 2
+2 x 2009-02-13 2009-02-02 $WEEKLY cleanup => with CHARISMA in 5 minutes
+TODO: 2 marked as done.
+
+>>> todo.sh -p -x lsdo
+2 x 2009-02-13 2009-02-02 $WEEKLY cleanup => with CHARISMA in 5 minutes
+--
+TODO: 1 of 4 tasks shown
+
+>>> todo.sh -a -f do 3
+3 x 2009-02-13 2009-02-03 task cleanup => on a total of 4 tasks
+TODO: 3 marked as done.
+
+>>> todo.sh -a -f do 4
+4 x 2009-02-13 2009-02-03 count stuff => 1 2 3 and 5 6 7 8
+TODO: 4 marked as done.
+EOF
+
+cat > todo.txt <<'EOF'
+2009-02-02 broken ~> with ${WHAT^^} but ` is bad
+EOF
+test_todo_session 'syntax error in comment template prints warning and keeps original task content' <<'EOF'
+>>> WHAT=charisma todo.sh -a -f do 1
+TODO: Could not expand comment template: ~> with ${WHAT^^} but ` is bad
+1 x 2009-02-13 2009-02-02 broken ~> with ${WHAT^^} but ` is bad
+TODO: 1 marked as done.
+EOF
+
 test_done
