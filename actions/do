@@ -23,6 +23,9 @@ readonly CACHE_DIRSPEC="${XDG_CACHE_HOME:-${HOME}/.cache}"
 [ -d "$CACHE_DIRSPEC" ] || mkdir --parents -- "$CACHE_DIRSPEC" || { printf >&2 'ERROR: Could not initialize cache store at %s\n' "$CACHE_DIRSPEC"; exit 3; }
 : ${TODOTXT_DO_LAST:=${CACHE_DIRSPEC}/todo-lastdone}
 
+: ${TODOTXT_COMMENT_SYMBOL:= => }
+: ${TODOTXT_COMMENTTEMPLATE_SYMBOL:= ~> }
+
 action=$1
 shift
 
@@ -30,6 +33,8 @@ shift
     echo "    $(basename $0) NR [NR ...] [COMMENT]"
     echo "      Marks task(s) on line NR as done in todo.txt,"
     echo "      optionally appending COMMENT."
+    echo "      A comment template (${TODOTXT_COMMENTTEMPLATE_SYMBOL}TEMPLATE) within the task will be shell-expanded"
+    echo "      and turned into a ${TODOTXT_COMMENT_SYMBOL}COMMENT."
     echo "      Other task(s) that are dependent on w:NR have that blocker removed."
     echo "      Other task(s) contradependent on j:NR are trashed, and"
     echo "      j:OTHER-NR other contradependent task(s) are trashed."
@@ -71,6 +76,12 @@ do
     fi
 
     getTodo "$item"
+
+    if [[ "$todo" =~ ^(.*)"$TODOTXT_COMMENTTEMPLATE_SYMBOL"(.*)$ ]]; then
+        input="${BASH_REMATCH[1]}${TODOTXT_COMMENT_SYMBOL}${BASH_REMATCH[2]}"
+        cleaninput "for sed"
+        sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
+    fi
 
     if [ "$isTrashInstead" ]; then
         if [ "${todo:0:2}" != 'X ' ]; then
