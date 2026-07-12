@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2025 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -23,6 +23,9 @@ readonly CACHE_DIRSPEC="${XDG_CACHE_HOME:-${HOME}/.cache}"
 [ -d "$CACHE_DIRSPEC" ] || mkdir --parents -- "$CACHE_DIRSPEC" || { printf >&2 'ERROR: Could not initialize cache store at %s\n' "$CACHE_DIRSPEC"; exit 3; }
 : ${TODOTXT_DO_LAST:=${CACHE_DIRSPEC}/todo-lastdone}
 
+: ${TODOTXT_COMMENT_SYMBOL:= => }
+: ${TODOTXT_COMMENTTEMPLATE_SYMBOL:= ~> }
+
 action=$1
 shift
 
@@ -30,6 +33,8 @@ shift
     echo "    $(basename $0) NR [NR ...] [COMMENT]"
     echo "      Marks task(s) on line NR as done in todo.txt,"
     echo "      optionally appending COMMENT."
+    echo "      A comment template (${TODOTXT_COMMENTTEMPLATE_SYMBOL}TEMPLATE) within the task will be shell-expanded"
+    echo "      and turned into a ${TODOTXT_COMMENT_SYMBOL}COMMENT."
     echo "      Other task(s) that are dependent on w:NR have that blocker removed."
     echo "      Other task(s) contradependent on j:NR are trashed, and"
     echo "      j:OTHER-NR other contradependent task(s) are trashed."
@@ -61,16 +66,28 @@ do
 done
 [ "$items" ] || die "$errmsg"
 
-[ "$RECURSIVE_DO" ] || > "$TODOTXT_DO_LAST"
+[ "$RECURSIVE_DO" ] || : > "$TODOTXT_DO_LAST"
 originalAutoArchive=$TODOTXT_AUTO_ARCHIVE; TODOTXT_AUTO_ARCHIVE=0   # Don't immediately auto-archive; it would interfere with subsequent unblocking, recurrence, and the numbering of additional passed NR, and also trigger multiple times.
 for item in ${items//,/ }
 do
     # Always append more even when the task is already done.
-    if [ "$*" ]; then
+    if [ -n "$*" ]; then
         "$TODO_FULL_SH" command append $item "$@" || exit $?
     fi
 
     getTodo "$item"
+
+    if [[ "$todo" =~ ^(.*)"$TODOTXT_COMMENTTEMPLATE_SYMBOL"(.*)$ ]]; then
+        body="${BASH_REMATCH[1]}"
+        template="${BASH_REMATCH[2]}"
+        if comment="$(evalFile <<<"$template" 2>/dev/null)"; then
+            input="${body}${TODOTXT_COMMENT_SYMBOL}${comment}"
+            cleaninput "for sed"
+            sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
+        else
+            printf 'TODO: Could not expand comment template:%s%s\n' "$TODOTXT_COMMENTTEMPLATE_SYMBOL" "$template"
+        fi
+    fi
 
     if [ "$isTrashInstead" ]; then
         if [ "${todo:0:2}" != 'X ' ]; then
@@ -101,7 +118,7 @@ do
 
     # Cascade done to tasks linked from the now done task.
     linkMarkers=$(echo "$todo" | grep -o '[^ ]*l:[[:digit:]]\+' | grep '^l:')
-    if [ "$linkMarkers" ]; then
+    if [ -n "$linkMarkers" ]; then
         links=$(echo "$linkMarkers" | sed -n -e 's/^l://' -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
         echo "TODO: $item is linked to ${links}; cascading done marker."
         for link in $linkMarkers
@@ -123,7 +140,7 @@ do
     # Trash to-be-killed tasks referenced by the now done task.
     if [ -x "$TODO_ACTIONS_DIR/trash" ]; then
         killMarkers=$(echo "$todo" | grep -o '[^ ]*k:[[:digit:]]\+' | grep '^k:')
-        if [ "$killMarkers" ]; then
+        if [ -n "$killMarkers" ]; then
             killedItems=$(echo "$killMarkers" | sed -n -e 's/^k://' -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')
             echo "TODO: $item trashes ${killedItems}."
             for killMarker in $killMarkers
@@ -159,7 +176,7 @@ do
     # Add the tasks referenced from the current task, unless they're already
     # done or trashed.
     referencedFromHere=$(echo "$joinMarkers" | grep -e '^j:[0-9]\+$')
-    if [ "$referencedFromHere" ]; then
+    if [ -n "$referencedFromHere" ]; then
         referencedFromHere=${referencedFromHere//j:/}
         referencedFromHereItems=$(sed -n -e "${referencedFromHere/$'\n'/b check}b check" -e 'b' -e ':check' -e '/^[xX] /!=' "$TODO_FILE") || exit $?
         [ "$referencedFromHereItems" ] && referencedItems=$(echo "${referencedItems}${referencedItems:+
@@ -170,7 +187,7 @@ do
     # To achieve both recursion and processing, we do not delegate to the trash
     # action, but recursively invoke ourself with the hidden "do trash"
     # subaction.
-    if [ "$referencedItems" ]; then
+    if [ -n "$referencedItems" ]; then
         [ "${referencedItems//$'\n'/}" = "$referencedItems" ] && howManyReferences='the latter' || howManyReferences='those others'
         echo "TODO: $item is contradependent on ${referencedItems//$'\n'/,}; trashing ${howManyReferences}."
         eval 'RECURSIVE_DO=true "$TODO_FULL_SH" do trash' ${referencedItems//$'\n'/ } '"$@"'

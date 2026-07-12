@@ -21,6 +21,7 @@ Discussions and questions around the Todo.txt workflow is best directed to the
 
 * Bash, GNU `awk`, GNU `sed`
 * [todo.txt-cli](https://github.com/inkarkat/todo.txt-cli) (official distribution or my fork)
+* [inkarkat/shell-scripting](https://github.com/inkarkat/shell-scripting) for the template expansion of the `do` command (via the `evalFile` command)
 
 ### Installation
 
