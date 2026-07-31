@@ -12,7 +12,7 @@ shopt -qs extglob
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2024 Ingo Karkat
+# COPYRIGHT: (C) 2024-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -43,7 +43,7 @@ if [ $# -gt 0 ]; then
     # Need to filter both active and archived tasks files and inject those into birdseye.py.
     tempTodoFilespec="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TMPDIR:-/tmp}/$(basename -- "$0").$$$RANDOM")"
     tempDoneFilespec="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TMPDIR:-/tmp}/$(basename -- "$0").$$$RANDOM")"
-    [ "${DEBUG:-}" ] || trap 'rm -f -- "$tempTodoFilespec" "$tempDoneFilespec" 2>/dev/null' EXIT
+    ! ${DEBUG:+debugenabled --invert-match --} ${DEBUG:-:} || trap 'rm -f -- "$tempTodoFilespec" "$tempDoneFilespec" 2>/dev/null' EXIT
     eval "$(filtercommand 'cat "$TODO_FILE"' '' "$@")" > "$tempTodoFilespec"
     eval "$(filtercommand 'cat "$DONE_FILE"' '' "$@")" > "$tempDoneFilespec"
     export TODO_FILE="$tempTodoFilespec"
