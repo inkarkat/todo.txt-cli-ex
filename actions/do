@@ -98,7 +98,7 @@ do
     elif [ "${todo:0:2}" = 'X ' ]; then
         die "TODO: $item is already marked as trashed."
     else
-        "$TODO_FULL_SH" command do $item || exit $?
+        "$TODO_FULL_SH" ${TODOTXT_DO_COMMAND:-command do} $item || exit $?
         printf '%s ' $item >> "$TODOTXT_DO_LAST"
     fi
 
