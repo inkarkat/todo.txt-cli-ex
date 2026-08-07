@@ -42,7 +42,12 @@ shift
 : ${TODOTXT_PARTIALDONE_TEMPLATE="(%s${TODOTXT_COMMENT_SYMBOL}%s)"}
 : ${TODOTXT_PARTIALDONE_TEMPLATE_WITH_COMMENT="(%s${TODOTXT_COMMENT_SYMBOL}%s %s)"}
 shopt -s extglob
-. "${TODO_ACTIONS_DIR}/../lib/common.sh"
+
+readonly scriptDir="$([ "${BASH_SOURCE[0]}" ] && dirname -- "${BASH_SOURCE[0]}" || exit 3)"
+[ -d "$scriptDir" ] || { echo >&2 'ERROR: Cannot determine script directory!'; exit 3; }
+readonly projectDir="${scriptDir}/.."
+readonly libDir="${projectDir}/lib"
+source "${libDir}/common.sh" || exit 3
 
 listParts()
 {
