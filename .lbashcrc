@@ -1,0 +1,15 @@
+#!/bin/bash source-this-script
+
+case "$1" in
+    enter)
+        # Observe and run tests on changes to the tests themselves.
+        export MAKE_ONCHANGE_ARGS='--tests'
+        export MAKE_ONCHANGE_TEST_DIRSPEC='tests'
+        export MAKE_ONCHANGE_TEST_GLOB='t[0-9][0-9][0-9][0-9]-*.sh'
+        ;;
+    leave)
+        unset MAKE_ONCHANGE_TEST_GLOB
+        unset MAKE_ONCHANGE_TEST_DIRSPEC
+        unset MAKE_ONCHANGE_ARGS
+        ;;
+esac
