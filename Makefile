@@ -1,3 +1,5 @@
+ACTIONS = $(wildcard actions/*)
+FILTERS = $(wildcard filter/*)
 TESTS = $(wildcard tests/t[0-9][0-9][0-9][0-9]-*.sh)
 #TEST_OPTIONS=--verbose
 
@@ -24,10 +26,12 @@ aggregate-results: $(TESTS)
 $(TESTS): test-pre-clean test-copy-deps
 	-cd ./tests && ./$(notdir $@) $(TEST_OPTIONS)
 
+$(ACTIONS) $(FILTERS): test-pre-clean test-copy-deps
+	-@cd ./tests && for testfile in ./t[0-9][0-9][0-9][0-9]-$(notdir $@).sh ./t[0-9][0-9][0-9][0-9]-$(notdir $@)-*.sh; do if [ -x ./"$$testfile" ]; then echo "cd ./tests && $$testfile $(TEST_OPTIONS)"; ./"$$testfile" $(TEST_OPTIONS); fi; done
+
 test: aggregate-results
 	tests/aggregate-results.sh tests/test-results/t*-*
 	rm -rf tests/test-results
-
 
 ci:
 	. ./.lbashcrc enter && singleton --id todo.txt-cli-ex-ci -- make-onchange TEST_OPTIONS=-i
@@ -39,4 +43,4 @@ stop-ci:
 	singleton --kill --id todo.txt-cli-ex-ci
 
 # Force tests to get run every time
-.PHONY: test aggregate-results $(TESTS)
+.PHONY: test aggregate-results $(ACTIONS) $(FILTERS) $(TESTS)
