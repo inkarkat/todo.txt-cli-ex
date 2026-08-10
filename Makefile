@@ -30,13 +30,13 @@ test: aggregate-results
 
 
 ci:
-	cd ./tests && singleton --id todo.txt-cli-ex-ci -- onchange-singleton-invocation --event create --event change --exec ./{} -i \; t[0-9][0-9][0-9][0-9]-*.sh
+	. ./.lbashcrc enter && singleton --id todo.txt-cli-ex-ci -- make-onchange TEST_OPTIONS=-i
 
 restart-ci:
-	cd ./tests && singleton --restart --id todo.txt-cli-ex-ci -- onchange-singleton-invocation --event create --event change --exec ./{} -i \; t[0-9][0-9][0-9][0-9]-*.sh
+	. ./.lbashcrc enter && singleton --restart --id todo.txt-cli-ex-ci -- make-onchange TEST_OPTIONS=-i
 
 stop-ci:
-	cd ./tests && singleton --kill --id todo.txt-cli-ex-ci
+	singleton --kill --id todo.txt-cli-ex-ci
 
 # Force tests to get run every time
 .PHONY: test aggregate-results $(TESTS)
