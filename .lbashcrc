@@ -1,0 +1,17 @@
+#!/bin/bash source-this-script
+
+case "$1" in
+    enter)
+        # Observe and run tests on changes to the tests themselves.
+        export MAKE_ONCHANGE_ARGS='--tests'
+        export MAKE_ONCHANGE_TEST_DIRSPEC='tests'
+        export MAKE_ONCHANGE_TEST_GLOB='t[0-9][0-9][0-9][0-9]-*.sh'
+        # Observe changes to custom actions and filters, and make the changed filespec ({} is the onchange placeholder), which runs the corresponding test(s).
+        MAKE_ONCHANGE_ARGS+=' --observee @\(actions\|filter\)/+\(\[\[:alpha:\]\]\) --target {}'
+        ;;
+    leave)
+        unset MAKE_ONCHANGE_TEST_GLOB
+        unset MAKE_ONCHANGE_TEST_DIRSPEC
+        unset MAKE_ONCHANGE_ARGS
+        ;;
+esac
