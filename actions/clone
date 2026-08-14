@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2024 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -52,7 +52,7 @@ fi
 # Figure out the line of what we just added, "uncomment" it, and perform any
 # passed substitutions.
 clonedItem=$(sed -n '$ =' "$TODO_FILE") || exit $?
-if [ -x "$TODO_ACTIONS_DIR/uncomment" ]; then
+if [ -n "$(listCustomActions uncomment)" ]; then
     "$TODO_FULL_SH" uncomment -q "$clonedItem"
 fi
 if [ $# -gt 0 ]; then

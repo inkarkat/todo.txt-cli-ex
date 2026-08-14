@@ -105,12 +105,12 @@ do
 
 
     # Unblock tasks that depended on the now done task.
-    if [ -x "$TODO_ACTIONS_DIR/unwait" ]; then
+    if [ -n "$(listCustomActions unwait)" ]; then
         "$TODO_FULL_SH" unwait 'for' $item 2>&1 | grep -v '^TODO: No tasks that contain the dependent tasks found.$'
     fi
 
     # Handle potential recurrence of the now done task.
-    if [ -x "$TODO_ACTIONS_DIR/recur" ]; then
+    if [ -n "$(listCustomActions recur)" ]; then
         "$TODO_FULL_SH" recur $item apply
     fi
 
@@ -138,7 +138,7 @@ do
 
 
     # Trash to-be-killed tasks referenced by the now done task.
-    if [ -x "$TODO_ACTIONS_DIR/trash" ]; then
+    if [ -n "$(listCustomActions trash)" ]; then
         killMarkers=$(echo "$todo" | grep -o '[^ ]*k:[[:digit:]]\+' | grep '^k:')
         if [ -n "$killMarkers" ]; then
             killedItems=$(echo "$killMarkers" | sed -n -e 's/^k://' -e '1h' -e '1!H' -e '$g' -e '$s/\n/, /g' -e '$p')

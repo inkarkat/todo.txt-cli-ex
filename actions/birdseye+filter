@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2023 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -56,7 +56,11 @@ export DONE_FILE=$TMPDONE
 
 # Note: Cannot launch birdseye via "$TODO_FULL_SH" birdseye, because the todo.sh
 # invocation would overwrite the custom TODO_FILE and DONE_FILE config settings.
-"$TODO_ACTIONS_DIR/birdseye" birdseye "${which}-${ITEM}"
+birdseyeCommand="$(listCustomActions birdseye)"
+if [ -z "$birdseyeCommand" ]; then
+    die 'ERROR: birdseye action not found'
+fi
+"$birdseyeCommand" birdseye "${which}-${ITEM}"
 rc=$?
 rm "$TMPTODO" "$TMPDONE" 2>/dev/null
 exit $rc

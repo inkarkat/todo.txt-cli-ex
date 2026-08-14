@@ -63,7 +63,7 @@ do
 done
 dateGlobs="[[:space:]]\\(${dateGlob}\\)\\([[:space:]]\\|\$\\)"
 
-if [ -n "$1" ] && [ -x "$TODO_ACTIONS_DIR/$1/$1" -o -x "$TODO_ACTIONS_DIR/$1" ]; then
+if [ -n "$1" ] && [ -n "$(listCustomActions "$1")" ]; then
     action="$1"; shift
     "$TODO_FULL_SH" "$action" "${dateArgs[@]}" "$@"
 else
