@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2024 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -69,7 +69,7 @@ if [ "$HOSTNAME" -a "$*" != "@$HOSTNAME" ]; then
     fi
 fi
 
-if [ -x "$TODO_ACTIONS_DIR/lsbumped" ]; then
+if [ -n "$(listCustomActions lsbumped)" ]; then
     mostBumpedTasks=$(TODOTXT_VERBOSE=0 "$TODO_FULL_SH" lsbumped "$@" | sed -e '1{ h; s/^.* \(!:[0-9]\+\).*$/\1/; x }' -e '1!{ G; / \(!:[0-9]\+\).*\n\1$/!{ s/.*//; q }; s/\n.*// }')
     if [ "$mostBumpedTasks" ]; then
         mostBumpedTasksNum=$(echo "$mostBumpedTasks" | sed -n '$ =')

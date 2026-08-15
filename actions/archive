@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2024 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -128,14 +128,14 @@ processItems 'x' "$DONE_FILE" 'archived' "$items" "$@"
 processItems 'X' "$TRASH_FILE" 'trashed' "$items" "$@"
 
 
-if [ $# -eq 0 -a -x "$TODO_ACTIONS_DIR/backup" ]; then
+if [ $# -eq 0 -a -n "$(listCustomActions backup)" ]; then
     # This is a complete, regular archive.
     # Use this occasion to make a backup.
     "$TODO_FULL_SH" backup
 fi
 
 # Defragment blank lines.
-if [ -x "$TODO_ACTIONS_DIR/defragment" ]; then
+if [ -n "$(listCustomActions defragment)" ]; then
     # We have a customized defragment script that not only removes the empty
     # lines, but also adapts cross-task references; use it.
     "$TODO_FULL_SH" defragment
