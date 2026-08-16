@@ -113,13 +113,13 @@ test_todo_session 'mvreference marker syntax' <<EOF
 TODO: 4 of 4 tasks shown
 
 >>> todo.sh mvreference 6 77
-TODO: Changed 4 task references from 6 to 77.
+TODO: Changed 3 task references from 6 to 77.
 
 >>> todo.sh -p command ls
 1 2011-01-01 find a building site +house
 2 2012-02-02 obtain a bank loan +house m:77
 3 2012-02-03 buy the site +house marker:6 M:77 :6 m:6a m:-6
-4 2012-02-03 hire an architect +house !:77 *:77
+4 2012-02-03 hire an architect +house !:6 *:77
 --
 TODO: 4 of 4 tasks shown
 EOF

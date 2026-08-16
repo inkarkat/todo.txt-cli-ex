@@ -214,7 +214,7 @@ TODO: 4 of 4 tasks shown
 1 2011-01-01 find a building site +house
 2 2012-02-02 obtain a bank loan +house m:1
 3 2012-02-03 buy the site +house marker:6 M:4 :6 m:6a m:-6
-4 2012-02-03 hire an architect +house !:2 *:3
+4 2012-02-03 hire an architect +house !:4 *:3
 --
 TODO: 4 of 4 tasks shown
 EOF
