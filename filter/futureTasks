@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2016 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -22,12 +22,15 @@
 # @(#)futureTasks	$Id$	todo.txt-cli-ex
 ###############################################################################
 
+export TODOTXT_FILTER_SUPPRESS_TASKS=${TODOTXT_FILTER_SUPPRESS_TASKS:-1}
+# On by default, set to 0 if you want all tasks to be rendered and shown.
+
 export TODOTXT_FILTER_FUTURE_TASKS=${TODOTXT_FILTER_FUTURE_TASKS:-1}
 #   1: Suppress tasks that are scheduled in the future.
 #  -1: Suppress tasks that have already been scheduled.
 #   0: Disable the futureTasks filter.
 
-if [ $TODOTXT_FILTER_FUTURE_TASKS -ne 0 ]; then
+if [ $TODOTXT_FILTER_SUPPRESS_TASKS -ne 0 -a $TODOTXT_FILTER_FUTURE_TASKS -ne 0 ]; then
     awk -v date=$1 '
 function highlight(colorVar,      color) {
     color = ENVIRON[colorVar]
