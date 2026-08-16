@@ -61,9 +61,9 @@ validRecurringFilter()
 }
 listRecurring()
 {
-    # Disable the futureTasks filter that hides recurring tasks scheduled in the
-    # future.
-    export TODOTXT_FILTER_FUTURE_TASKS=0
+    # Disable suppression in filters (like futureTasks) that hide recurring tasks
+    # (that are scheduled in the future).
+    export TODOTXT_FILTER_SUPPRESS_TASKS=0
 
     post_filter_command="grep -e '{[^}]\+}' | validRecurringFilter"
     _list "$TODO_FILE" "$@"
