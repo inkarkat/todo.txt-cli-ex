@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2020 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -40,7 +40,7 @@ shift
 
 # Configuration of (built-in and add-on) actions that handle multiple NR
 # after the action.
-: ${TODOTXT_TASKS_MULTIACTIONS:=depri dp do}
+: ${TODOTXT_TASKS_MULTIACTIONS:=depri dp do done}
 
 typeset action=
 typeset actionPrefix=
