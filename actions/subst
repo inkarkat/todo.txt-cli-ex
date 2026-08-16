@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2024 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -42,6 +42,8 @@ newtodo=$todo
 
 replace()
 {
+    local pattern="${1:?}"; shift
+    local input="${1?}"; shift
     cleaninput
     input=${input//%/\\%}
     # Above takes care of the replacement; for the pattern, we only have to escape
@@ -52,26 +54,32 @@ replace()
     newtodo=$(echo "$newtodo" | sed "s%${pattern//%/\\%}%${input}%g") || exit 1
 }
 
-pattern=
-input=
-if [[ $# -lt 2 && $TODOTXT_FORCE = 0 ]]; then
+typeset -a patterns=()
+typeset -a replacements=()
+if [ $# -lt 2 ]; then
+    [ $TODOTXT_FORCE = 0 ] || die "$errmsg"
     IFS=$'\n' read -p "Pattern: " pattern
-    [ "$pattern" ] || exit 1
-    IFS=$'\n' read -p "Replacement: " input
-    replace
+    [ -n "$pattern" ] || exit 1
+    IFS=$'\n' read -p "Replacement: " replacement
+    patterns+=("$pattern")
+    replacements+=("$replacement")
+else
+    while [[ $# -ge 2 ]]
+    do
+        patterns+=("$1")
+        replacements+=("$2")
+        shift; shift
+    done
 fi
 
-while [[ $# -ge 2 ]]
+for ((i = 0; i < ${#patterns[@]}; i++))
 do
-    pattern=$1
-    input=$2
-    shift; shift
-    replace
+    replace "${patterns[$i]}" "${replacements[$i]}"
 done
-[ "$newtodo" ] || die "TODO: Replacement would create empty task."
 
+[ -n "$newtodo" ] || die "TODO: Replacement would create empty task: $item $todo"
 if [ "$newtodo" = "$todo" ]; then
     [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
-    die "TODO: No replacement done for $pattern"
+    IFS=,; die "TODO: No replacement done for ${patterns[*]}"
 fi
 "$TODO_FULL_SH" command replace $item "$newtodo"
