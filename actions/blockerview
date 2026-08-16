@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2022 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -54,7 +54,7 @@ do
 
     if [[ "$blocker" =~ ^[0-9]+$ ]]; then
         # Translate dependent task number into a fully rendered, but shortened task description.
-        deptodo=$(export TODOTXT_FILTER_SCHEDULED=0; export TODOTXT_FILTER_FUTURE_TASKS=0; post_filter_command= _list "$TODO_FILE" "^ *$blocker ")
+        deptodo=$(export TODOTXT_FILTER_SCHEDULED=0; export TODOTXT_FILTER_SUPPRESS_TASKS=0; post_filter_command= _list "$TODO_FILE" "^ *$blocker ")
         if [ ! "$deptodo" ]; then
             deptodo='???'
             let invalidDependentTaskCnt+=1

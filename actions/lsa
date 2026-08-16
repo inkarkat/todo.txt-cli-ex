@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2012-2013 Ingo Karkat
+# COPYRIGHT: (C) 2012-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -40,7 +40,7 @@ PADDING=${#TOTAL}
 # remove the dummy column again.
 post_filter_command="${post_filter_command:-}${post_filter_command:+ | }awk -v TOTAL=$TOTAL -v PADDING=$PADDING '{ \$1 = sprintf(\"%\" PADDING \"d\", (\$1 > TOTAL ? 0 : \$1)); print }' | sed -e '/^ *[0-9]\\+ \\([xX]\\|(.)\\) /!s/^ *[0-9]\\+ /&(.) /'"
 TODOTXT_SORT_COMMAND="env LC_COLLATE=C sort -f -k3,3 | sed -e 's/^\( *[0-9]\\+ \)(\.) /\\1/'"
-export TODOTXT_FILTER_FUTURE_TASKS=0
+export TODOTXT_FILTER_SUPPRESS_TASKS=0
 cat "$TODO_FILE" "$DONE_FILE" "$TRASH_FILE" | TODOTXT_VERBOSE=0 _format '' "$PADDING" "$@"
 
 if [ $TODOTXT_VERBOSE -gt 0 ]; then

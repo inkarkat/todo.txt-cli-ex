@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2020 Ingo Karkat
+# COPYRIGHT: (C) 2020-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -44,7 +44,7 @@ renderViaScheduledFilter()
 if [ $TODOTXT_VERBOSE -gt 0 ]; then
     TOTAL=$(sed -n '$ =' "$TODO_FILE") || exit $?
     PADDING=${#TOTAL}
-    { renderViaScheduledFilter "$@" 2>&1 | TODOTXT_FILTER_FUTURE_TASKS=0 _format '' "$PADDING"; } || die 'Fatal Error: Unable to render markers in tasks.'
+    { renderViaScheduledFilter "$@" 2>&1 | TODOTXT_FILTER_SUPPRESS_TASKS=0 _format '' "$PADDING"; } || die 'Fatal Error: Unable to render markers in tasks.'
 else
     renderViaScheduledFilter "$@" || die 'Fatal Error: Unable to render markers in tasks.'
 fi
