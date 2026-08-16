@@ -8,6 +8,8 @@
 #
 ###############################################################################
 # CONTENTS:
+#   This is a variant of futureTasks that highlights tasks which lie closely
+#   around the scheduled date.
 #
 # REMARKS:
 #
@@ -20,6 +22,9 @@
 ###############################################################################
 
 export TODOTXT_FILTER_FUTURE_TASKS=${TODOTXT_FILTER_FUTURE_TASKS:-1}
+#   1: Suppress tasks that are scheduled in the future.
+#  -1: Suppress tasks that have already been scheduled.
+#   0: Disable the futureTasks filter.
 
 if [ $TODOTXT_PLAIN -eq 0 ]; then
     # Note: Highlightings that set the background color (\\033[4...) must have
