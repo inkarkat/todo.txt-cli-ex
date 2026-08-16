@@ -23,22 +23,20 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) NR PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
+    echo "    $(basename $0) NR [NR ...] PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
     echo "      Replaces all instances of (sed-style) PATTERN with REPLACEMENT"
-    echo "      on line NR."
+    echo "      on line(s) NR."
     echo ""
     exit
 }
 
 shopt -s extglob
-errmsg="usage: $TODO_SH $(basename $0) NR PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
-item=$1; shift
-
-getTodo "$item"
-# Get task without potential priority, the "replace" command will maintain the
-# priority.
-todo=${todo#(?) }
-newtodo=$todo
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] PATTERN REPLACEMENT [PATTERN REPLACEMENT ...]"
+items=
+while [[ "$1" =~ ^[,0-9]+$ ]]
+do
+    items+=" $1"; shift
+done
 
 replace()
 {
@@ -72,14 +70,30 @@ else
     done
 fi
 
-for ((i = 0; i < ${#patterns[@]}; i++))
+didReplace=
+typeset -a tasksWithoutReplacements=()
+for item in ${items//,/ }
 do
-    replace "${patterns[$i]}" "${replacements[$i]}"
-done
+    getTodo "$item"
+    # Get task without potential priority, the "replace" command will maintain the
+    # priority.
+    todo=${todo#(?) }
+    newtodo=$todo
 
-[ -n "$newtodo" ] || die "TODO: Replacement would create empty task: $item $todo"
-if [ "$newtodo" = "$todo" ]; then
-    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
+    for ((i = 0; i < ${#patterns[@]}; i++))
+    do
+        replace "${patterns[$i]}" "${replacements[$i]}"
+    done
+
+    [ -n "$newtodo" ] || die "TODO: Replacement would create empty task: $item $todo"
+    if [ "$newtodo" = "$todo" ]; then
+        tasksWithoutReplacements+=("$item $todo")
+    else
+        didReplace=t
+        "$TODO_FULL_SH" command replace $item "$newtodo"
+    fi
+done
+if [ ! "$didReplace" ]; then
+    [ $TODOTXT_VERBOSE -gt 0 ] && printf '%s\n' "${tasksWithoutReplacements[@]}"
     IFS=,; die "TODO: No replacement done for ${patterns[*]}"
 fi
-"$TODO_FULL_SH" command replace $item "$newtodo"
