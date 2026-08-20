@@ -54,7 +54,7 @@ trap 'cleanup' EXIT
 
 isHard=
 if [ "$1" = '--hard' ]; then
-    isHard='true'
+    isHard=t
     shift
 fi
 

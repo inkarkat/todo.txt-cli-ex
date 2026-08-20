@@ -171,12 +171,12 @@ do
     items+=" $1"; shift
 done
 if [ "$items" ]; then
-    [ "$1" = 'zap' ] && { isZap='true'; shift; }
+    [ "$1" = 'zap' ] && { isZap=t; shift; }
     date=$*
 else
-    [ "$1" = 'zap' ] && { isZap='true'; shift; }
+    [ "$1" = 'zap' ] && { isZap=t; shift; }
     [[ "$1" =~ ^[,0-9]+$ ]] || { date=$1; shift; }
-    [ "$1" = 'zap' ] && { isZap='true'; shift; }
+    [ "$1" = 'zap' ] && { isZap=t; shift; }
     items=$*
 fi
 [ "$items" ] || die "$errmsg"

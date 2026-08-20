@@ -55,7 +55,7 @@ errmsg="usage: $TODO_SH $(basename $0) [trash] NR [NR ...] [COMMENT]"
 
 isTrashInstead=
 if [ "$1" = 'trash' ]; then
-    isTrashInstead='true'
+    isTrashInstead=t
     shift
 fi
 
@@ -93,7 +93,7 @@ do
         if [ "${todo:0:2}" != 'X ' ]; then
             # The task may have already been trashed by another recursion level.
             # Prevent the trash error message in such a case.
-            RECURSIVE_DO='true' "$TODO_FULL_SH" trash $item || exit $?
+            RECURSIVE_DO=true "$TODO_FULL_SH" trash $item || exit $?
         fi
     elif [ "${todo:0:2}" = 'X ' ]; then
         die "TODO: $item is already marked as trashed."
@@ -131,7 +131,7 @@ do
 
                 # Test for already done tasks to avoid endless loop when tasks
                 # are cross-linked or tasks form a closed graph.
-                [ "${todo:0:2}" = 'x ' ] || RECURSIVE_DO='true' "$TODO_FULL_SH" do $linkedItem "$@"
+                [ "${todo:0:2}" = 'x ' ] || RECURSIVE_DO=true "$TODO_FULL_SH" do $linkedItem "$@"
             )
         done
     fi
@@ -153,7 +153,7 @@ do
 
                     # Test for already trashed tasks to avoid endless loop when tasks
                     # are cross-killed or tasks form a closed graph.
-                    [ "${todo:0:2}" = 'X ' ] || RECURSIVE_DO='true' "$TODO_FULL_SH" trash $killedItem "$@"
+                    [ "${todo:0:2}" = 'X ' ] || RECURSIVE_DO=true "$TODO_FULL_SH" trash $killedItem "$@"
                 )
             done
         fi

@@ -60,7 +60,7 @@ do
             let invalidDependentTaskCnt+=1
         fi
         blocker=$deptodo
-        isTaskDependency='true'
+        isTaskDependency=t
     else
         isTaskDependency=
     fi

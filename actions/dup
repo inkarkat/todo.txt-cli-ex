@@ -53,7 +53,7 @@ case "$1" in
                 shift
                 shift
                 if [ "$subaction" = 'trash' -a "$1" = '--hard' ]; then
-                    isHard='true'
+                    isHard=t
                     shift
                 fi
 

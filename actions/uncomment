@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2024 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -36,7 +36,7 @@ errmsg="usage: $TODO_SH $(basename $0) [-q] NR"
 
 isSilentAndQuery=
 if [ "$1" = '-q' ]; then
-    isSilentAndQuery='true'
+    isSilentAndQuery=t
     shift
 fi
 item=$1; shift
