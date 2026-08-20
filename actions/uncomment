@@ -49,7 +49,7 @@ if [ "$isSilentAndQuery" ]; then
     comment=${todo#*${TODOTXT_COMMENT_SYMBOL}}
     while true
     do
-        if [ "$comment" ]; then
+        if [ -n "$comment" ]; then
             read -p "Remove comment \"${comment}\", or disarm it by replacing \"${TODOTXT_COMMENT_SYMBOL// /}\" with \"${TODOTXT_DISARMED_COMMENT_SYMBOL// /}\"? (y/n/d) " answer
         else
             read -p "Remove empty comment? (y/n) " answer
@@ -66,7 +66,7 @@ if [ "$isSilentAndQuery" ]; then
     done
 fi
 
-[ "$newtodo" ] || die "TODO: Removal of comment would create empty task."
+[ -n "$newtodo" ] || die "TODO: Removal of comment would create empty task."
 
 if [ "$newtodo" = "$todo" ]; then
     [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
