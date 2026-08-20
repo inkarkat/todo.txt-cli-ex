@@ -40,6 +40,7 @@ if [ "$1" = '-q' ]; then
     shift
 fi
 item=$1; shift
+[ $# -eq 0 ] || die "$errmsg"
 
 getTodo "$item"
 newtodo=${todo%%${TODOTXT_COMMENT_SYMBOL}*}
