@@ -52,14 +52,16 @@ if [ "$isSilentAndQuery" ]; then
         if [ -n "$comment" ]; then
             read -p "Remove comment \"${comment}\", or disarm it by replacing \"${TODOTXT_COMMENT_SYMBOL// /}\" with \"${TODOTXT_DISARMED_COMMENT_SYMBOL// /}\"? (y/n/d) " answer
         else
-            read -p "Remove empty comment? (y/n) " answer
+            confirm 'Remove empty comment' \
+                && break \
+                || exit 4
         fi
 
         if [ "$answer" = 'd' ]; then
             newtodo=${todo//${TODOTXT_COMMENT_SYMBOL}/${TODOTXT_DISARMED_COMMENT_SYMBOL}}
             break
         elif [ "$answer" = 'n' ]; then
-            exit 0
+            exit 4
         elif [ "$answer" = 'y' ]; then
             break
         fi

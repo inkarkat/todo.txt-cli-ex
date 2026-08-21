@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2013-2024 Ingo Karkat
+# COPYRIGHT: (C) 2013-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -69,23 +69,19 @@ if [ $# -eq 1 ]; then
 fi
 
 
-answer=y
 if  [ $TODOTXT_FORCE = 0 ]; then
     affectedLines=$(cat "$FILE" | sed -n "${replacements[@]/%g/gp}")
     if [ "$affectedLines" ]; then
         echo "$(getPrefix "$FILE"): Affected lines:"
         echo "$affectedLines"
-        read -p "Make those replacements? (y/n) " answer
+        confirm 'Make those replacements' || exit 4
     else
         die "$(getPrefix "$FILE"): The pattern does not match in any line."
     fi
 fi
-if [ "$answer" = 'y' ]; then
-    sed -i.bak "${replacements[@]}" "$FILE" || die $?
-    if [ $TODOTXT_VERBOSE -gt 0 ]; then
-        lineCnt=$(echo "$affectedLines" | wc -l)
-        echo "$(getPrefix "$FILE"): $lineCnt tasks updated."
-    fi
-else
-    exit 1
+
+sed -i.bak "${replacements[@]}" "$FILE" || die $?
+if [ $TODOTXT_VERBOSE -gt 0 ]; then
+    lineCnt=$(echo "$affectedLines" | wc -l)
+    echo "$(getPrefix "$FILE"): $lineCnt tasks updated."
 fi

@@ -15,7 +15,7 @@
 #   Based on the edit action by Matt Brubeck:
 #   https://github.com/mbrubeck/todo.txt-cli/blob/master/todo.actions.d/edit
 #
-# COPYRIGHT: (C) 2010-2024 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -100,21 +100,19 @@ fi
 
 newLinesNum=$(sed '1d' "$TMPEDIT" | grep -cve '^\s*$')
 if [ $newLinesNum -ge 1 ]; then
-    answer=y
-    if  [ $TODOTXT_FORCE = 0 ]; then
+    if [ $TODOTXT_FORCE = 0 ]; then
         echo
         if [ $newLinesNum -eq 1 ]; then
-            read -p "There is one additional line. Add it as another task? (y/n) " answer
+            confirm 'There is one additional line. Add it as another task'
         else
-            read -p "There are $newLinesNum additional lines. Add them as individual tasks? (y/n) " answer
-        fi
+            confirm "There are $newLinesNum additional lines. Add them as individual tasks"
+        fi || exit 4
     fi
-    if [ "$answer" = "y" ]; then
-        IFS=$'\n'
-        sed -e '1d' -e '/^[ \t]*$/d' "$TMPEDIT" | while IFS=$'\n' read newtask
-        do
-            # -T: The additional lines should be added as-is, without TODOTXT_DATE_ON_ADD.
-            "$TODO_FULL_SH" -T command add "$newtask"
-        done
-    fi
+
+    IFS=$'\n'
+    sed -e '1d' -e '/^[ \t]*$/d' "$TMPEDIT" | while IFS=$'\n' read newtask
+    do
+        # -T: The additional lines should be added as-is, without TODOTXT_DATE_ON_ADD.
+        "$TODO_FULL_SH" -T command add "$newtask"
+    done
 fi
