@@ -23,13 +23,13 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-    echo "    $(basename $0) [-q] NR"
-    echo "      Removes the done / trashed comment from task on line NR."
+    echo "    $(basename $0) [-q] NR [REPLACEMENT-COMMENT]"
+    echo "      Removes / replaces the done / trashed comment from task on line NR."
     echo ""
     exit
 }
 
-errmsg="usage: $TODO_SH $(basename $0) [-q] NR"
+errmsg="usage: $TODO_SH $(basename $0) [-q] NR [REPLACEMENT-COMMENT]"
 
 : ${TODOTXT_COMMENT_SYMBOL:= => }
 : ${TODOTXT_DISARMED_COMMENT_SYMBOL:=; }
@@ -40,16 +40,15 @@ if [ "$1" = '-q' ]; then
     shift
 fi
 item=$1; shift
-[ $# -eq 0 ] || die "$errmsg"
 
 getTodo "$item"
-newtodo=${todo%%${TODOTXT_COMMENT_SYMBOL}*}
+newtodo="${todo%%${TODOTXT_COMMENT_SYMBOL}*}"
 if [ "$newtodo" = "$todo" ]; then
     [ "$isSilentAndQuery" ] && exit 0
 
     [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
     die "TODO: Task $item does not contain a comment."
-elif [ -z "$newtodo" ]; then
+elif [ -z "${newtodo}$*" ]; then
     die "TODO: Removal of comment would create empty task."
 fi
 
@@ -57,20 +56,23 @@ if [ "$isSilentAndQuery" ]; then
     comment=${todo#*${TODOTXT_COMMENT_SYMBOL}}
     while :
     do
-        if [ -n "$comment" ]; then
+        if [ -n "$*" ]; then
+            confirm "Replace comment \"${comment}\" with \"$*\""
+        elif [ -n "$comment" ]; then
             answer="$(getKeyFromUser "Remove comment \"${comment}\", or disarm it by replacing \"${TODOTXT_COMMENT_SYMBOL// /}\" with \"${TODOTXT_DISARMED_COMMENT_SYMBOL// /}\"? (y/n/d) ")"
+            case "$answer" in
+                d)  newtodo=${todo//${TODOTXT_COMMENT_SYMBOL}/${TODOTXT_DISARMED_COMMENT_SYMBOL}};;
+                n)  false;;
+                y)  ;;
+                *)  continue;;
+            esac
         else
-            confirm 'Remove empty comment' \
-                && break \
-                || exit 4
-        fi
-
-        case "$answer" in
-            d)  newtodo=${todo//${TODOTXT_COMMENT_SYMBOL}/${TODOTXT_DISARMED_COMMENT_SYMBOL}}; break;;
-            n)  exit 4;;
-            y)  break;;
-        esac
+            confirm 'Remove empty comment'
+        fi \
+            || exit 4
+        break
     done
 fi
 
+[ $# -eq 0 ] || newtodo+="${TODOTXT_COMMENT_SYMBOL}$*"
 "$TODO_FULL_SH" command replace $item "$newtodo"
