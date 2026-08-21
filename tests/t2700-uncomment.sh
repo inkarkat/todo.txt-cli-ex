@@ -65,7 +65,7 @@ x 2011-08-10 2011-08-08 mow the lawn => too tired
 x 2011-08-10 2011-08-08 pick some flowers => sunny day
 x 2011-08-10 2011-08-08 wash the car => very dirty
 EOF
-test_todo_session 'uncomment -q queries what to do' <<'EOF'
+test_todo_session 'uncomment -q queries what to do (unless forced)' <<'EOF'
 >>> todo.sh -p -x lsdo
 1 x 2011-08-10 2011-08-08 mow the lawn => too tired
 2 x 2011-08-10 2011-08-08 pick some flowers => sunny day
@@ -88,6 +88,11 @@ TODO: Replaced task with:
 3 x 2011-08-10 2011-08-08 wash the car => very dirty
 TODO: Replaced task with:
 3 x 2011-08-10 2011-08-08 wash the car; very dirty
+
+>>> todo.sh -x -f uncomment -q 2
+2 x 2011-08-10 2011-08-08 pick some flowers => sunny day
+TODO: Replaced task with:
+2 x 2011-08-10 2011-08-08 pick some flowers
 EOF
 
 cat > todo.txt <<EOF
