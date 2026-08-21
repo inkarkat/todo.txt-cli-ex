@@ -74,5 +74,5 @@ if [ "$isSilentAndQuery" ]; then
     done
 fi
 
-[ $# -eq 0 ] || newtodo+="${TODOTXT_COMMENT_SYMBOL}$*"
+[ $# -eq 0 ] || newtodo+="${TODOTXT_UNCOMMENT_REPLACEMENT_COMMENT_SYMBOL-$TODOTXT_COMMENT_SYMBOL}$*"
 "$TODO_FULL_SH" command replace $item "$newtodo"
