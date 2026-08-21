@@ -85,7 +85,7 @@ getTodo "$item"
 # priority.
 todo=${todo#(?) }
 
-recur=$*; shift
+recur="$1"; shift
 recurType=
 command="replace $item"
 isApply=
@@ -150,5 +150,5 @@ fi
 if [ "$isApply" -a -n "$(listCustomActions uncomment)" ]; then
     # Figure out the line of what we just added, and "uncomment" it.
     item=$(sed -n '$ =' "$TODO_FILE") || exit $?
-    "$TODO_FULL_SH" uncomment -q "$item"
+    "$TODO_FULL_SH" uncomment -q "$item" "$@"
 fi
