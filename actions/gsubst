@@ -49,9 +49,9 @@ FILE="$TODO_FILE"
 pattern=
 input=
 if [[ $# -lt 2 && $TODOTXT_FORCE = 0 ]]; then
-    IFS=$'\n' read -p "Pattern: " pattern
-    [ "$pattern" ] || exit 1
-    IFS=$'\n' read -p "Replacement: " input
+    readinput 'Pattern' || exit 1
+    pattern="$input"
+    readinput 'Replacement'
     buildReplacement
 fi
 

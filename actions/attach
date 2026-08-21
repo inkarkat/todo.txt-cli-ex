@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2024 Ingo Karkat
+# COPYRIGHT: (C) 2024-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -64,9 +64,10 @@ addAttachment()
         return 1
     elif [ -e "${dirspec:?}/${filename:?}" ]; then
         printf >&2 'TODO: Attachment %s already exists in %s. Rename or press enter to skip.\n' "$filename" "$dirspec"
-        < /dev/tty read -p "Attachment name: " -e -r -i "$filename" newname
-        [ -n "$newname" -a "$newname" != "$filename" ] || return 4
-        addAttachment "$newname" "$@"; return $?
+        < /dev/tty readinput 'Attachment name' -i "$filename" \
+            && [ "$input" != "$filename" ] \
+            || return 4
+        addAttachment "$input" "$@"; return $?
     fi
 
     "$@" "${dirspec:?}/${filename:?}" || return $?
@@ -80,9 +81,10 @@ do
         # Need to first collect stdin; we can only query for the filename after the
         # source has been exhausted and we're reading from the terminal again.
         cat > "$placeholderForStdin" || exit $?
-        < /dev/tty read -p "Attachment name: " -e -r name
-        if [ -n "$name" ] && [[ ! "$name" =~ / ]]; then
-            addAttachment "$name" mv -- "$placeholderForStdin" || status=$?
+        if < /dev/tty readinput 'Attachment name' \
+            && [[ ! "$input" =~ / ]]
+        then
+            addAttachment "$input" mv -- "$placeholderForStdin" || status=$?
         else
             status=4
         fi
