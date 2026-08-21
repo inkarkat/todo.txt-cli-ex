@@ -44,8 +44,16 @@ item=$1; shift
 
 getTodo "$item"
 newtodo=${todo%%${TODOTXT_COMMENT_SYMBOL}*}
+if [ "$newtodo" = "$todo" ]; then
+    [ "$isSilentAndQuery" ] && exit 0
+
+    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
+    die "TODO: Task $item does not contain a comment."
+elif [ -z "$newtodo" ]; then
+    die "TODO: Removal of comment would create empty task."
+fi
+
 if [ "$isSilentAndQuery" ]; then
-    [ "$newtodo" = "$todo" ] && exit 0
     comment=${todo#*${TODOTXT_COMMENT_SYMBOL}}
     while :
     do
@@ -65,10 +73,4 @@ if [ "$isSilentAndQuery" ]; then
     done
 fi
 
-[ -n "$newtodo" ] || die "TODO: Removal of comment would create empty task."
-
-if [ "$newtodo" = "$todo" ]; then
-    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
-    die "TODO: Task $item does not contain a comment."
-fi
 "$TODO_FULL_SH" command replace $item "$newtodo"
