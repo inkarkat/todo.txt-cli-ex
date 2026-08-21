@@ -40,35 +40,37 @@ if [ "$1" = '-q' ]; then
     shift
 fi
 item=$1; shift
+[ $# -eq 0 ] || die "$errmsg"
 
 getTodo "$item"
 newtodo=${todo%%${TODOTXT_COMMENT_SYMBOL}*}
+if [ "$newtodo" = "$todo" ]; then
+    [ "$isSilentAndQuery" ] && exit 0
+
+    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
+    die "TODO: Task $item does not contain a comment."
+elif [ -z "$newtodo" ]; then
+    die "TODO: Removal of comment would create empty task."
+fi
+
 if [ "$isSilentAndQuery" ]; then
-    [ "$newtodo" = "$todo" ] && exit 0
     comment=${todo#*${TODOTXT_COMMENT_SYMBOL}}
-    while true
+    while :
     do
-        if [ "$comment" ]; then
-            read -p "Remove comment \"${comment}\", or disarm it by replacing \"${TODOTXT_COMMENT_SYMBOL// /}\" with \"${TODOTXT_DISARMED_COMMENT_SYMBOL// /}\"? (y/n/d) " answer
+        if [ -n "$comment" ]; then
+            answer="$(getKeyFromUser "Remove comment \"${comment}\", or disarm it by replacing \"${TODOTXT_COMMENT_SYMBOL// /}\" with \"${TODOTXT_DISARMED_COMMENT_SYMBOL// /}\"? (y/n/d) ")"
         else
-            read -p "Remove empty comment? (y/n) " answer
+            confirm 'Remove empty comment' \
+                && break \
+                || exit 4
         fi
 
-        if [ "$answer" = 'd' ]; then
-            newtodo=${todo//${TODOTXT_COMMENT_SYMBOL}/${TODOTXT_DISARMED_COMMENT_SYMBOL}}
-            break
-        elif [ "$answer" = 'n' ]; then
-            exit 0
-        elif [ "$answer" = 'y' ]; then
-            break
-        fi
+        case "$answer" in
+            d)  newtodo=${todo//${TODOTXT_COMMENT_SYMBOL}/${TODOTXT_DISARMED_COMMENT_SYMBOL}}; break;;
+            n)  exit 4;;
+            y)  break;;
+        esac
     done
 fi
 
-[ "$newtodo" ] || die "TODO: Removal of comment would create empty task."
-
-if [ "$newtodo" = "$todo" ]; then
-    [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
-    die "TODO: Task $item does not contain a comment."
-fi
 "$TODO_FULL_SH" command replace $item "$newtodo"
