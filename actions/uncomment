@@ -50,7 +50,7 @@ if [ "$isSilentAndQuery" ]; then
     while true
     do
         if [ -n "$comment" ]; then
-            read -p "Remove comment \"${comment}\", or disarm it by replacing \"${TODOTXT_COMMENT_SYMBOL// /}\" with \"${TODOTXT_DISARMED_COMMENT_SYMBOL// /}\"? (y/n/d) " answer
+            answer="$(getKeyFromUser "Remove comment \"${comment}\", or disarm it by replacing \"${TODOTXT_COMMENT_SYMBOL// /}\" with \"${TODOTXT_DISARMED_COMMENT_SYMBOL// /}\"? (y/n/d) ")"
         else
             confirm 'Remove empty comment' \
                 && break \

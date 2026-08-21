@@ -83,7 +83,7 @@ else
     do
         echo
         echo "$task"
-        read -p "Add task? ([o]nly this/[y]es/[n]o/[q]uit) " answer
+        answer="$(getKeyFromUser "Add task? ([o]nly this/[y]es/[n]o/[q]uit) ")"
         case $answer in
             o)  addTask "$task"
                 break
