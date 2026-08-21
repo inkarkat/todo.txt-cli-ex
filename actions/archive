@@ -81,10 +81,8 @@ confirmVirtualItems()
         getTodo "$item"
         if [ "${todo:0:2}" != "$mark " ]; then
             echo "$todo"
-            read -p "Should this task really be $what? (y/n) " answer
-            if [ "$answer" != "y" ]; then
-                continue
-            fi
+            confirm "Should this task really be $what" \
+                || continue
         fi
         confirmedItems+="${confirmedItems:+$'\n'}${item}"
     done

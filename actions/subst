@@ -56,11 +56,10 @@ typeset -a patterns=()
 typeset -a replacements=()
 if [ $# -lt 2 ]; then
     [ $TODOTXT_FORCE = 0 ] || die "$errmsg"
-    IFS=$'\n' read -p "Pattern: " pattern
-    [ -n "$pattern" ] || exit 1
-    IFS=$'\n' read -p "Replacement: " replacement
-    patterns+=("$pattern")
-    replacements+=("$replacement")
+    readinput 'Pattern' || exit 1
+    patterns+=("$input")
+    readinput 'Replacement'
+    replacements+=("$input")
 else
     while [[ $# -ge 2 ]]
     do
