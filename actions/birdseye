@@ -43,7 +43,7 @@ if [ $# -gt 0 ]; then
     # Need to filter both active and archived tasks files and inject those into birdseye.py.
     tempTodoFilespec="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TMPDIR:-/tmp}/$(basename -- "$0").$$$RANDOM")"
     tempDoneFilespec="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TMPDIR:-/tmp}/$(basename -- "$0").$$$RANDOM")"
-    ! ${DEBUG:+debugenabled --invert-match --} ${DEBUG:-:} || trap 'rm -f -- "$tempTodoFilespec" "$tempDoneFilespec" 2>/dev/null' EXIT
+    trap '${DEBUG:+debugcommand --} rm -f -- "$tempTodoFilespec" "$tempDoneFilespec" 2>/dev/null' EXIT
     eval "$(filtercommand 'cat "$TODO_FILE"' '' "$@")" > "$tempTodoFilespec"
     eval "$(filtercommand 'cat "$DONE_FILE"' '' "$@")" > "$tempDoneFilespec"
     export TODO_FILE="$tempTodoFilespec"

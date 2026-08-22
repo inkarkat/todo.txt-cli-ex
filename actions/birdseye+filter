@@ -60,5 +60,5 @@ birdseyeCommand="$(listCustomActions birdseye)"
 if [ -z "$birdseyeCommand" ]; then
     die 'ERROR: birdseye action not found'
 fi
-! ${DEBUG:+debugenabled --invert-match --} ${DEBUG:-:} || trap 'rm "$TMPTODO" "$TMPDONE" 2>/dev/null' EXIT
+trap '${DEBUG:+debugcommand --} rm -f -- "$TMPTODO" "$TMPDONE" 2>/dev/null' EXIT
 "$birdseyeCommand" birdseye "${which}-${ITEM}"
