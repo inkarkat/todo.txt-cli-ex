@@ -31,6 +31,8 @@ shift
     exit
 }
 
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] | [TERM...]"
+
 : ${TODOTXT_BROWSER_URL_SCHEMES:='\(http\|https\|file\|ftp\)://'}
 : ${TODOTXT_BROWSER_URL_CHARACTERS:='[^][ ()<>",;]\+'}
 
@@ -50,7 +52,8 @@ do
     readarray -t taskUrls < <(echo "$todo" | grep -o "${TODOTXT_BROWSER_URL_SCHEMES}${TODOTXT_BROWSER_URL_CHARACTERS}")
     if [ ${#taskUrls[@]} -eq 0 ]; then
         [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
-        echo "TODO: No web resource URL found in task $item."
+        echo "TODO: No (web resource) URL found in task $item."
+        continue
     fi
 
     urls+=("${taskUrls[@]}")

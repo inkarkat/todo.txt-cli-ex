@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2013-2024 Ingo Karkat
+# COPYRIGHT: (C) 2013-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -32,6 +32,8 @@ shift
     echo ""
     exit
 }
+
+errmsg="usage: $TODO_SH $(basename $0) NR [NR ...] | [TERM...]"
 
 : ${TODOTXT_BROWSER_URL_SCHEMES:='\(http\|https\|file\|ftp\)://'}
 : ${TODOTXT_BROWSER_URL_CHARACTERS:='[^ ()<>"]\+'}
@@ -60,6 +62,7 @@ do
     if [ ${#taskUrls[@]} -eq 0 -a ${#linkMarkers[@]} -eq 0 ]; then
         [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $todo"
         echo "TODO: No URL found in task $item."
+        continue
     fi
 
     IFS=$'\n'
