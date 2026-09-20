@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-[ "$1" = "usage" ] && exit
+[ "$1" = "usage" ] && exec "$TODO_FULL_SH" help lsp
 
 shift
 exec "$TODO_FULL_SH" lsp "$@"

@@ -11,7 +11,7 @@
 #
 # REMARKS:
 #
-# COPYRIGHT: (C) 2010-2012 Ingo Karkat
+# COPYRIGHT: (C) 2010-2026 Ingo Karkat
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License.
 #   See http://www.gnu.org/copyleft/gpl.txt
@@ -24,6 +24,7 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) [TERM...]"
+    echo "    lsblockers [TERM...]"
     echo "      Lists all the wait reasons (w:... markers) in open tasks."
     echo "      If TERM specified, considers only tasks that contain TERM(s)."
     echo ""

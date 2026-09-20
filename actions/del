@@ -24,6 +24,7 @@ shift
 
 [ "$action" = "usage" ] && {
     echo "    $(basename $0) NR [NR ...] [TERM]"
+    echo "    rm NR [NR ...] [TERM]"
     echo "      Deletes the task(s) on line NR in todo.txt."
     echo "      Task(s) that were dependent on NR have that blocker removed."
     echo "      If TERM specified, deletes only TERM from the task."
