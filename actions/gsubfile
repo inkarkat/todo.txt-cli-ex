@@ -69,15 +69,13 @@ if [ $# -eq 1 ]; then
 fi
 
 
-if  [ $TODOTXT_FORCE = 0 ]; then
-    affectedLines=$(cat "$FILE" | sed -n "${replacements[@]/%g/gp}")
-    if [ "$affectedLines" ]; then
-        echo "$(getPrefix "$FILE"): Affected lines:"
-        echo "$affectedLines"
-        confirm 'Make those replacements' || exit 4
-    else
-        die "$(getPrefix "$FILE"): The pattern does not match in any line."
-    fi
+affectedLines=$(sed -n "${replacements[@]/%g/gp}" "$FILE")
+[ -n "$affectedLines" ] \
+    || die "$(getPrefix "$FILE"): The pattern does not match in any line."
+if [ $TODOTXT_FORCE = 0 ]; then
+    echo "$(getPrefix "$FILE"): Affected lines:"
+    echo "$affectedLines"
+    confirm 'Make those replacements' || exit 4
 fi
 
 [ ${#replacements[@]} -gt 0 ] || die "$errmsg"
