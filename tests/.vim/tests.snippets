@@ -1,14 +1,14 @@
 snippet tasks
-	cat > todo.txt <<EOF
+	cat > todo.txt <<'EOF'
 	${1:tasks}
 	EOF
 	${2}
 snippet session
-	test_todo_session '${1:test-name}' <<EOF
-	>>> todo.sh ${2:action}
-	${3:output}
+	test_todo_session '${1:test-name}' <<${2:'}EOF$2
+	>>> todo.sh ${3:action}
+	${4:output}
 	EOF
-	${4}
+	${5}
 snippet step
 	>>> todo.sh ${1:action}
 	${2:output}
