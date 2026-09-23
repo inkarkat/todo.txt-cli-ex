@@ -68,6 +68,7 @@ if [ $# -eq 1 ]; then
     [ -f "$FILE" ] || die "TODO: File $FILE does not exist."
 fi
 
+[ ${#replacements[@]} -gt 0 ] || die "$errmsg"
 
 affectedLines=$(sed -n "${replacements[@]}" -e T -e p "$FILE")
 [ -n "$affectedLines" ] \
@@ -78,7 +79,6 @@ if [ $TODOTXT_FORCE = 0 ]; then
     confirm 'Make those replacements' || exit 4
 fi
 
-[ ${#replacements[@]} -gt 0 ] || die "$errmsg"
 sed -i.bak "${replacements[@]}" "$FILE" || die $?
 if [ $TODOTXT_VERBOSE -gt 0 ]; then
     lineCnt=$(echo "$affectedLines" | wc -l)

@@ -13,6 +13,12 @@ cat > todo.txt <<EOF
 2011-10-10 clean the bike
 EOF
 
+test_todo_session 'usage help on no arguments' <<'EOF'
+>>> todo.sh -f gsubfile
+usage: todo.sh gsubfile PATTERN REPLACEMENT [PATTERN REPLACEMENT ...] [SRC]
+=== 1
+EOF
+
 test_todo_session 'no matches' <<'EOF'
 >>> todo.sh gsubfile doesNotExist something
 TODO: The pattern does not match in any line.
