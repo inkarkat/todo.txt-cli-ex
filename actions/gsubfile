@@ -68,16 +68,15 @@ if [ $# -eq 1 ]; then
     [ -f "$FILE" ] || die "TODO: File $FILE does not exist."
 fi
 
+[ ${#replacements[@]} -gt 0 ] || die "$errmsg"
 
-if  [ $TODOTXT_FORCE = 0 ]; then
-    affectedLines=$(cat "$FILE" | sed -n "${replacements[@]/%g/gp}")
-    if [ "$affectedLines" ]; then
-        echo "$(getPrefix "$FILE"): Affected lines:"
-        echo "$affectedLines"
-        confirm 'Make those replacements' || exit 4
-    else
-        die "$(getPrefix "$FILE"): The pattern does not match in any line."
-    fi
+affectedLines=$(sed -n "${replacements[@]}" -e T -e p "$FILE")
+[ -n "$affectedLines" ] \
+    || die "$(getPrefix "$FILE"): The pattern does not match in any line."
+if [ $TODOTXT_FORCE = 0 ]; then
+    echo "$(getPrefix "$FILE"): Affected lines:"
+    echo "$affectedLines"
+    confirm 'Make those replacements' || exit 4
 fi
 
 sed -i.bak "${replacements[@]}" "$FILE" || die $?
