@@ -24,7 +24,7 @@ TODO: The pattern does not match in any line.
 EOF
 
 test_todo_session 'global substitutions' <<'EOF'
->>> yes | todo.sh gsubfile the my
+>>> printf y | todo.sh gsubfile the my
 TODO: Affected lines:
 2011-08-08 mow my lawn
 2011-10-10 clean my bike
@@ -38,7 +38,7 @@ TODO: 2 tasks updated.
 --
 TODO: 3 of 3 tasks shown
 
->>> yes | todo.sh gsubfile '\b[[:lower:]]' '\u&'
+>>> printf y | todo.sh gsubfile '\b[[:lower:]]' '\u&'
 TODO: Affected lines:
 2011-08-08 Mow My Lawn
 2011-09-09 Watch Tv
@@ -71,7 +71,7 @@ cat > done.txt <<EOF
 EOF
 
 test_todo_session 'global substitutions in different file' <<'EOF'
->>> yes | todo.sh gsubfile go do 'for a' the done.txt
+>>> printf y | todo.sh gsubfile go do 'for a' the done.txt
 DONE: Affected lines:
 2011-08-08 do shopping
 2011-08-09 do the walk
