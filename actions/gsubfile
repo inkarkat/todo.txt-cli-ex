@@ -69,7 +69,7 @@ if [ $# -eq 1 ]; then
 fi
 
 
-affectedLines=$(sed -n "${replacements[@]/%g/gp}" "$FILE")
+affectedLines=$(sed -n "${replacements[@]}" -e T -e p "$FILE")
 [ -n "$affectedLines" ] \
     || die "$(getPrefix "$FILE"): The pattern does not match in any line."
 if [ $TODOTXT_FORCE = 0 ]; then
