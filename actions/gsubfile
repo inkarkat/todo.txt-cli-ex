@@ -80,6 +80,7 @@ if  [ $TODOTXT_FORCE = 0 ]; then
     fi
 fi
 
+[ ${#replacements[@]} -gt 0 ] || die "$errmsg"
 sed -i.bak "${replacements[@]}" "$FILE" || die $?
 if [ $TODOTXT_VERBOSE -gt 0 ]; then
     lineCnt=$(echo "$affectedLines" | wc -l)
