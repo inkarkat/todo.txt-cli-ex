@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+###############################################################################
+##
+# FILE:         gdelfile
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 23-Sep-2026
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2026 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)gdelfile	$Id$	todo.txt-cli-ex
+###############################################################################
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) TERM [...] [SRC]"
+    echo "      Delete all instances of TERM from ALL lines in todo.txt or SRC file."
+    echo ""
+    exit
+}
+
+errmsg="usage: $TODO_SH $(basename $0) TERM [...] [SRC]"
+
+isMatchInTodoFile()
+{
+    local pattern="${1:?}"; shift
+    [ -z "$(sed -n -e "/${pattern//\//\\/}/p" -- "$TODO_FILE" 2>/dev/null)" ]
+}
+
+typeset -a fileArg=()
+if [ $# -gt 0 -a -f "$TODO_DIR/${!#}" ]; then
+    fileArg=("${!#}")
+    [ $# -eq 0 ] || set -- "${@:1:$(($#-1))}"
+elif [ $# -ge 2 ] && isMatchInTodoFile "${!#}"; then    # gsubfile can simply consume PATTERN REPLACEMENT pairs, but gdelfile needs to check whether the last argument is a SRC or a TERM. Heuristic is if TERM doesn't match in todo.txt, then it's meant to be a SRC file.
+    die "TODO: File ${TODO_DIR}/${!#} does not exist."
+fi
+
+if [[ $# -eq 0 && $TODOTXT_FORCE = 0 ]]; then
+    readinput 'Term' || exit 1
+    set -- "$input"
+fi
+[ $# -gt 0 ] || die "$errmsg"
+
+typeset -a substitutions=()
+for term
+do
+    # Taken from todo.sh's "del" implementation.
+    substitutions+=("^\((.) \)\{0,1\} *$term *" '\1/')
+    substitutions+=(" *$term *\$" '')
+    substitutions+=("  *$term *" ' ')
+    substitutions+=(" *$term  *" ' ')
+    substitutions+=("$term" '')
+done
+
+TODOTXT_GSUBFILE_WHAT=deletions \
+    exec "$TODO_FULL_SH" gsubfile "${substitutions[@]}" "${fileArg[@]}"
