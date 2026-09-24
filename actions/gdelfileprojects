@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+###############################################################################
+##
+# FILE:         gdelfileprojects
+# PRODUCT:      todo.txt-cli-ex
+# AUTHOR:       Ingo Karkat <ingo@karkat.de>
+# DATE CREATED: 24-Sep-2026
+#
+###############################################################################
+# CONTENTS:
+#
+# REMARKS:
+#
+# COPYRIGHT: (C) 2026 Ingo Karkat
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License.
+#   See http://www.gnu.org/copyleft/gpl.txt
+#
+# @(#)gdelfileprojects	$Id$	todo.txt-cli-ex
+###############################################################################
+
+TODOTXT_SIGIL_BEFORE_PATTERN=${TODOTXT_SIGIL_BEFORE_PATTERN:-}    # Allow any other non-whitespace entity before +project and @context; should be an optional match; example: \(w:\)\{0,1\} to allow w:@context.
+[ "$TODOTXT_SIGIL_VALID_PATTERN" = '.*' ] && unset TODOTXT_SIGIL_VALID_PATTERN    # XXX: The default pattern is overly eager.
+TODOTXT_SIGIL_VALID_PATTERN=${TODOTXT_SIGIL_VALID_PATTERN:-[^ ]\\+}    # Limit the valid characters (from the default any non-whitespace sequence) for +project and @context; example: [a-zA-Z]\{3,\} to only allow alphabetic ones that are at least three characters long.
+TODOTXT_SIGIL_AFTER_PATTERN=${TODOTXT_SIGIL_AFTER_PATTERN:-}    # Allow any other non-whitespace entity after +project and @context; should be an optional match; example: )\{0,1\} to allow (with the corresponding TODOTXT_SIGIL_BEFORE_PATTERN) enclosing in parentheses.
+
+: ${TODOTXT_GDELFILE_PROJECTS_SIGIL:=+}
+: ${TODOTXT_GDELFILE_PROJECTS_WHAT:=+projects}
+
+action=$1
+shift
+
+[ "$action" = "usage" ] && {
+    echo "    $(basename $0) [SRC]"
+    echo "      Delete all $TODOTXT_GDELFILE_PROJECTS_WHAT from ALL lines in todo.txt or SRC file."
+    echo ""
+    exit
+}
+
+errmsg="usage: $TODO_SH $(basename $0) [SRC]"
+
+[ $# -le 1 ] || die "$errmsg"
+
+TODOTXT_GDELFILE_WHOLE_WORD=t \
+    exec "$TODO_FULL_SH" gdelfile "${TODOTXT_SIGIL_BEFORE_PATTERN}${TODOTXT_GDELFILE_PROJECTS_SIGIL}${TODOTXT_SIGIL_VALID_PATTERN}${TODOTXT_SIGIL_AFTER_PATTERN}" "$@"

@@ -56,10 +56,12 @@ for term
 do
     # Taken from todo.sh's "del" implementation.
     substitutions+=("^\((.) \)\{0,1\} *$term *" '\1/')
-    substitutions+=(" *$term *\$" '')
+    [ "$TODOTXT_GDELFILE_WHOLE_WORD" ] \
+        && substitutions+=("  *$term *\$" '') \
+        || substitutions+=(" *$term *\$" '')
     substitutions+=("  *$term *" ' ')
     substitutions+=(" *$term  *" ' ')
-    substitutions+=("$term" '')
+    [ "$TODOTXT_GDELFILE_WHOLE_WORD" ] || substitutions+=("$term" '')
 done
 
 TODOTXT_GSUBFILE_WHAT=deletions \
