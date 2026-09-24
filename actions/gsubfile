@@ -32,6 +32,7 @@ shift
 
 errmsg="usage: $TODO_SH $(basename $0) PATTERN REPLACEMENT [PATTERN REPLACEMENT ...] [SRC]"
 
+whatReplacement='deletions'
 typeset -a replacements=()
 buildReplacement()
 {
@@ -43,6 +44,7 @@ buildReplacement()
     # symbol. For example, "|" causes problems when it is contained in pattern
     # (e.g. /\(^\| \)/), and then mistakenly double-escaped.
     replacements+=(-e "s%${pattern//%/\\%}%${input}%g")
+    [ -z "$input" ] || whatReplacement='replacements'
 }
 
 FILE="$TODO_FILE"
@@ -76,7 +78,7 @@ affectedLines=$(sed -n "${replacements[@]}" -e T -e p "$FILE")
 if [ $TODOTXT_FORCE = 0 ]; then
     echo "$(getPrefix "$FILE"): Affected lines:"
     echo "$affectedLines"
-    confirm 'Make those replacements' || exit 4
+    confirm "Make those ${TODOTXT_GSUBFILE_WHAT:-whatReplacement}" || exit 4
 fi
 
 sed -i.bak "${replacements[@]}" "$FILE" || die $?
