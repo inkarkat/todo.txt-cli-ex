@@ -1,4 +1,5 @@
 todo.sh
+todo.cfg
 tests/aggregate-results.sh
 tests/test-lib.sh
 tests/test-results/

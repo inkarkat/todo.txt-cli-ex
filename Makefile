@@ -7,10 +7,13 @@ TESTS = $(wildcard tests/t[0-9][0-9][0-9][0-9]-*.sh)
 # ../todo.txt-cli working copy next to this.
 DEPENDENCY_DIR ?= ../todo.txt-cli
 
-test-copy-deps: todo.sh tests/test-lib.sh tests/aggregate-results.sh
+test-copy-deps: todo.sh todo.cfg tests/test-lib.sh tests/aggregate-results.sh
 
 todo.sh: $(DEPENDENCY_DIR)/todo.sh
 	cp $< .
+
+todo.cfg: $(DEPENDENCY_DIR)/todo.cfg todo-extensions.cfg
+	cat $^ > $@
 
 tests/test-lib.sh: $(DEPENDENCY_DIR)/tests/test-lib.sh
 	cp $< tests/
