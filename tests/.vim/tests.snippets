@@ -4,7 +4,7 @@ snippet tasks
 	EOF
 	${2}
 snippet session
-	test_todo_session '${1:test-name}' <<${2:'}EOF$2
+	test_todo_session '${1:test-name}' <<${2:'}'EOF'$2
 	>>> todo.sh ${3:action}
 	${4:output}
 	EOF
