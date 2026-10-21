@@ -49,7 +49,7 @@ cat > todo.txt <<EOF
 EOF
 
 test_todo_session 'wait marker before +project is also removed' <<'EOF'
->>> TODOTXT_SIGIL_BEFORE_PATTERN='\(w:\)\?' todo.sh -f gdelfileprojects
+>>> TODOTXT_SIGIL_BEFORE_PATTERN='(w:)?' todo.sh -f gdelfileprojects
 TODO: 2 tasks updated.
 
 >>> todo.sh -p command ls

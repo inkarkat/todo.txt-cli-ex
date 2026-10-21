@@ -36,5 +36,6 @@ errmsg="usage: $TODO_SH $(basename $0) [SRC]"
 
 [ $# -le 1 ] || die "$errmsg"
 
+basicProjectsPattern="$(extendedToBasicRegexp "${TODOTXT_SIGIL_BEFORE_PATTERN}[${TODOTXT_GDELFILE_PROJECTS_SIGIL}]${TODOTXT_SIGIL_VALID_PATTERN:?}${TODOTXT_SIGIL_AFTER_PATTERN}")" || exit 3
 TODOTXT_GDELFILE_WHOLE_WORD=t \
-    exec "$TODO_FULL_SH" gdelfile "${TODOTXT_SIGIL_BEFORE_PATTERN}${TODOTXT_GDELFILE_PROJECTS_SIGIL}${TODOTXT_SIGIL_VALID_PATTERN}${TODOTXT_SIGIL_AFTER_PATTERN}" "$@"
+    exec "$TODO_FULL_SH" gdelfile "$basicProjectsPattern" "$@"
