@@ -90,8 +90,7 @@ TODO: 1 marked as done.
 3 2009-02-13 a simple task {2009-02-14} t:2009-02-14 => easily done
 TODO: 3 added.
 TODO: Next scheduled for 2009-02-14, in 1 day
-3 2009-02-13 a simple task {2009-02-14} t:2009-02-14 => easily done
-TODO: Replaced task with:
+TODO: Uncommented task:
 3 2009-02-13 a simple task {2009-02-14} t:2009-02-14 ~> easily done
 
 >>> todo.sh -a -f do 2
@@ -100,8 +99,7 @@ TODO: 2 marked as done.
 4 2009-02-13 count stuff {2009-03-13} t:2009-03-13 => 1 2 3 and 5 6 7 8
 TODO: 4 added.
 TODO: Next scheduled for 2009-03-13, in 28 days
-4 2009-02-13 count stuff {2009-03-13} t:2009-03-13 => 1 2 3 and 5 6 7 8
-TODO: Replaced task with:
+TODO: Uncommented task:
 4 2009-02-13 count stuff {2009-03-13} t:2009-03-13 ~> $(seq 1 3) and `seq 5 8`
 EOF
 

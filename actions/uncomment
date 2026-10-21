@@ -77,4 +77,11 @@ if [ "$isSilentAndQuery" ]; then
 fi
 
 [ $# -eq 0 ] || newtodo+="${TODOTXT_UNCOMMENT_REPLACEMENT_COMMENT_SYMBOL-$TODOTXT_COMMENT_SYMBOL}$*"
-"$TODO_FULL_SH" command replace $item "$newtodo"
+
+input=$newtodo
+cleaninput "for sed"
+sed -i.bak "$item s|^.*|${input}|" "$TODO_FILE" || exit $?
+if [ $TODOTXT_VERBOSE -gt 0 ]; then
+    echo "TODO: Uncommented task:"
+    echo "$item $newtodo"
+fi

@@ -18,8 +18,7 @@ test_todo_session 'uncomment removes the comment or complains' <<EOF
 TODO: 1 of 2 tasks shown
 
 >>> todo.sh -x uncomment 1
-1 X 2011-08-10 2011-08-08 mow the lawn => too tired
-TODO: Replaced task with:
+TODO: Uncommented task:
 1 X 2011-08-10 2011-08-08 mow the lawn
 
 >>> todo.sh -p -x lsdo
@@ -55,8 +54,7 @@ TODO: 1 of 2 tasks shown
 
 >>> printf y | todo.sh -x uncomment -q 1
 \
-1 X 2011-08-10 2011-08-08 nobody commented text => 
-TODO: Replaced task with:
+TODO: Uncommented task:
 1 X 2011-08-10 2011-08-08 nobody commented text
 EOF
 
@@ -75,8 +73,7 @@ TODO: 3 of 3 tasks shown
 
 >>> printf y | todo.sh -x uncomment -q 1
 \
-1 x 2011-08-10 2011-08-08 mow the lawn => too tired
-TODO: Replaced task with:
+TODO: Uncommented task:
 1 x 2011-08-10 2011-08-08 mow the lawn
 
 >>> printf n | todo.sh -x uncomment -q 2
@@ -85,13 +82,11 @@ TODO: Replaced task with:
 
 >>> printf d | todo.sh -x uncomment -q 3
 \
-3 x 2011-08-10 2011-08-08 wash the car => very dirty
-TODO: Replaced task with:
+TODO: Uncommented task:
 3 x 2011-08-10 2011-08-08 wash the car; very dirty
 
 >>> todo.sh -x -f uncomment -q 2
-2 x 2011-08-10 2011-08-08 pick some flowers => sunny day
-TODO: Replaced task with:
+TODO: Uncommented task:
 2 x 2011-08-10 2011-08-08 pick some flowers
 EOF
 
@@ -105,8 +100,7 @@ test_todo_session 'uncomment replaces the comment' <<EOF
 TODO: 1 of 1 tasks shown
 
 >>> todo.sh -x uncomment 1 after the mower gets fixed
-1 X 2011-08-10 2011-08-08 mow the lawn => too tired
-TODO: Replaced task with:
+TODO: Uncommented task:
 1 X 2011-08-10 2011-08-08 mow the lawn => after the mower gets fixed
 
 >>> todo.sh -p -x lstrashable
@@ -128,8 +122,7 @@ TODO: 2 of 2 tasks shown
 
 >>> printf y | todo.sh -x uncomment -q 1 after the mower gets fixed
 \
-1 x 2011-08-10 2011-08-08 mow the lawn => too tired
-TODO: Replaced task with:
+TODO: Uncommented task:
 1 x 2011-08-10 2011-08-08 mow the lawn => after the mower gets fixed
 
 >>> printf n | todo.sh -x uncomment -q 2 after the mower gets fixed
