@@ -31,10 +31,8 @@ shift
 }
 
 # Remove projects, contexts and done / add date(s) to shorten the tasks.
-: ${TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION='[[:space:]][+@][[:graph:]]\{1,\}\| \([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\}\)\{1,2\}'}
-if [ "$TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION" ]; then
-    export HIDE_CUSTOM_SUBSTITUTION=$TODOTXT_HIDE_DEPENDENCY_SUBSTITUTION
-fi
+: ${TODOTXT_DEPENDENCY_HIDE='HIDE_CONTEXT_NAMES=1 HIDE_PROJECT_NAMES=1 HIDE_DATES=1'}
+[ -z "$TODOTXT_DEPENDENCY_HIDE" ] || eval "export $TODOTXT_DEPENDENCY_HIDE"
 
 original_TODOTXT_VERBOSE=$TODOTXT_VERBOSE
 TODOTXT_VERBOSE=0
